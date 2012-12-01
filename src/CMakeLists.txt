@@ -19,6 +19,7 @@ option(OPEN3DMOTION_LINEAR_ALGEBRA_EIGEN "For linear algebra use the Eigen libra
 if (MSVC)
   option(OPEN3DMOTION_MSVC_RUNTIME_STATIC "Use static (non-DLL) version of C runtime libraries" ON)
 endif(MSVC)
+set(OPEN3DMOTION_LINEAR_ALGEBRA_EIGEN_INCLUDEPATH "/usr/include" CACHE PATH "Path to Eigen library")
 
 SET(CMAKE_DEBUG_POSTFIX d)
 
@@ -48,19 +49,13 @@ include_directories (${PROJECT_SOURCE_DIR}/ThirdParty/cppunit/include)
 # Option to use Eigen library instead of CLAPACK
 if (OPEN3DMOTION_LINEAR_ALGEBRA_EIGEN)
   add_definitions(-DOPEN3DMOTION_LINEAR_ALGEBRA_EIGEN)
+  include_directories(${OPEN3DMOTION_LINEAR_ALGEBRA_EIGEN_INCLUDEPATH})
 endif(OPEN3DMOTION_LINEAR_ALGEBRA_EIGEN)
 
 # Build the library
 file(GLOB_RECURSE Open3DMotion_CPP Open3DMotion/*.cpp)
 file(GLOB_RECURSE Open3DMotion_H Open3DMotion/*.h)
 add_library(Open3DMotion ${Open3DMotion_CPP} ${Open3DMotion_H})
-
-# Default link paths for third-party libs
-link_directories(${PROJECT_SOURCE_DIR}/ThirdParty/CLAPACK/lib)
-link_directories(${PROJECT_SOURCE_DIR}/ThirdParty/libb64/lib)
-link_directories(${PROJECT_SOURCE_DIR}/ThirdParty/pugixml/lib)
-link_directories(${PROJECT_SOURCE_DIR}/ThirdParty/zlib/lib)
-
 
 # Build test program
 file(GLOB_RECURSE Open3DMotionTest_CPP Open3DMotionTest/*.cpp)
@@ -105,10 +100,10 @@ if (OPEN3DMOTION_LINEAR_ALGEBRA_EIGEN)
   # No library binaries needed here - all relevant things are in header templates
 else(OPEN3DMOTION_LINEAR_ALGEBRA_EIGEN)
   # Add CLAPACK and supporting libraries
+  link_directories(${PROJECT_SOURCE_DIR}/ThirdParty/CLAPACK/lib)
   target_link_libraries(Open3DMotionTest optimized clapack optimized blas optimized libf2c)
   target_link_libraries(Open3DMotionTest debug clapackd debug blasd debug libf2cd)
 endif(OPEN3DMOTION_LINEAR_ALGEBRA_EIGEN)
-
 
 install(TARGETS Open3DMotion Open3DMotionTest
   RUNTIME DESTINATION bin
@@ -122,4 +117,5 @@ install(DIRECTORY ./Open3DMotion DESTINATION include/Open3DMotion
           PATTERN "ipch" EXCLUDE)
 
 enable_testing()
-add_test (Open3DMotionTestRun Open3DMotionTest)
+add_test (Open3DMotionTestRun ${CMAKE_CURRENT_BINARY_DIR}/Open3DMotionTest)
+set_tests_properties(Open3DMotionTestRun PROPERTIES WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})

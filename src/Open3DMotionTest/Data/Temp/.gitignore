@@ -4,7 +4,8 @@
 # See LICENSE.txt for more information.
 # 
 # This folder is for temporary output during unit tests and so contents
-# should not be committed to repository. This .gitignore file is
-# therefore configured to ignore all items.
+# should not be committed to repository. 
+#
 
-?*.*
+# Ignore all files in this folder.
+*.*
