@@ -1,0 +1,10 @@
+# Open3DMotion
+# Copyright (c) 2004-2012.
+# All rights reserved.
+# See LICENSE.txt for more information.
+# 
+# This folder is for temporary output during unit tests and so contents
+# should not be committed to repository. This .gitignore file is
+# therefore configured to ignore all items.
+
+?*.*
