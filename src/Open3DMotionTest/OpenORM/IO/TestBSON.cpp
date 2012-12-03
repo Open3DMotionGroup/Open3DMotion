@@ -44,6 +44,7 @@ public:
 	CPPUNIT_TEST( testReadElementInt64 );
 	CPPUNIT_TEST( testReadElementString );
 	CPPUNIT_TEST( testReadElementBinary );
+	CPPUNIT_TEST( testReadElementBinaryMOBLCompatible );
 	CPPUNIT_TEST( testReadBSONTimestamp ); 
 	CPPUNIT_TEST( testBSONObjectIdHolder ); 
 	CPPUNIT_TEST( testReadBSONObjectId ); 
@@ -274,6 +275,37 @@ public:
 			0x03, 0x04, 0x05, 0xA1, 0xB1, 0xAA, 0x11 };
 		std::istrstream input((char*)data, sizeof(data));
 		BSONStreamReader reader(input);
+		TreeValue* value(NULL);
+		std::string name;
+		CPPUNIT_ASSERT( reader.ReadElement(name, value) );
+		CPPUNIT_ASSERT_EQUAL(std::string("Ted"), name);
+		CPPUNIT_ASSERT( value != NULL );
+		CPPUNIT_ASSERT( value->ClassNameMatches(TreeBinary::classname) );
+		TreeBinary* bin = (TreeBinary*)value;
+		CPPUNIT_ASSERT_EQUAL(size_t(7), bin->SizeBytes());
+		CPPUNIT_ASSERT_EQUAL(0x03, (int) bin->Data()[0]);
+		CPPUNIT_ASSERT_EQUAL(0x04, (int) bin->Data()[1]);
+		CPPUNIT_ASSERT_EQUAL(0x05, (int) bin->Data()[2]);
+		CPPUNIT_ASSERT_EQUAL(0xA1, (int) bin->Data()[3]);
+		CPPUNIT_ASSERT_EQUAL(0xB1, (int) bin->Data()[4]);
+		CPPUNIT_ASSERT_EQUAL(0xAA, (int) bin->Data()[5]);
+		CPPUNIT_ASSERT_EQUAL(0x11, (int) bin->Data()[6]);
+	}
+
+	void testReadElementBinaryMOBLCompatible()
+	{
+		UInt8 data[] = { 
+			0x05, 
+			'T', 'e', 'd', '\0', 
+			0x0B, 0x00, 0x00, 0x00, 
+			0x00,
+			0x07, 0x00, 0x00, 0x00,	// the size of data not including this element - this is extra stuff added by MOBL writer
+			0x03, 0x04, 0x05, 0xA1, 0xB1, 0xAA, 0x11 };
+		std::istrstream input((char*)data, sizeof(data));
+		BSONStreamReader reader(input);
+		CPPUNIT_ASSERT_EQUAL(false, reader.BinaryMOBLCompatible());
+		reader.BinaryMOBLCompatible() = true;
+		CPPUNIT_ASSERT_EQUAL(true, reader.BinaryMOBLCompatible());
 		TreeValue* value(NULL);
 		std::string name;
 		CPPUNIT_ASSERT( reader.ReadElement(name, value) );

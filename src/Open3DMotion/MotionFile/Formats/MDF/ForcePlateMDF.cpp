@@ -97,8 +97,8 @@ namespace Open3DMotion
 			id = (UInt8)ForcePlateMDF::type_Kistler_9821B;
 
 		// get plate type and model from ID - will generate exception if not recognised or supported
-		PlateType = IDtoType(id);
-		PlateModel = IDtoModel(id);
+		Type = IDtoType(id);
+		Model = IDtoModel(id);
 
 		// set default basic params
     DefaultOutline();
@@ -311,8 +311,8 @@ namespace Open3DMotion
 	UInt8 ForcePlateMDF::MDFPlateID() const throw(MotionFileException)
   {
 		UInt8 id(0);
-    const std::string& model = PlateModel.Value();
-		if (PlateType.Value() == ForcePlate::TypeKistler)
+    const std::string& model = Model.Value();
+		if (Type.Value() == ForcePlate::TypeKistler)
     {
       if (model == "9821B")
         id = type_Kistler_9821B;
@@ -330,7 +330,7 @@ namespace Open3DMotion
         id = type_Kistler_9821B;
 
     }
-		else if (PlateType.Value() == ForcePlate::TypeAMTI)
+		else if (Type.Value() == ForcePlate::TypeAMTI)
     {
       if (model == "BP2416")
         id = type_AMTI_BP2416;
@@ -423,7 +423,7 @@ namespace Open3DMotion
 
 	bool ForcePlateMDF::HasAMTIChannelScheme() const
 	{
-		bool isAMTI = (PlateType.Value() == ForcePlate::TypeAMTI);
+		bool isAMTI = (Type.Value() == ForcePlate::TypeAMTI);
 		return isAMTI;
 	}
 

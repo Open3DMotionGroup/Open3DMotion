@@ -27,8 +27,8 @@ namespace Open3DMotion
 		ForcePlate();
 
 	public:
-		MapString PlateType;
-		MapString PlateModel;
+		MapString Type;
+		MapString Model;
     MapArrayCompound<MapVectorXYZ> Outline;
 		MapArrayFloat64 Calibration;   
 		MapArrayInt32 Channels;

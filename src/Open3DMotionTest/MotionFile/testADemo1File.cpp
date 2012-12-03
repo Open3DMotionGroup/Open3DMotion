@@ -162,6 +162,12 @@ void testADemo1File(Open3DMotion::MotionFileHandler& handler, const char* filena
 		// MDF should have 8 channels per plate always
 		CPPUNIT_ASSERT_EQUAL(size_t(8), fp.Channels.NumElements());
 
+		// Should be Kistler type
+		CPPUNIT_ASSERT_EQUAL(std::string("Kistler"), fp.Type.Value());
+
+		// Either Generic or equivalent 9821B type
+		CPPUNIT_ASSERT((std::string("9821B") == fp.Model.Value()) || (std::string("Generic") == fp.Model.Value()));
+
 		// get channels
 		for (size_t ichannel = 0; ichannel < 8; ichannel++)
 		{

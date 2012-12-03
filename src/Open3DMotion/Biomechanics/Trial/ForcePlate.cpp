@@ -19,8 +19,8 @@ namespace Open3DMotion
 		COPOptimisation("value"),
 		PreCompCoPChannels("Channel")
 	{
-		REGISTER_MEMBER(PlateType);
-		REGISTER_MEMBER(PlateModel);
+		REGISTER_MEMBER(Type);
+		REGISTER_MEMBER(Model);
 		REGISTER_MEMBER(Outline);
 		REGISTER_MEMBER(Calibration);
 		REGISTER_MEMBER(SensorSeparation);

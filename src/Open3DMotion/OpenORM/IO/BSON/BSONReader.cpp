@@ -19,7 +19,8 @@
 
 namespace Open3DMotion
 {
-	BSONReader::BSONReader()
+	BSONReader::BSONReader() :
+		binary_mobl_compatible(false)
 	{
 	}
 
@@ -157,9 +158,33 @@ namespace Open3DMotion
 					UInt8 subtype(0);
 					ReadBinary(&numbytes, 4);
 					ReadBinary(&subtype, 1);
-					MemoryHandlerBasic memory(numbytes);
-					ReadBinary(memory.Data(), numbytes);
-					value = new TreeBinary(&memory);
+					if (BinaryMOBLCompatible())
+					{
+						// MOBL files insert an additional 4 bytes containing length of subsequent data.
+						// This will always be equal to (numbytes-4) so just skip these for MOBL compatibility.
+						if (numbytes > 4)
+						{
+							SkipBytes(4);
+							numbytes -= 4;
+							MemoryHandlerBasic memory(numbytes);
+							ReadBinary(memory.Data(), numbytes);
+							value = new TreeBinary(&memory);
+						}
+						else
+						{
+							// When <= than 4 bytes available data was not actually MOBL-compatible
+							// - don't know how to read this so just skip and return NULL
+							SkipBytes(numbytes);
+							return NULL;
+						}
+					}
+					else
+					{
+						// Read binary data
+						MemoryHandlerBasic memory(numbytes);
+						ReadBinary(memory.Data(), numbytes);
+						value = new TreeBinary(&memory);
+					}
 					break;
 				}
 

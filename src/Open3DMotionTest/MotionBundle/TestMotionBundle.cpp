@@ -14,6 +14,7 @@
 #include "Open3DMotion/MotionFile/MotionFileHandler.h"
 #include "Open3DMotion/MotionFile/MotionFileFormat.h"
 #include "Open3DMotion/MotionFile/Formats/XMove/FileFormatOptionsXMove.h"
+#include "Open3DMotionTest/MotionFile/testADemo1File.h"
 #include <cppunit/extensions/HelperMacros.h>
 #include <fstream>
 #include <strstream>
@@ -29,6 +30,7 @@ class TestMotionBundle : public CppUnit::TestFixture
 public:
 	CPPUNIT_TEST_SUITE( TestMotionBundle );
 	CPPUNIT_TEST( testLoad );
+	CPPUNIT_TEST( testReadADemo1_ODIN_MOBL );
 	CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -74,6 +76,39 @@ public:
 			CPPUNIT_FAIL(e.message);
 		}
 	}
+
+	void testReadADemo1_ODIN_MOBL()
+	{ 
+		try
+		{
+			// open bundle
+			MotionBundleHandler bundlehandler;
+			std::auto_ptr<MOBLFormatReader> formatreader( bundlehandler.Open("Open3DMotionTest/Data/MOBL/ADemo1.ODIN.mobl") );
+			CPPUNIT_ASSERT(formatreader.get() != NULL);
+
+			// should have one trial
+			UInt32 num_trials = formatreader->TrialCount();
+			CPPUNIT_ASSERT_EQUAL(UInt32(1), num_trials);
+
+			// load it
+			std::auto_ptr<TreeValue> tree( formatreader->ReadTrial(0) );
+			
+			// store as XMove
+			const char* tempfilename = "Open3DMotionTest/Data/Temp/TestMotionBundle.ADemo1.ODIN.xml";
+			Open3DMotion::MotionFileHandler filehandler("TestMotionBundle", "UNVESIONED");
+			FileFormatOptionsXMove xmove_options;
+			std::auto_ptr<TreeValue> xmove_options_tree( xmove_options.ToTree() );
+			filehandler.Write(tempfilename, tree.get(), xmove_options_tree.get());
+
+			// reload from XMove and check results
+			testADemo1File(filehandler, tempfilename, true, 1, true);
+		}
+		catch (const Open3DMotion::MotionFileException& e)
+		{
+			CPPUNIT_FAIL(e.message);
+		}
+	}
+
 
 };
 

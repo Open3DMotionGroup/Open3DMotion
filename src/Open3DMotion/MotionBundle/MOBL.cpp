@@ -124,6 +124,9 @@ namespace Open3DMotion
 			else
 				reader = new BSONStreamReader(*is);
 
+			// always ignore first 4 bytes of binary blobs for MOBL compatibility
+			reader->BinaryMOBLCompatible() = true;
+
 			// reset docs read
 			num_docs_read = 0;
 		}

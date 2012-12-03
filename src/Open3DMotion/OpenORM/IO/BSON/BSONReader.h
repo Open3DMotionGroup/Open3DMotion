@@ -28,6 +28,16 @@ namespace Open3DMotion
 
 	public:
 
+		/** Option for motion bundle compatibility of binary data (ignores first four bytes) */
+		bool& BinaryMOBLCompatible()
+		{ return binary_mobl_compatible; }
+
+		/** Option for motion bundle compatibility of binary data (ignores first four bytes) */
+		const bool& BinaryMOBLCompatible() const
+		{ return binary_mobl_compatible; }
+
+	public:
+
 		/** Read whole document - any unsupported fields are skipped */
 		void ReadDocument(TreeCompound& compound)  throw(BSONReadException);
 
@@ -65,6 +75,9 @@ namespace Open3DMotion
 		    @return true if more bytes, false otherwise
 			*/
 		virtual bool HaveMore() = 0;
+
+	protected:
+		bool binary_mobl_compatible;
 	};
 
 }

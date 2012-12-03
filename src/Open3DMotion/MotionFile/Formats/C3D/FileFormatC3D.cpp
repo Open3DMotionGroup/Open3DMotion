@@ -408,8 +408,8 @@ namespace Open3DMotion
 			if (c3dForceType == 2 || c3dForceType == 4)
       {
 				// AMTI plates
-				fpm->PlateType = ForcePlate::TypeAMTI;
-				fpm->PlateModel ="Generic";
+				fpm->Type = ForcePlate::TypeAMTI;
+				fpm->Model ="Generic";
 
 				// AMTI type 4 will have calibration matrix whereas type 2 does not
 				if (c3dForceType == 4)
@@ -444,8 +444,8 @@ namespace Open3DMotion
       else if (c3dForceType == 3)
       {
 				// Kistler plates
-				fpm->PlateType = ForcePlate::TypeKistler;
-				fpm->PlateModel ="Generic";
+				fpm->Type = ForcePlate::TypeKistler;
+				fpm->Model ="Generic";
 			}
       else
       {
@@ -957,7 +957,7 @@ namespace Open3DMotion
 			// determinte c3d type and expected number of channels
 			size_t channels_to_save = 0;
 			Int16 mytype = 0;
-			if (fpm.PlateType.Value().compare(ForcePlate::TypeAMTI) == 0)
+			if (fpm.Type.Value().compare(ForcePlate::TypeAMTI) == 0)
 			{
 				channels_to_save = 6;
 				if (fpm.Calibration.NumElements() == 36)
@@ -965,7 +965,7 @@ namespace Open3DMotion
 				else
 					mytype = 2;
 			}
-			else if (fpm.PlateType.Value().compare(ForcePlate::TypeKistler) == 0)
+			else if (fpm.Type.Value().compare(ForcePlate::TypeKistler) == 0)
 			{
 				channels_to_save = 8;
 				mytype = 3;

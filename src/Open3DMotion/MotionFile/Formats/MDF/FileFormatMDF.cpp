@@ -1549,9 +1549,9 @@ namespace Open3DMotion
       wElements = 1;
       for (i = 0; i < force_plates; i++)
       {
-				std::string strFP = fp_mdf[i].PlateType.Value();
+				std::string strFP = fp_mdf[i].Type.Value();
 				strFP += " ";
-				strFP += fp_mdf[i].PlateModel.Value();
+				strFP += fp_mdf[i].Model.Value();
 				wElements = 1;
         os.write((const char*)&wElements,2);
 				if (strFP.size() < 32)
