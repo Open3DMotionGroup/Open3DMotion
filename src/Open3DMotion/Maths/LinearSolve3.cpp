@@ -17,7 +17,6 @@ extern "C"
 }
 #else
 #include <Eigen/Dense>
-using namespace Eigen;
 #endif
 
 namespace Open3DMotion
@@ -27,9 +26,9 @@ namespace Open3DMotion
 	// Solves linear least squares in 3D
 	bool LinearSolve3(float* x, const float* A, const float* b, int numrows, float* rms /*=NULL*/, float rcond /*=0.001*/)
 	{	
-		int i, j;
-
 #ifndef OPEN3DMOTION_LINEAR_ALGEBRA_EIGEN
+
+		int i, j;
 
 		// transpose as required for lapack
 		float* AT = new float[3*numrows];
@@ -97,44 +96,35 @@ namespace Open3DMotion
 		return true;
 
 #else
-		
-		// copy to eigen
-		MatrixXf C(numrows, 3);
-		MatrixXf d(numrows, 1);
-		for (i = 0; i < numrows; i++)
-		{
-			for (j = 0; j < 3; j++)
-				C(i, j) = A[3*i+j];
-			d(i) = b[i];
-		}
 
-		// compute CTC = ATA
-		MatrixXf CT = C.transpose();
-		MatrixXf CTC = CT * C;
+		// Map to Eigen objects
+		Eigen::Map< Eigen::Matrix<float, Eigen::Dynamic, 3, Eigen::RowMajor> > C(A, numrows, 3);
+    Eigen::Map< Eigen::Matrix<float, Eigen::Dynamic, 1, Eigen::RowMajor> > d(b, numrows, 1);
+    Eigen::Map< Eigen::Matrix<float, 3, 1, Eigen::RowMajor> > y(x, 3, 1);
+
+		// compute CTC ( = ATA )
+		Eigen::MatrixXf CT = C.transpose();
+		Eigen::Matrix3f CTC = CT * C;
+
+		// perform check on reciprocal condition number	to mimic LAPACK behaviour
+		Eigen::Vector3f e = Eigen::EigenSolver<Eigen::Matrix3f> (CTC).eigenvalues().real();
+		float CTC_rcond = e.minCoeff() / e.maxCoeff();
+		if (CTC_rcond < rcond)
+			return false;		
 
 		// compute CTd = ATb
-		MatrixXf CTd = CT * d;
+		Eigen::Vector3f CTd = CT * d;
 
 		// solve
-		MatrixXf y = CTC.inverse() * CTd;
-		
-		// copy result
-		x[0] = y(0);
-		x[1] = y(1);
-		x[2] = y(2);
+		CTC.ldlt().solve(CTd, &y);
 
-		// rms error
-		float absolute_error = (CTC*y - CTd).norm();
+		// compute rms error if requested
 		if (rms)
-			*rms = absolute_error;
+			*rms = sqrt((C*y - d).squaredNorm() / numrows);
 
-		// compute stability
-		float relative_error =  absolute_error / CTd.norm();
-		return (relative_error < rcond);
+		return true;
 
 #endif
-
-
 	}
 
 }

@@ -49,13 +49,15 @@ public:
 
 		// do fit
 		float x[3];
-		bool result = Open3DMotion::LinearSolve3(x, A, b, 4);
+		float rms(0.0f);
+		bool result = Open3DMotion::LinearSolve3(x, A, b, 4, &rms);
 
 		// check result
 		CPPUNIT_ASSERT_EQUAL(true, result);
 		CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, (double)x[0], 0.00001);
 		CPPUNIT_ASSERT_DOUBLES_EQUAL(2.0, (double)x[1], 0.00001);
 		CPPUNIT_ASSERT_DOUBLES_EQUAL(3.0, (double)x[2], 0.00001);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(sqrt((0.1*0.1 + 0.1*0.1) / 4.0), (double)rms, 0.00001);
 	}
 
 
@@ -64,10 +66,10 @@ public:
 		// rank-deficient simulated input data
 		float A[12] = 
 		{
-			2.0f, 0.0f, 0.0f,
-			0.1f, 2.0f, 0.0f,
-			1.0f, 0.0f, 0.0f,
-			0.1f, 2.0f, 0.0f
+			2.0f, 0.0f,  1.0E-6f,
+			0.1f, 2.0f,  0.0f,
+			1.0f, 0.0f,  0.0f,
+			0.1f, 2.0f,  0.0f
 		};
 
 		// some idealised result
