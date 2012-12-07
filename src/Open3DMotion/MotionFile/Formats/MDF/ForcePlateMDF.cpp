@@ -78,7 +78,7 @@ namespace Open3DMotion
 
 	void ForcePlateMDF::ParseMDF(
 			std::map<size_t, std::vector< std::vector<UInt8> >, std::less<size_t> >& data,
-			std::map<size_t, size_t, std::less<size_t> >& elementsize,
+			std::map<size_t, size_t, std::less<size_t> >& /*elementsize*/,
 			size_t iplate) throw(MotionFileException)
   {
 		// MDF plate ID - init to zero (invalid)

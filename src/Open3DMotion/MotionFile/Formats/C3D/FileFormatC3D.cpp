@@ -52,7 +52,7 @@ namespace Open3DMotion
 	};
 	
 	// check file id, processor type and number format
-  bool FileFormatC3D::Probe(const MotionFileHandler& context, TreeValue*& readoptions, istream& is) const throw(MotionFileException)
+  bool FileFormatC3D::Probe(const MotionFileHandler& /*context*/, TreeValue*& readoptions, istream& is) const throw(MotionFileException)
   {
     FileFormatOptionsC3D options;
 
