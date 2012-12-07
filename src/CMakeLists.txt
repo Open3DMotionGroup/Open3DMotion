@@ -63,6 +63,8 @@ file(GLOB_RECURSE Open3DMotion_H Open3DMotion/*.h)
 add_library(Open3DMotion ${Open3DMotion_CPP} ${Open3DMotion_H})
 
 # Build test program
+CONFIGURE_FILE(${Open3DMotion_SOURCE_DIR}/Open3DMotionTest/MotionFile/MotionFileTest.h.in ${Open3DMotion_BINARY_DIR}/MotionFile/MotionFileTest.h @ONLY IMMEDIATE)
+INCLUDE_DIRECTORIES("${Open3DMotion_BINARY_DIR}/MotionFile")
 file(GLOB_RECURSE Open3DMotionTest_CPP Open3DMotionTest/*.cpp)
 file(GLOB_RECURSE Open3DMotionTest_H Open3DMotionTest/*.h)
 add_executable(Open3DMotionTest ${Open3DMotionTest_CPP} ${Open3DMotionTest_H})

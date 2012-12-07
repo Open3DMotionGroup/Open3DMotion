@@ -1,0 +1,7 @@
+#pragma once
+
+#define o3dm_test_root  "@CMAKE_CURRENT_SOURCE_DIR@/"
+
+#define o3dm_test_construct_global_filename(var, rel_path) \
+  char var[1024] = {0}; strcat(var, o3dm_test_root); \
+  strcat(var, rel_path);
