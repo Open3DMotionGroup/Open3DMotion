@@ -13,7 +13,7 @@
 
 #include <map>
 #include <limits>
-#include <strstream>
+#include <sstream>
 #include <stdio.h>
 #include <math.h>
 
@@ -349,7 +349,7 @@ namespace Open3DMotion
 					string recordname_long("DESCRIPTIONS");
 					if (setofnames > 0)
 					{
-						std::ostrstream number;
+						std::ostringstream number;
 						number << (setofnames+1) << std::ends;
 						recordname_short += number.str();
 						recordname_long += number.str();
@@ -384,8 +384,8 @@ namespace Open3DMotion
         else
         {
           // invent a Int16 name
-          ostrstream osTempname;
-          osTempname << "M" << (i+1) << '\0';
+          std::ostringstream osTempname;
+          osTempname << "M" << (i+1);
 					ts->Channel = osTempname.str();
         }
 
@@ -551,8 +551,8 @@ namespace Open3DMotion
         else
         {
           // invent a Int16 name
-          ostrstream tempname;
-          tempname << "CH" << (i+1) << '\0';
+          std::ostringstream tempname;
+          tempname << "CH" << (i+1);
 					ts->Channel = tempname.str();
         }
 
@@ -795,7 +795,7 @@ namespace Open3DMotion
 			string descrecordname = "DESCRIPTIONS";
 			if (setnumber > 0)
 			{
-				ostrstream number;
+				std::ostringstream number;
 				number << (setnumber+1) << ends;
 				descrecordname += number.str();
 			}
@@ -1032,16 +1032,16 @@ namespace Open3DMotion
 
 					if (ianalog < num_analog)
 					{
-            ostrstream sname, sdesc;
+            std::ostringstream sname, sdesc;
             if (platetype[i] == 3)	// Kistler plates
             {
-              sname << "F" << (i+1) << strForceLabelK[ichannel] << '\0';
-              sdesc << "Force Plate #" << (i+1) << " - " << strForceDescK[ichannel] << '\0';
+              sname << "F" << (i+1) << strForceLabelK[ichannel];
+              sdesc << "Force Plate #" << (i+1) << " - " << strForceDescK[ichannel];
             }
             else if (platetype[i] == 2 || platetype[i] == 4)	// AMTI plates
             {
-              sname << strForceLabelA[ichannel] << (i+1) << '\0';
-              sdesc << "Force Plate #" << (i+1) << " - " << strForceDescA[ichannel] << '\0';
+              sname << strForceLabelA[ichannel] << (i+1);
+              sdesc << "Force Plate #" << (i+1) << " - " << strForceDescA[ichannel];
             }
 						else
 						{
@@ -1075,8 +1075,8 @@ namespace Open3DMotion
     {
 			for (i = 0; i < label_marker.size(); i++)
 			{
-				ostrstream strlabels;
-				ostrstream strdescs;
+				std::ostringstream strlabels;
+				std::ostringstream strdescs;
 				strlabels << "LABELS";
 				strdescs << "DESCRIPTIONS";
 				if (i > 0)
@@ -1086,8 +1086,8 @@ namespace Open3DMotion
 				}
 				strlabels << ends;
 				strdescs << ends;
-				param.AddRecord(new C3DRecordText(1, strlabels.str(), "Short marker names", label_marker[i], maxchars_label_marker));
-				param.AddRecord(new C3DRecordText(1, strdescs.str(),  "Marker names", desc_marker[i], maxchars_pointdesc));
+				param.AddRecord(new C3DRecordText(1, strlabels.str().c_str(), "Short marker names", label_marker[i], maxchars_label_marker));
+				param.AddRecord(new C3DRecordText(1, strdescs.str().c_str(),  "Marker names", desc_marker[i], maxchars_pointdesc));
 			}
     }
 
