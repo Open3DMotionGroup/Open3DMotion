@@ -12,8 +12,10 @@
 #include "Open3DMotion/OpenORM/Mappings/MapArrayCompound.h"
 #include <stdlib.h>
 
-// Disables MS warning C4290: C++ exception specification ignored except to indicate a function is not __declspec(nothrow)
-#pragma warning( disable : 4290 )
+#ifdef _MSC_VER
+  // Disables MS warning C4290: C++ exception specification ignored except to indicate a function is not __declspec(nothrow)
+  #pragma warning( disable : 4290 )
+#endif
 
 namespace Open3DMotion
 {
