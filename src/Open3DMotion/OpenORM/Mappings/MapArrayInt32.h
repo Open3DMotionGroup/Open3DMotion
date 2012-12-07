@@ -16,7 +16,7 @@ namespace Open3DMotion
 	{
 	public:
 		MapArrayInt32(const char* _elementname) :
-			MapArraySimpleValue(_elementname)
+			MapArraySimpleValue<TreeInt32, Int32>(_elementname)
 		{
 		}
 	};
