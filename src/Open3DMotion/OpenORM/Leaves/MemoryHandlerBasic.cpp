@@ -28,6 +28,7 @@ namespace Open3DMotion
 	}
 
 	MemoryHandlerBasic::MemoryHandlerBasic(const MemoryHandlerBasic& src) :
+    MemoryHandler(src),
 		sizebytes(src.sizebytes),
 		refcount(src.refcount),
     data(src.data)

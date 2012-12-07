@@ -22,7 +22,7 @@ namespace Open3DMotion
 		{
 		}
 
-		MapCompound(const MapCompound& src) : MapElement()
+		MapCompound(const MapCompound& src) : MapElement(src)
 		{ operator=(src); }
 
 		virtual ~MapCompound();
