@@ -21,13 +21,13 @@ namespace Open3DMotion
 
 		/** Copy constructor which does nothing as parent element should not
 		    be copied when using = to copy from one compound structure to another */
-		MapElement(const MapElement& src) 
+		MapElement(const MapElement& /*src*/) 
 			: parent(NULL)
 		{  }
 
 		/** Assignment operator which does nothing as parent element should not
 		    be copied when using = to copy from one compound structure to another */
-		const MapElement& operator=(const MapElement& src)
+		const MapElement& operator=(const MapElement& /*src*/)
 		{ return *this; }
 
 	public:
