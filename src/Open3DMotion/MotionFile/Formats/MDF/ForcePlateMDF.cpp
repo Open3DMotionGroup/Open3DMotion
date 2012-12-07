@@ -620,7 +620,7 @@ namespace Open3DMotion
 		{
 			for (int i = 0; i < 6; i++)
 			{
-				if ((abs(mdf_remap_amti[orient][i])-1) == runchannel)
+				if ((abs(mdf_remap_amti[orient][i])-1) == static_cast<int>(runchannel))
 					return i;
 			}
 		}
@@ -628,7 +628,7 @@ namespace Open3DMotion
 		{
 			for (int i = 0; i < 8; i++)
 			{
-				if ((abs(mdf_remap_kistler[orient][i])-1) == runchannel)
+				if ((abs(mdf_remap_kistler[orient][i])-1) == static_cast<int>(runchannel))
 					return i;
 			}
 		}

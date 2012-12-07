@@ -1519,7 +1519,7 @@ namespace Open3DMotion
 
 					// find value from data (interpolate if necessary)
 					double value;
-          if (isub == 0 || iinput == ( ts_iter.NumFrames()-1))
+          if (isub == 0 || iinput == ( static_cast<int>(ts_iter.NumFrames()-1)))
           {
             // at end of array - just use input frame
 						ts_iter.SeekTo(iinput);
