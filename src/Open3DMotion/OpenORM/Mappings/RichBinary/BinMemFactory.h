@@ -15,6 +15,7 @@ namespace Open3DMotion
 	class BinMemFactory
 	{
 	public:
+		virtual ~BinMemFactory() {};
 		virtual MemoryHandler* Allocate(size_t numframes, const BinaryStructure& framestruct) = 0;
 	};
 
