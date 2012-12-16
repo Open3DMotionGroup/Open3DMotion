@@ -99,7 +99,7 @@ namespace Open3DMotion
   void MDFDescriptorVersion3::TransferMarker(TimeSequence& ts, 
                                      const UInt8* data,
                                      const UInt8* inview,
-                                     float scale)
+                                     float /*scale*/)
   {
     const float* pos = (const float*)data;
     UInt16 wInView;

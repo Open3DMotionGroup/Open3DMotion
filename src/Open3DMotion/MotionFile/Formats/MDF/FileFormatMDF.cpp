@@ -221,7 +221,7 @@ namespace Open3DMotion
 	}
 
 	// check id and number type
-  bool FileFormatMDF::Probe(const MotionFileHandler& context, TreeValue*& readoptions, std::istream& is) const throw(MotionFileException)
+  bool FileFormatMDF::Probe(const MotionFileHandler& /*context*/, TreeValue*& readoptions, std::istream& is) const throw(MotionFileException)
 	{
 		FileFormatOptionsMDF mdf_options;
 
@@ -256,7 +256,7 @@ namespace Open3DMotion
 	}
 
   // Read MDF
-  TreeValue* FileFormatMDF::Read(const MotionFileHandler& context, std::istream& is, BinMemFactory& memfactory, const TreeValue* readoptions) const throw(MotionFileException) 
+  TreeValue* FileFormatMDF::Read(const MotionFileHandler& /*context*/, std::istream& is, BinMemFactory& memfactory, const TreeValue* readoptions) const throw(MotionFileException) 
 	{
 		// get options
 		FileFormatOptionsMDF mdf_options;
@@ -1042,7 +1042,7 @@ namespace Open3DMotion
 	}
 
   // Write MDF
-  void FileFormatMDF::Write(const MotionFileHandler& context, const TreeValue* contents, std::ostream& os, const TreeValue* writeoptions) const throw(MotionFileException)
+  void FileFormatMDF::Write(const MotionFileHandler& /*context*/, const TreeValue* contents, std::ostream& os, const TreeValue* writeoptions) const throw(MotionFileException)
 	{
 		// get write options
 		FileFormatOptionsMDF mdf_options;

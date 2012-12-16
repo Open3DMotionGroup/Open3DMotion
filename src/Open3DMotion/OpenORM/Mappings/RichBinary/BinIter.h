@@ -26,6 +26,8 @@ namespace Open3DMotion
 			framesize = bin.DataStructure().TotalBytes();
 			numframes = bin.DataSizeBytes() / framesize;
 		}
+		
+    virtual ~BinIterBase() {};
 
 	protected:
 		template<typename DataType> static const DataType* GetFieldPointer(const RichBinary& bin, const char* fieldname, size_t dimension) throw(NoSuchFieldException)
