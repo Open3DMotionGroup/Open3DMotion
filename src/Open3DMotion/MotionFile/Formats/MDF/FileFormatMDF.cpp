@@ -15,10 +15,6 @@
 
 #include <sstream>
 
-#ifdef __GNUC__
-#define _stricmp strcasecmp
-#endif
-
 namespace Open3DMotion
 {
 

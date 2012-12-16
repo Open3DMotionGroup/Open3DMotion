@@ -19,6 +19,11 @@
 #include <stddef.h>
 #endif
 
+#ifdef __GNUC__
+#define _stricmp strcasecmp
+#define _finite finite
+#endif
+
 namespace Open3DMotion
 {
 #ifdef __GNUC__
