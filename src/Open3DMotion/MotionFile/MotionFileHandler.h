@@ -5,10 +5,13 @@
   See LICENSE.txt for more information.
 --*/
 
-#pragma once
+#ifndef _OPEN3DMOTION_MOTION_FILE_HANDLER_H_
+#define _OPEN3DMOTION_MOTION_FILE_HANDLER_H_
 
 #include "Open3DMotion/Biomechanics/Trial/Trial.h"
 #include "Open3DMotion/MotionFile/MotionFileException.h"
+#include "Open3DMotion/MotionFile/MotionFileFormatList.h"
+#include "Open3DMotion/MotionFile/MotionFileFormatListAll.h"
 
 namespace Open3DMotion
 {
@@ -32,9 +35,9 @@ namespace Open3DMotion
 		const std::string& ProgramVersion() const
 		{ return programname; }
 
-		TreeValue* Read(const char* filename) throw(MotionFileException);
+		TreeValue* Read(const char* filename, const MotionFileFormatList& formatlist = MotionFileFormatListAll()) throw(MotionFileException);
 
-		void Write(const char* filename, const TreeValue* contents, const TreeValue* writeoptions) throw(MotionFileException);
+		void Write(const char* filename, const TreeValue* contents, const TreeValue* writeoptions, const MotionFileFormatList& formatlist = MotionFileFormatListAll()) throw(MotionFileException);
 
 	private:
 		std::string programname;
@@ -42,3 +45,4 @@ namespace Open3DMotion
 	};
 
 }
+#endif

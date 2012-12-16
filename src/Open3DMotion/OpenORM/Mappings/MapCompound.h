@@ -5,7 +5,8 @@
   See LICENSE.txt for more information.
 --*/
 
-#pragma once
+#ifndef _ORMPP_MAP_COMPOUND_H_
+#define _ORMPP_MAP_COMPOUND_H_
 
 #include "Open3DMotion/OpenORM/Branches/TreeCompound.h"
 #include "Open3DMotion/OpenORM/Mappings/MapElement.h"
@@ -40,7 +41,15 @@ namespace Open3DMotion
 	private:
 		std::vector<MapCompoundElement*> refmap;
 	};
+
+	const char* MemberName(const char* qualified_name);
+
 }
 
 // Helper to use inside constructor of compound classes to register their member variables
 #define REGISTER_MEMBER(m) Register(#m, &m)
+
+// Helper to express a member variable name as a string
+#define MEMBER_NAME(qualified_name) Open3DMotion::MemberName(#qualified_name)
+
+#endif

@@ -5,8 +5,8 @@
   See LICENSE.txt for more information.
 --*/
 
-#ifndef _EVENT_ID_TIME_H_
-#define _EVENT_ID_TIME_H_
+#ifndef _OPEN3DMOTION_EVENT_ID_TIME_H_
+#define _OPEN3DMOTION_EVENT_ID_TIME_H_
 
 #include "Open3DMotion/OpenORM/Types.h"
 

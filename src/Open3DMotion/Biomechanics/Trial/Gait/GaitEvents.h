@@ -5,8 +5,8 @@
   See LICENSE.txt for more information.
 --*/
 
-#ifndef _GAIT_EVENT_ARRAY_H_
-#define _GAIT_EVENT_ARRAY_H_
+#ifndef _OPEN3DMOTION_GAIT_EVENTS_H_
+#define _OPEN3DMOTION_GAIT_EVENTS_H_
 
 #include "Open3DMotion/Biomechanics/Trial/EventArray.h"
 

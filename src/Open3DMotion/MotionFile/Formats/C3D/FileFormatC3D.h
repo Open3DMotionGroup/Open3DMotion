@@ -5,8 +5,8 @@
   See LICENSE.txt for more information.
 --*/
 
-#ifndef _FILE_FORMAT_C3D_H_
-#define _FILE_FORMAT_C3D_H_
+#ifndef _OPEN3DMOTION_FILE_FORMAT_C3D_H_
+#define _OPEN3DMOTION_FILE_FORMAT_C3D_H_
 
 #include "Open3DMotion/MotionFile/MotionFileFormat.h"
 #include "Open3DMotion/OpenORM/Mappings/MapString.h"
@@ -18,13 +18,7 @@ namespace Open3DMotion
 	// base class for C3D reading
 	class FileFormatC3D : public MotionFileFormat
   {
-		friend class MotionFileFormatList;
-
-  protected:
-    // Protected constructor for derived classes
-    // Parameters 
-    //  _summary : Int16 description of file format
-    //  _extension : comma-separated list of file extensions
+	public:
     FileFormatC3D() :
 			MotionFileFormat("C3D", "C3D", "c3d")
 		{

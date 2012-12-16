@@ -1,0 +1,453 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XML Spy v4.4 U (http://www.xmlspy.com) by Elsevier Science BV Elsevier Science BV (Elsevier Science BV) -->
+<!-- edited with XMLSPY v5 rel. 2 U (http://www.xmlspy.com) by Lia Out (VUmc) -->
+<xs:schema targetNamespace="http://www.smalll.nl/vumc/rev/moxie" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:moxie="http://www.smalll.nl/vumc/rev/moxie">
+	<!-- definition of simple elements -->
+	<xs:element name="admitting_diagnoses_description" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Description of the admitting diagnosis (diagnoses)</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="artefacts_removed" type="xs:boolean">
+		<xs:annotation>
+			<xs:documentation>True if the raw emg data in this channel have been high-pass filtered to remove artefacts</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="attention_modality">
+		<xs:annotation>
+			<xs:documentation>Description of the patient's attention</xs:documentation>
+		</xs:annotation>
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:pattern value="FOCUSSED|DISTRACTED|UNKNOWN"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="body_side">
+		<xs:annotation>
+			<xs:documentation>Body side</xs:documentation>
+		</xs:annotation>
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:pattern value="LEFT|RIGHT|UNKNOWN"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="channel_anatomical_label_long" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Anatomical description, for instance full muscle name, or joint name</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="channel_anatomical_label_short" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Anatomical code, for instance "TA" for "m. tibialis anterior"</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="channel_baseline" type="xs:decimal">
+		<xs:annotation>
+			<xs:documentation>Offset of encoded sample value 0 from actual 0</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="channel_canvas_minimum" type="xs:int">
+		<xs:annotation>
+			<xs:documentation>Minimum sample value of the range that is used for presentation purposes</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="channel_canvas_maximum" type="xs:int">
+		<xs:annotation>
+			<xs:documentation>Maximum sample value of the range that is used for presentation purposes</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="channel_clinical_baseline" type="xs:decimal">
+		<xs:annotation>
+			<xs:documentation>Offset for transformation of engineering units into clinical units. Clinical units are obtained by multiplication of engineering units with the Channel Clinical Sensitivity before subtracting the Channel Clinical Baseline.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="channel_clinical_sensitivity" type="xs:decimal">
+		<xs:annotation>
+			<xs:documentation>Gain factor for transformation of engineering units into clinical units</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="channel_data">
+		<xs:annotation>
+			<xs:documentation>Data measured at one channel</xs:documentation>
+		</xs:annotation>
+		<xs:simpleType>
+			<xs:list itemType="xs:decimal"/>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="channel_engineering_units" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Description of engineering units</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="channel_label" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Describes the nature of the signal measured</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="channel_number" type="xs:unsignedShort">
+		<xs:annotation>
+			<xs:documentation>Equipment physical channel number used for acquisition</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="channel_sensitivity" type="xs:decimal">
+		<xs:annotation>
+			<xs:documentation>Nominal numeric value of unit quantity of sample. Required if samples represent defined (not arbitrary) units.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="channel_type">
+		<xs:annotation>
+			<xs:documentation>Describes the nature of the signal measured (EMG_ENVELOPE, EMG_RAW, FORCE_X, FORCE_Y, FORCE_Z, MOMENT_X, MOMENT_Y, MOMENT_Z or OTHER ). Can be used to customize data display.</xs:documentation>
+		</xs:annotation>
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:pattern value="EMG_ENVELOPE|EMG_RAW|FORCE_X|FORCE_Y|FORCE_Z|MOMENT_X|MOMENT_Y|MOMENT_Z|OTHER"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="comments" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Comments made by the performing physician</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="cycle_data">
+		<xs:annotation>
+			<xs:documentation>Resampled data</xs:documentation>
+		</xs:annotation>
+		<xs:simpleType>
+			<xs:list itemType="xs:decimal"/>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="dlt_matrix">
+		<xs:annotation>
+			<xs:documentation>Eleven Direct Linear Transformation parameters that relate camera coordinates to spatial coordinates</xs:documentation>
+		</xs:annotation>
+		<xs:simpleType>
+			<xs:list itemType="xs:decimal"/>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="file_characterisation" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Defines of the nature of the present file, e.g. the name of the test carried out</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="filename" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Filename of the present file given at its creation</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="force">
+		<xs:annotation>
+			<xs:documentation>Defines whether movements are carried out against manual force</xs:documentation>
+		</xs:annotation>
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:pattern value="YES|NO|UNKNOWN"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="joint">
+		<xs:annotation>
+			<xs:documentation>Joint of investigation</xs:documentation>
+		</xs:annotation>
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:pattern value="ANKLE|ELBOW|HIP|KNEE|SHOULDER|WRIST|UNKNOWN"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="knee_angle" type="xs:short">
+		<xs:annotation>
+			<xs:documentation>Knee angle (deg)</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="moment_arm" type="xs:unsignedShort">
+		<xs:annotation>
+			<xs:documentation>Perpendicular distance from the line of application of a force to the axis of rotation (cm)</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="movement_frequency" type="xs:unsignedShort">
+		<xs:annotation>
+			<xs:documentation>Frequency of limb movement. Required if Movement Frequency Modality has value IMPOSED.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="movement_frequency_modality">
+		<xs:annotation>
+			<xs:documentation>Defines whether the repetitive limb movements were carried out following a timing device (e.g. a metronome) or not (IMPOSED vs. FREE)</xs:documentation>
+		</xs:annotation>
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:pattern value="FREE|IMPOSED|UNKNOWN"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="movement_modality">
+		<xs:annotation>
+			<xs:documentation>Defines whether the repetitive movements are carried out with or without manual guidance (PASSIVE vs. ACTIVE)</xs:documentation>
+		</xs:annotation>
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:pattern value="ACTIVE|PASSIVE|UNKNOWN"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="nr_of_channels" type="xs:unsignedShort">
+		<xs:annotation>
+			<xs:documentation>Number of channels present in this datafile</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="nr_of_samples" type="xs:unsignedInt">
+		<xs:annotation>
+			<xs:documentation>Number of samples per channel </xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="optotrak_filename" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Filename of the Optotrak file with data acquired simultaneously with the present trial</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="original_datafile" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Datafile (e.g. MDF-file) that was converted to XML</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="patient_birth_date" type="xs:date">
+		<xs:annotation>
+			<xs:documentation>Date of birth of the patient</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="patient_id" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Primary hospital identification number or code for the patient</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="patient_name" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Patient's full name</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="performing_physician_name" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Physician administering the trial</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="plateau_height" type="xs:unsignedShort">
+		<xs:annotation>
+			<xs:documentation>Height of the foot dynamometer plateau (in cm)</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="posture">
+		<xs:annotation>
+			<xs:documentation>Posture of the patient</xs:documentation>
+		</xs:annotation>
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:pattern value="SITTING|SITTING - KNEE EXT.|SITTING - KNEE FL.|STANDING|LYING|LYING - KNEE EXT.|LYING - KNEE FL.|LYING - SIDE|UNKNOWN"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="project" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Project that the present trial is part of</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="referring_physician_name" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Patient's primary referring physician for this visit</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="sampling_frequency" type="xs:unsignedLong">
+		<xs:annotation>
+			<xs:documentation>Sampling frequency of the data (Hz)</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="session_date" type="xs:date">
+		<xs:annotation>
+			<xs:documentation>Date of the session</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="session_time" type="xs:time">
+		<xs:annotation>
+			<xs:documentation>Time at which the acquisition of the session information was started</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="show" type="xs:boolean">
+		<xs:annotation>
+			<xs:documentation>True if this channel contains meaningful data, can be used by a viewer</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="tibia_angle" type="xs:short">
+		<xs:annotation>
+			<xs:documentation>Angle of the tibia with respect to the horizontal (deg)</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="trial_condition" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Description of a trial condition</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="trial_date" type="xs:date">
+		<xs:annotation>
+			<xs:documentation>Date of the trial</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="trial_number" type="xs:unsignedShort">
+		<xs:annotation>
+			<xs:documentation>A number that identifies this trial</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="trial_time" type="xs:time">
+		<xs:annotation>
+			<xs:documentation>Time the trial ended</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="trial_walking_velocity" type="xs:decimal">
+		<xs:annotation>
+			<xs:documentation>Normal walking velocity as measured at the start of a trial (m/s)</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="version" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Version of the data file, e.g. 01.01</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="videofile" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>String of one or more videofilenames separated by asterixes</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="vitc" type="xs:unsignedLong">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+	</xs:element>
+	<!-- definition of complex elements -->
+	<xs:element name="channel_body_side">
+		<xs:annotation>
+			<xs:documentation>Side of the body to which a channel is connected</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:all>
+				<xs:element ref="moxie:body_side"/>
+			</xs:all>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="channel_data_AD_units">
+		<xs:annotation>
+			<xs:documentation>Data measured at one channel in units of the AD convertor</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:all>
+				<xs:element ref="moxie:sampling_frequency"/>
+				<xs:element ref="moxie:channel_data"/>
+			</xs:all>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="coordinate_transformations">
+		<xs:annotation>
+			<xs:documentation>Contains a DLT matrix for each video camera</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="moxie:dlt_matrix" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="cycle">
+		<xs:annotation>
+			<xs:documentation>Contains both the cycle boundaries and the data</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:all>
+				<xs:element ref="moxie:cycle_boundaries"/>
+				<xs:element ref="moxie:cycle_data"/>
+			</xs:all>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="cycle_boundaries">
+		<xs:annotation>
+			<xs:documentation>Beginning and end VITC of a cycle</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence minOccurs="2" maxOccurs="2">
+				<xs:element ref="moxie:vitc"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="cycles_mean">
+		<xs:annotation>
+			<xs:documentation>Mean of cycles</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:all>
+				<xs:element ref="moxie:cycle_data"/>
+			</xs:all>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="cycles_sd">
+		<xs:annotation>
+			<xs:documentation>Standard deviation of cycles</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:all>
+				<xs:element ref="moxie:cycle_data"/>
+			</xs:all>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="normalized_data">
+		<xs:annotation>
+			<xs:documentation>Data resampled in cycles, e.g. gait cycles</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="moxie:cycle" maxOccurs="unbounded"/>
+				<xs:element ref="moxie:cycles_mean"/>
+				<xs:element ref="moxie:cycles_sd"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="processed_channel_data">
+		<xs:annotation>
+			<xs:documentation>Processed channel data</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:all>
+				<xs:element ref="moxie:sampling_frequency"/>
+				<xs:element ref="moxie:channel_data"/>
+			</xs:all>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="raw_channel_data">
+		<xs:annotation>
+			<xs:documentation>Raw data measured at one channel in engineering units</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:all>
+				<xs:element ref="moxie:artefacts_removed" minOccurs="0"/>
+				<xs:element ref="moxie:sampling_frequency"/>
+				<xs:element ref="moxie:channel_data"/>
+			</xs:all>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="trial_body_side">
+		<xs:annotation>
+			<xs:documentation>Side of the body at which a test is performed</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:all>
+				<xs:element ref="moxie:body_side"/>
+			</xs:all>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="vitc_start">
+		<xs:annotation>
+			<xs:documentation>Starting VITC of the video</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:all>
+				<xs:element ref="moxie:vitc"/>
+			</xs:all>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

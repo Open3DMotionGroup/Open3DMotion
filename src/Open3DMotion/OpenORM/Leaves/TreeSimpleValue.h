@@ -5,7 +5,8 @@
   See LICENSE.txt for more information.
 --*/
 
-#pragma once
+#ifndef _ORMPP_TREE_SIMPLE_VALUE_H_
+#define _ORMPP_TREE_SIMPLE_VALUE_H_
 
 #include "Open3DMotion/OpenORM/TreeValue.h"
 #include <stdlib.h>
@@ -51,3 +52,4 @@ namespace Open3DMotion
 	};
 
 }
+#endif

@@ -5,7 +5,8 @@
   See LICENSE.txt for more information.
 --*/
 
-#pragma once
+#ifndef _ORMPP_MAP_ARRAY_SIMPLE_VALUE_H_
+#define _ORMPP_MAP_ARRAY_SIMPLE_VALUE_H_
 
 #include "Open3DMotion/OpenORM/Mappings/MapElement.h"
 #include "Open3DMotion/OpenORM/Branches/TreeList.h"
@@ -83,3 +84,4 @@ namespace Open3DMotion
 	};
 
 }
+#endif

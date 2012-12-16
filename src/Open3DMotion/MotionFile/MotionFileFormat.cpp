@@ -11,50 +11,6 @@ namespace Open3DMotion
 {
 	using namespace std;
 
-	// global objects
-
-	MotionFileFormatList* MotionFileFormatList::instance = NULL;
-
-	MotionFileFormatList* MotionFileFormatList::GetInstance()
-	{
-		if (instance == NULL)
-		{
-			atexit(MotionFileFormatList::CloseInstance);
-			instance = new MotionFileFormatList;
-		}
-		return instance;
-	}
-
-	void MotionFileFormatList::CloseInstance()
-	{
-		if (instance != NULL)
-		{
-			delete instance;
-			instance = NULL;
-		}
-	}
-
-	MotionFileFormatList::MotionFileFormatList()
-	{
-		RegisterAll();
-	}
-
-	MotionFileFormatList::~MotionFileFormatList()
-	{
-		for (MotionFileFormatList::iterator i( begin() ); i != end(); i++)
-		{
-			MotionFileFormat* format = i->second;
-			delete format;
-		}
-
-		clear();
-	}
-
-	void MotionFileFormatList::Register(MotionFileFormat* format)
-	{
-		(*this)[format->FormatID()] = format;
-	}
-
   // construct new (abstract) file format
   MotionFileFormat::MotionFileFormat(
     const char* _formatid,

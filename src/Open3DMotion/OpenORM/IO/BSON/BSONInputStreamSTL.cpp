@@ -5,23 +5,23 @@
   See LICENSE.txt for more information.
 --*/
 
-#include "BSONStreamReader.h"
+#include "BSONInputStreamSTL.h"
 
 namespace Open3DMotion
 {
-	BSONStreamReader::BSONStreamReader(std::istream& _input) :
+	BSONInputStreamSTL::BSONInputStreamSTL(std::istream& _input) :
 		input(_input)
 	{
 	}
 
-	void BSONStreamReader::SkipBytes(UInt32 count)  throw(BSONReadException)
+	void BSONInputStreamSTL::SkipBytes(UInt32 count)  throw(BSONReadException)
 	{
 		input.seekg(count, std::ios::cur);
 		if (input.fail())
 			throw BSONReadException("error skipping bytes in BSON stream");
 	}
 
-	void BSONStreamReader::ReadBinary(void* binary, UInt32 size)  throw(BSONReadException)
+	void BSONInputStreamSTL::ReadBinary(void* binary, UInt32 size)  throw(BSONReadException)
 	{
 		input.read((char*)binary, size);
 		if (input.fail())

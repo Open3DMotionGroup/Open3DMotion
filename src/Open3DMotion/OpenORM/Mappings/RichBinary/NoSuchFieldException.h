@@ -5,7 +5,13 @@
   See LICENSE.txt for more information.
 --*/
 
-#pragma once
+#ifndef _OPEN3DMOTION_NO_SUCH_FIELD_EXCEPTION_H_
+#define _OPEN3DMOTION_NO_SUCH_FIELD_EXCEPTION_H_
+
+#ifdef _MSC_VER
+  // Disables MS warning C4290: C++ exception specification ignored except to indicate a function is not __declspec(nothrow)
+  #pragma warning( disable : 4290 )
+#endif
 
 #include <string>
 
@@ -35,3 +41,4 @@ namespace Open3DMotion
 		ErrorCode errorcode;
 	};
 }
+#endif

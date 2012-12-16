@@ -5,7 +5,8 @@
   See LICENSE.txt for more information.
 --*/
 
-#pragma once
+#ifndef _ORMPP_MAP_BOOL_H_
+#define _ORMPP_MAP_BOOL_H_
 
 #include "Open3DMotion/OpenORM/Leaves/TreeBool.h"
 #include "Open3DMotion/OpenORM/Mappings/MapSimpleValue.h"
@@ -35,3 +36,4 @@ namespace Open3DMotion
 		{ bool& s = Value(); s = _x; return s; }
 	};
 }
+#endif

@@ -5,7 +5,8 @@
   See LICENSE.txt for more information.
 --*/
 
-#pragma once
+#ifndef _ORMPP_MAP_COMPOUND_REF_MAP_H_
+#define _ORMPP_MAP_COMPOUND_REF_MAP_H_
 
 #include "Open3DMotion/OpenORM/Mappings/MapCompoundElement.h"
 
@@ -30,3 +31,4 @@ namespace Open3DMotion
 		MapElement* refmap;
 	};
 }
+#endif

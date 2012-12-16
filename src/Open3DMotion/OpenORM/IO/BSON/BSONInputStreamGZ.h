@@ -5,10 +5,10 @@
   See LICENSE.txt for more information.
 --*/
 
-#ifndef _BSON_GZ_STREAM_READER_H_
-#define _BSON_GZ_STREAM_READER_H_
+#ifndef _ORMPP_BSON_STREAM_READER_GZ_H_
+#define _ORMPP_BSON_STREAM_READER_GZ_H_
 
-#include "BSONReader.h"
+#include "BSONInputStream.h"
 #include <istream>
 
 struct z_stream_s;
@@ -16,12 +16,12 @@ struct z_stream_s;
 namespace Open3DMotion
 {
 	/** Implementation of BSONReader for reading from STL stream in which the data was previously compressed using the gzip algorithm */
-	class BSONGZStreamReader : public BSONReader
+	class BSONInputStreamGZ: public BSONInputStream
 	{
 	public:
-		BSONGZStreamReader(std::istream& _input, UInt32 _chunk_size = 4096UL);
+		BSONInputStreamGZ(std::istream& _input, UInt32 _chunk_size = 4096UL);
 
-		~BSONGZStreamReader();
+		~BSONInputStreamGZ();
 
 	public:
 

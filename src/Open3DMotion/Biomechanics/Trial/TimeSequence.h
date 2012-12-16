@@ -5,7 +5,8 @@
   See LICENSE.txt for more information.
 --*/
 
-#pragma once
+#ifndef _OPEN3DMOTION_TIME_SEQUENCE_H_
+#define _OPEN3DMOTION_TIME_SEQUENCE_H_
 
 #include "Open3DMotion/OpenORM/Mappings/RichBinary/RichBinary.h"
 #include "Open3DMotion/Biomechanics/Trial/TimeRange.h"
@@ -53,3 +54,4 @@ namespace Open3DMotion
 		MapInt32 Frames;
 	};
 }
+#endif

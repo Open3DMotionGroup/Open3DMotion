@@ -5,7 +5,8 @@
   See LICENSE.txt for more information.
 --*/
 
-#pragma once
+#ifndef _OPEN3DMOTION_RIGID_TRANFORM_3_H_
+#define _OPEN3DMOTION_RIGID_TRANFORM_3_H_
 
 #include "Open3DMotion/Maths/Vector3.h"
 #include "Open3DMotion/Maths/Matrix3x3.h"
@@ -152,3 +153,4 @@ namespace Open3DMotion
     }
   };
 }
+#endif

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XML Spy v4.4 U (http://www.xmlspy.com) by Elsevier Science BV Elsevier Science BV (Elsevier Science BV) -->
+<!-- edited with XMLSPY v5 rel. 2 U (http://www.xmlspy.com) by Lia Out (VUmc) -->
+<xs:schema targetNamespace="http://www.smalll.nl/vumc/rev/moxie" xmlns:moxie="http://www.smalll.nl/vumc/rev/moxie" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:include schemaLocation="moxie_elements.xsd"/>
+	<!-- definition of complex elements -->
+	<xs:element name="viewer_header">
+		<xs:annotation>
+			<xs:documentation>Descriptive part of the datafile</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:all>
+				<xs:element ref="moxie:admitting_diagnoses_description" minOccurs="0"/>
+				<xs:element ref="moxie:attention_modality" minOccurs="0"/>
+				<xs:element ref="moxie:comments" minOccurs="0"/>
+				<xs:element ref="moxie:coordinate_transformations" minOccurs="0"/>
+				<xs:element ref="moxie:file_characterisation" minOccurs="0"/>
+				<xs:element ref="moxie:filename"/>
+				<xs:element ref="moxie:force" minOccurs="0"/>
+				<xs:element ref="moxie:joint" minOccurs="0"/>
+				<xs:element ref="moxie:knee_angle" minOccurs="0"/>
+				<xs:element ref="moxie:moment_arm" minOccurs="0"/>
+				<xs:element ref="moxie:movement_frequency" minOccurs="0"/>
+				<xs:element ref="moxie:movement_frequency_modality" minOccurs="0"/>
+				<xs:element ref="moxie:movement_modality" minOccurs="0"/>
+				<xs:element ref="moxie:nr_of_channels" minOccurs="0"/>
+				<xs:element ref="moxie:nr_of_samples" minOccurs="0"/>
+				<xs:element ref="moxie:optotrak_filename" minOccurs="0"/>
+				<xs:element ref="moxie:original_datafile" minOccurs="0"/>
+				<xs:element ref="moxie:patient_birth_date" minOccurs="0"/>
+				<xs:element ref="moxie:patient_id" minOccurs="0"/>
+				<xs:element ref="moxie:patient_name" minOccurs="0"/>
+				<xs:element ref="moxie:performing_physician_name" minOccurs="0"/>
+				<xs:element ref="moxie:plateau_height" minOccurs="0"/>
+				<xs:element ref="moxie:posture" minOccurs="0"/>
+				<xs:element ref="moxie:project" minOccurs="0"/>
+				<xs:element ref="moxie:referring_physician_name" minOccurs="0"/>
+				<xs:element ref="moxie:session_date" minOccurs="0"/>
+				<xs:element ref="moxie:session_time" minOccurs="0"/>
+				<xs:element ref="moxie:trial_date" minOccurs="0"/>
+				<xs:element ref="moxie:trial_number" minOccurs="0"/>
+				<xs:element ref="moxie:trial_time" minOccurs="0"/>
+				<xs:element ref="moxie:trial_body_side" minOccurs="0"/>
+				<xs:element ref="moxie:trial_condition" minOccurs="0"/>
+				<xs:element ref="moxie:trial_walking_velocity" minOccurs="0"/>
+				<xs:element ref="moxie:tibia_angle" minOccurs="0"/>
+				<xs:element ref="moxie:version" minOccurs="0"/>
+				<xs:element ref="moxie:videofile"/>
+				<xs:element ref="moxie:vitc_start" minOccurs="0"/>
+			</xs:all>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="viewer_channel">
+		<xs:annotation>
+			<xs:documentation>Contains both data and a description of the channel</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:all>
+				<xs:element ref="moxie:channel_anatomical_label_long" minOccurs="0"/>
+				<xs:element ref="moxie:channel_anatomical_label_short" minOccurs="0"/>
+				<xs:element ref="moxie:channel_body_side" minOccurs="0"/>
+				<xs:element ref="moxie:channel_engineering_units" minOccurs="0"/>
+				<xs:element ref="moxie:channel_label"/>
+				<xs:element ref="moxie:channel_number" minOccurs="0"/>
+				<xs:element ref="moxie:channel_type" minOccurs="0"/>
+				<xs:element ref="moxie:normalized_data" minOccurs="0"/>
+				<xs:element ref="moxie:processed_channel_data" minOccurs="0"/>
+				<xs:element ref="moxie:raw_channel_data" minOccurs="0"/>
+				<xs:element ref="moxie:show" minOccurs="0"/>
+			</xs:all>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="viewer_data">
+		<xs:annotation>
+			<xs:documentation>Data part of the datafile</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="moxie:viewer_channel" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!-- instantiation of root -->
+	<xs:element name="moxie_viewer_datafile">
+		<xs:annotation>
+			<xs:documentation>Root element</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:all>
+				<xs:element ref="moxie:viewer_header"/>
+				<xs:element ref="moxie:viewer_data" minOccurs="0"/>
+			</xs:all>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

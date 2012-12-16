@@ -5,7 +5,8 @@
   See LICENSE.txt for more information.
 --*/
 
-#pragma once
+#ifndef _OPEN3DMOTION_MAP_C3D_PARAMETERS_H_
+#define _OPEN3DMOTION_MAP_C3D_PARAMETERS_H_
 
 #include "Open3DMotion/MotionFile/Formats/C3D/C3DRecord.h"
 
@@ -92,3 +93,4 @@ namespace Open3DMotion
 	};
 
 }
+#endif

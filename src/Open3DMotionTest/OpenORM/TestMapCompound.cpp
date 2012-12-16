@@ -57,6 +57,7 @@ public:
 	CPPUNIT_TEST( testToTreeTwoLayers );
 	CPPUNIT_TEST( testFromTreeEmpty );
 	CPPUNIT_TEST( testFromTreeTwoLayers );
+	CPPUNIT_TEST( testMemberName );
 	CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -131,6 +132,21 @@ public:
 		CPPUNIT_ASSERT_EQUAL(Int32(0), m.MyLayer.AnApple.Value());
 		CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, m.MyLayer.ABanana, 1E-12);
 		CPPUNIT_ASSERT_EQUAL(string("TotalRubbish"), m.MyLayer.SomeNonsense.Value());
+	}
+
+	void testMemberName()
+	{
+		// test something without qualifiers
+		const char* test0 = MEMBER_NAME(testMemberName);
+		CPPUNIT_ASSERT_EQUAL(std::string("testMemberName"), std::string(test0));
+
+		// test something with one set of qualifiers
+		const char* test1 = MEMBER_NAME(OneLayer::SomeNonsense);
+		CPPUNIT_ASSERT_EQUAL(std::string("SomeNonsense"), std::string(test1));
+
+		// test something with two sets of qualifiers
+		const char* test2 = MEMBER_NAME(TestMapCompound::OneLayer::ABanana);
+		CPPUNIT_ASSERT_EQUAL(std::string("ABanana"), std::string(test2));
 	}
 };
 

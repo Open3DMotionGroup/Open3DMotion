@@ -14,12 +14,15 @@
 #include "Open3DMotion/OpenORM/Branches/TreeList.h"
 #include "Open3DMotion/OpenORM/Leaves/MemoryHandlerBasic.h"
 
-#include "Open3DMotion/OpenORM/IO/BSON/BSONStreamReader.h"
-#include "Open3DMotion/OpenORM/IO/BSON/BSONGZStreamReader.h"
+#include "Open3DMotion/OpenORM/IO/BSON/BSONInputStreamSTL.h"
+#include "Open3DMotion/OpenORM/IO/BSON/BSONInputStreamGZ.h"
 #include "Open3DMotion/OpenORM/IO/BSON/BSONTimestampHolder.h"
 #include "Open3DMotion/OpenORM/IO/BSON/BSONObjectIdHolder.h"
+#include "Open3DMotion/OpenORM/IO/BSON/BSONReader.h"
+#include "Open3DMotion/OpenORM/IO/BSON/BSONReaderMOBL.h"
+
 #include <cppunit/extensions/HelperMacros.h>
-#include <strstream>
+#include <istream>
 
 
 using namespace Open3DMotion;
@@ -60,14 +63,27 @@ public:
 	{
 	}
 
+	/** Helper to initialise a read-write binary STL stream with data */
+	class BinaryStream : public std::stringstream
+	{
+	public:
+    BinaryStream(const void* s, std::size_t n) :
+				std::stringstream(std::ios::binary | std::ios::out | std::ios::in)
+    {
+       write((const char*)s, n);
+    }
+	};
+
+
 public:
 
 	void testStreamReadBinary()
 	{
 		const UInt8 data[] = { 0x05, 0x02, 0xFE, 0x1A, 0x3F, 0xF1 };
-		std::istrstream input((char*)data, sizeof(data));
+		BinaryStream input(data, sizeof(data));
 		
-		BSONStreamReader reader(input);
+		BSONInputStreamSTL stream(input);
+		BSONReader reader(stream);
 
 		UInt8 result1[2];
 		reader.ReadBinary(result1, 2);
@@ -95,9 +111,12 @@ public:
 	void testStreamSkipBytes()
 	{
 		const UInt8 data[] = { 0x05, 0x02, 0xFE, 0x1A, 0x3F, 0xF1 };
-		std::istrstream input((char*)data, sizeof(data));
+		std::stringstream input(std::ios::binary | std::ios::in | std::ios::out);
+		input.write((char*)data, sizeof(data));
+		input.seekg(0);
 		
-		BSONStreamReader reader(input);
+		BSONInputStreamSTL stream(input);
+		BSONReader reader(stream);
 
 		UInt8 result1[2];
 		reader.ReadBinary(result1, 2);
@@ -128,7 +147,8 @@ public:
 		CPPUNIT_ASSERT(input.good());
 
 		// try to read it, use tiny buffer to make sure we deal with wrap-around ok
-		BSONGZStreamReader reader(input, 8);
+		BSONInputStreamGZ stream(input, 8);
+		BSONReader reader(stream);
 		char result1[36];
 		reader.ReadBinary(result1, 36);
 
@@ -143,7 +163,8 @@ public:
 		CPPUNIT_ASSERT(input.good());
 
 		// try to read it, use tiny buffer to make sure we deal with wrap-around ok
-		BSONGZStreamReader reader(input, 8);
+		BSONInputStreamGZ stream(input, 8);
+		BSONReader reader(stream);
 		char result1[36];
 		reader.ReadBinary(result1, 7);
 		reader.SkipBytes(25);
@@ -157,8 +178,9 @@ public:
 	void testReadCString()
 	{
 		char data[] = "Bob";
-		std::istrstream input(data, sizeof(data));
-		BSONStreamReader reader(input);
+		BinaryStream input(data, sizeof(data));
+		BSONInputStreamSTL stream(input);
+		BSONReader reader(stream);
 		std::string result;
 		reader.ReadCString(result);
 		CPPUNIT_ASSERT_EQUAL(size_t(3), result.size());
@@ -169,8 +191,9 @@ public:
 	void testReadString()
 	{
 		char data[] = { 0x05, 0x00, 0x00, 0x00,  'B', 'o', 'b', '2', '\0' };
-		std::istrstream input(data, sizeof(data));
-		BSONStreamReader reader(input);
+		BinaryStream input(data, sizeof(data));
+		BSONInputStreamSTL stream(input);
+		BSONReader reader(stream);
 		std::string result;
 		reader.ReadString(result);
 		CPPUNIT_ASSERT_EQUAL(size_t(4), result.size());
@@ -180,8 +203,9 @@ public:
 	void testReadElementBool()
 	{
 		char data[] = { 0x08, 'T', 'e', 'd', '\0', 0x01, 0x08, 'B', 'i', 'l', 'l', '\0', 0x00 };
-		std::istrstream input(data, sizeof(data));
-		BSONStreamReader reader(input);
+		BinaryStream input(data, sizeof(data));
+		BSONInputStreamSTL stream(input);
+		BSONReader reader(stream);
 
 		std::string name;
 		TreeValue* value(NULL);
@@ -203,8 +227,9 @@ public:
 	{
 		// 0xFFF0BDB8 = -1000008
 		UInt8 data[] = { 0x10, 'T', 'e', 'd', '\0',    0xB8, 0xBD, 0xF0, 0xFF  };
-		std::istrstream input((char*)data, sizeof(data));
-		BSONStreamReader reader(input);
+		BinaryStream input(data, sizeof(data));
+		BSONInputStreamSTL stream(input);
+		BSONReader reader(stream);
 
 		std::string name;
 		TreeValue* value(NULL);
@@ -224,8 +249,9 @@ public:
 		// should truncate the rest
 		UInt8 data[] = { 0x12, 'T', 'e', 'd', '\0',       0xB8, 0xBD, 0xF0, 0xFF, 0x01, 0x02, 0x03, 0x04,  
 		                 0x12, 'B', 'i', 'l', 'l', '\0',  0x0D, 0x00, 0x00, 0x00, 0xA1, 0xB2, 0xC3, 0xD4};
-		std::istrstream input((char*)data, sizeof(data));
-		BSONStreamReader reader(input);
+		BinaryStream input(data, sizeof(data));
+		BSONInputStreamSTL stream(input);
+		BSONReader reader(stream);
 
 		std::string name;
 		TreeValue* value(NULL);
@@ -252,8 +278,9 @@ public:
 		double d(-23.99993);
 		memcpy(&data[5], &d, 8);
 
-		std::istrstream input(data, sizeof(data));
-		BSONStreamReader reader(input);
+		BinaryStream input(data, sizeof(data));
+		BSONInputStreamSTL stream(input);
+		BSONReader reader(stream);
 
 		TreeValue* value(NULL);
 		std::string name;
@@ -273,8 +300,9 @@ public:
 			0x07, 0x00, 0x00, 0x00, 
 			0x00,
 			0x03, 0x04, 0x05, 0xA1, 0xB1, 0xAA, 0x11 };
-		std::istrstream input((char*)data, sizeof(data));
-		BSONStreamReader reader(input);
+		BinaryStream input(data, sizeof(data));
+		BSONInputStreamSTL stream(input);
+		BSONReader reader(stream);
 		TreeValue* value(NULL);
 		std::string name;
 		CPPUNIT_ASSERT( reader.ReadElement(name, value) );
@@ -301,11 +329,9 @@ public:
 			0x00,
 			0x07, 0x00, 0x00, 0x00,	// the size of data not including this element - this is extra stuff added by MOBL writer
 			0x03, 0x04, 0x05, 0xA1, 0xB1, 0xAA, 0x11 };
-		std::istrstream input((char*)data, sizeof(data));
-		BSONStreamReader reader(input);
-		CPPUNIT_ASSERT_EQUAL(false, reader.BinaryMOBLCompatible());
-		reader.BinaryMOBLCompatible() = true;
-		CPPUNIT_ASSERT_EQUAL(true, reader.BinaryMOBLCompatible());
+		BinaryStream input(data, sizeof(data));
+		BSONInputStreamSTL stream(input);
+		BSONReaderMOBL reader(stream);
 		TreeValue* value(NULL);
 		std::string name;
 		CPPUNIT_ASSERT( reader.ReadElement(name, value) );
@@ -331,8 +357,9 @@ public:
 			0x07, 0x00, 0x00, 0x00,
 			'P', 'o', 't', 'a', 't', 'o', '\0'
 		};
-		std::istrstream input((char*)data, sizeof(data));
-		BSONStreamReader reader(input);
+		BinaryStream input(data, sizeof(data));
+		BSONInputStreamSTL stream(input);
+		BSONReader reader(stream);
 		TreeValue* value(NULL);
 		std::string name;
 		CPPUNIT_ASSERT( reader.ReadElement(name, value) );
@@ -351,8 +378,9 @@ public:
 			0x25, 0x00, 0x00, 0x00,
 			0x09, 0x00, 0x00, 0x00
 		};
-		std::istrstream input((char*)data, sizeof(data));
-		BSONStreamReader reader(input);
+		BinaryStream input(data, sizeof(data));
+		BSONInputStreamSTL stream(input);
+		BSONReader reader(stream);
 		TreeValue* value(NULL);
 		std::string name;
 		CPPUNIT_ASSERT( reader.ReadElement(name, value) );
@@ -402,8 +430,9 @@ public:
 			'T', 'e', 'd', '\0', 
 			0x12, 0xAB, 0xCD, 0x34, 0xFE, 0x56, 0x78, 0x91, 0xA3, 0xB4, 0xC7, 0xD3
 		};
-		std::istrstream input((char*)data, sizeof(data));
-		BSONStreamReader reader(input);
+		BinaryStream input(data, sizeof(data));
+		BSONInputStreamSTL stream(input);
+		BSONReader reader(stream);
 		TreeValue* value(NULL);
 		std::string name;
 		CPPUNIT_ASSERT( reader.ReadElement(name, value) );
@@ -434,8 +463,9 @@ public:
 		// internal consistency on doc size
 		CPPUNIT_ASSERT(*(Int32*)&data[0] == (Int32)sizeof(data));
 
-		std::istrstream input((char*)data, sizeof(data));
-		BSONStreamReader reader(input);
+		BinaryStream input(data, sizeof(data));
+		BSONInputStreamSTL stream(input);
+		BSONReader reader(stream);
 
 		TreeCompound c;
 		reader.ReadDocument(c);
@@ -470,8 +500,9 @@ public:
 		// internal consistency on doc size
 		CPPUNIT_ASSERT(*(Int32*)&data[7] == ((Int32)sizeof(data) - 7));
 
-		std::istrstream input((char*)data, sizeof(data));
-		BSONStreamReader reader(input);
+		BinaryStream input(data, sizeof(data));
+		BSONInputStreamSTL stream(input);
+		BSONReader reader(stream);
 
 		TreeValue* value(NULL);
 		std::string name;
@@ -511,8 +542,9 @@ public:
 		// internal consistency on doc size
 		CPPUNIT_ASSERT(*(Int32*)&data[0] == (Int32)sizeof(data));
 
-		std::istrstream input((char*)data, sizeof(data));
-		BSONStreamReader reader(input);
+		BinaryStream input(data, sizeof(data));
+		BSONInputStreamSTL stream(input);
+		BSONReader reader(stream);
 
 		std::auto_ptr<TreeList> lst( reader.ReadList() );
 		CPPUNIT_ASSERT( lst.get() != NULL );
@@ -548,8 +580,9 @@ public:
 		// internal consistency on doc size
 		CPPUNIT_ASSERT(*(Int32*)&data[7] == ((Int32)sizeof(data)-7));
 
-		std::istrstream input((char*)data, sizeof(data));
-		BSONStreamReader reader(input);
+		BinaryStream input(data, sizeof(data));
+		BSONInputStreamSTL stream(input);
+		BSONReader reader(stream);
 
 		TreeValue* value(NULL);
 		std::string name;

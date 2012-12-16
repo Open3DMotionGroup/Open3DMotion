@@ -5,7 +5,8 @@
   See LICENSE.txt for more information.
 --*/
 
-#pragma once
+#ifndef _ORMPP_BIN_MEM_FACTORY_DEFAULT_H_
+#define _ORMPP_BIN_MEM_FACTORY_DEFAULT_H_
 
 #include "Open3DMotion/OpenORM/Mappings/RichBinary/BinMemFactory.h"
 #include "Open3DMotion/OpenORM/Leaves/MemoryHandlerBasic.h"
@@ -19,3 +20,5 @@ namespace Open3DMotion
 	};
 
 }
+
+#endif

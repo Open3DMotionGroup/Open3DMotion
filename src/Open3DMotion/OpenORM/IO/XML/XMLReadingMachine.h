@@ -5,8 +5,8 @@
   See LICENSE.txt for more information.
 --*/
 
-#ifndef _XML_READING_MACHINE_H_
-#define _XML_READING_MACHINE_H_
+#ifndef _OPEN3DMOTION_XML_READING_MACHINE_H_
+#define _OPEN3DMOTION_XML_READING_MACHINE_H_
 
 #include "Open3DMotion/OpenORM/TreeValue.h"
 #include "Open3DMotion/OpenORM/IO/XML/XMLReadWriteMachine.h"

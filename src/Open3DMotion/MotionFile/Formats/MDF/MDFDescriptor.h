@@ -5,8 +5,8 @@
   See LICENSE.txt for more information.
 --*/
 
-#ifndef _MDF_DESCRIPTOR_H_
-#define _MDF_DESCRIPTOR_H_
+#ifndef _OPEN3DMOTION_MDF_DESCRIPTOR_H_
+#define _OPEN3DMOTION_MDF_DESCRIPTOR_H_
 
 #include "Open3DMotion/Biomechanics/Trial/TimeSequence.h"
 

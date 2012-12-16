@@ -5,8 +5,8 @@
   See LICENSE.txt for more information.
 --*/
 
-#ifndef _MATHS_EXCEPTION_H_
-#define _MATHS_EXCEPTION_H_
+#ifndef _OPEN3DMOTION_MATHS_EXCEPTION_H_
+#define _OPEN3DMOTION_MATHS_EXCEPTION_H_
 
 #include <string>
 

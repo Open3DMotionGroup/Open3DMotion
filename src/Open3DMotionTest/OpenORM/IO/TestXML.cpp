@@ -16,7 +16,7 @@
 
 #include "Open3DMotion/OpenORM/IO/XML/XMLWritingMachine.h"
 #include <cppunit/extensions/HelperMacros.h>
-#include <strstream>
+#include <sstream>
 
 
 using namespace Open3DMotion;
@@ -43,14 +43,11 @@ public:
 
 	void testWriteTextNode()
 	{
-		std::ostrstream stream;
+		std::ostringstream stream;
 		XMLWritingMachine writer(stream);
 		writer.WriteTextNode("A string with \'a quote & stuff < >\'");
-		stream << std::ends;
-		stream.freeze();
-		std::string result( stream.str() );
 		std::string expected("A string with \'a quote &amp; stuff &lt; &gt;\'");
-		CPPUNIT_ASSERT_EQUAL(expected, result);
+		CPPUNIT_ASSERT_EQUAL(expected, stream.str());
 	}
 
 	void testReadWriteBinary()

@@ -5,7 +5,8 @@
   See LICENSE.txt for more information.
 --*/
 
-#pragma once
+#ifndef _OPEN3DMOTION_MEMORY_HANDLER_BASIC_H_
+#define _OPEN3DMOTION_MEMORY_HANDLER_BASIC_H_
 
 #include "Open3DMotion/OpenORM/Leaves/MemoryHandler.h"
 
@@ -47,3 +48,4 @@ namespace Open3DMotion
 	};
 
 }
+#endif

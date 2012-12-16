@@ -5,7 +5,8 @@
   See LICENSE.txt for more information.
 --*/
 
-#pragma once
+#ifndef _OPEN3DMOTION_EVENT_ARRAY_H_
+#define _OPEN3DMOTION_EVENT_ARRAY_H_
 
 #include "Open3DMotion/OpenORM/Types.h"
 #include "Open3DMotion/Biomechanics/Trial/EventIDTime.h"
@@ -59,3 +60,4 @@ namespace Open3DMotion
 	};
 
 };
+#endif

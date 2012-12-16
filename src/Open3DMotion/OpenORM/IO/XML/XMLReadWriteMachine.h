@@ -5,8 +5,8 @@
   See LICENSE.txt for more information.
 --*/
 
-#ifndef _XML_READ_WRITE_MACHINE_H_
-#define _XML_READ_WRITE_MACHINE_H_
+#ifndef _OPEN3DMOTION_XML_READ_WRITE_MACHINE_H_
+#define _OPEN3DMOTION_XML_READ_WRITE_MACHINE_H_
 
 #include <vector>
 

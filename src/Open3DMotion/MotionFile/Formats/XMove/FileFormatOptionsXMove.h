@@ -5,8 +5,8 @@
   See LICENSE.txt for more information.
 --*/
 
-#ifndef _FILE_FORMAT_OPTIONS_XMOVE_H_
-#define _FILE_FORMAT_OPTIONS_XMOVE_H_
+#ifndef _OPEN3DMOTION_FILE_FORMAT_OPTIONS_XMOVE_H_
+#define _OPEN3DMOTION_FILE_FORMAT_OPTIONS_XMOVE_H_
 
 #include "Open3DMotion/MotionFile/FileFormatOptions.h"
 #include "Open3DMotion/OpenORM/Mappings/MapBool.h"

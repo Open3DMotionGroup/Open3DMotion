@@ -1,5 +1,5 @@
 /*--
-  OpenMove 
+  Open3DMotion 
   Copyright (c) 2004-2012.
   All rights reserved.
   See LICENSE.txt for more information.
@@ -23,7 +23,8 @@
 
  */
 
-#pragma once
+#ifndef _OPEN3DMOTION_ADEMO1_H_
+#define _OPEN3DMOTION_ADEMO1_H_
 
 #ifdef __GNUC__
 #include <stddef.h>
@@ -47,3 +48,5 @@ namespace TestData
 	extern const char* ADemo1_markername[ADemo1_nummarkers];
 	extern const char* ADemo1_EMGname[ADemo1_nummarkers];
 }
+
+#endif

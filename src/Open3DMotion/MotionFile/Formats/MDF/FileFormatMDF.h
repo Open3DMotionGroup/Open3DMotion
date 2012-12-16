@@ -5,8 +5,8 @@
   See LICENSE.txt for more information.
 --*/
 
-#ifndef _FILE_FORMAT_MDF_H_
-#define _FILE_FORMAT_MDF_H_
+#ifndef _OPEN3DMOTION_FILE_FORMAT_MDF_H_
+#define _OPEN3DMOTION_FILE_FORMAT_MDF_H_
 
 #include "Open3DMotion/MotionFile/MotionFileFormat.h"
 #include "Open3DMotion/OpenORM/Mappings/MapInt32.h"
@@ -57,13 +57,8 @@ namespace Open3DMotion
 	// MDF read/write
 	class FileFormatMDF : public MotionFileFormat
   {
-		friend class MotionFileFormatList;
+	public:
 
-  protected:
-    // Protected constructor for derived classes
-    // Parameters 
-    //  _summary : Int16 description of file format
-    //  _extension : comma-separated list of file extensions
     FileFormatMDF() :
 			MotionFileFormat("MDF", "MDF", "mdf,mdr")
 		{

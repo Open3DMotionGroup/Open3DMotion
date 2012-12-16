@@ -5,8 +5,8 @@
   See LICENSE.txt for more information.
 --*/
 
-#ifndef _BSON_TIMESTAMP_HOLDER_H_
-#define _BSON_TIMESTAMP_HOLDER_H_
+#ifndef _ORMPP_BSON_TIMESTAMP_HOLDER_H_
+#define _ORMPP_BSON_TIMESTAMP_HOLDER_H_
 
 #include "Open3DMotion/OpenORM/Mappings/MapCompound.h"
 #include "Open3DMotion/OpenORM/Mappings/MapInt32.h"

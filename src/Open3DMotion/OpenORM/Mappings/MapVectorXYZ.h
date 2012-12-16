@@ -5,7 +5,8 @@
   See LICENSE.txt for more information.
 --*/
 
-#pragma once
+#ifndef _ORMPP_MAP_VECTOR_XYZ_H_
+#define _ORMPP_MAP_VECTOR_XYZ_H_
 
 #include "Open3DMotion/OpenORM/Mappings/MapCompound.h"
 #include "Open3DMotion/OpenORM/Mappings/MapFloat64.h"
@@ -28,3 +29,4 @@ namespace Open3DMotion
 		void SetVector(const double* xyz);
 	};
 }
+#endif

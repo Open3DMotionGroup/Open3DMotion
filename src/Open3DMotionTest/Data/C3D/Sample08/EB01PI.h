@@ -1,5 +1,5 @@
 /*--
-  OpenMove 
+  Open3DMotion 
   Copyright (c) 2004-2012.
   All rights reserved.
   See LICENSE.txt for more information.
@@ -22,7 +22,8 @@
 
  */
 
-#pragma once
+#ifndef _OPEN3DMOTIONTEST_EB01PI_H_
+#define _OPEN3DMOTIONTEST_EB01PI_H_
 
 #include <string.h>
 
@@ -41,3 +42,5 @@ namespace TestData
 	extern const double EB01PI[EB01PI_numframes*EB01PI_valuesperframe];
 	extern bool EB01PI_isforce[EB01PI_numanalog];
 }
+
+#endif

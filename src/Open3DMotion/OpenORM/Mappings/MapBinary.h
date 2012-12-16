@@ -5,7 +5,8 @@
   See LICENSE.txt for more information.
 --*/
 
-#pragma once
+#ifndef _ORMPP_MAP_BINARY_H_
+#define _ORMPP_MAP_BINARY_H_
 
 #include "Open3DMotion/OpenORM/Leaves/TreeBinary.h"
 #include "Open3DMotion/OpenORM/Mappings/MapElement.h"
@@ -45,3 +46,4 @@ namespace Open3DMotion
 
 	};
 }
+#endif

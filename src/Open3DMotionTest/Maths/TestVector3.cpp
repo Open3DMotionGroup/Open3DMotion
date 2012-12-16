@@ -25,6 +25,7 @@ public:
 	CPPUNIT_TEST( testSubtract );
 	CPPUNIT_TEST( testCrossProduct );
 	CPPUNIT_TEST( testRatio );
+	CPPUNIT_TEST( testCopy );
 	CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -176,6 +177,18 @@ public:
 		CPPUNIT_ASSERT_DOUBLES_EQUAL( 14.7634777, v3[0], 1E-7);
 		CPPUNIT_ASSERT_DOUBLES_EQUAL( -2.2823981, v3[1], 1E-7);
 		CPPUNIT_ASSERT_DOUBLES_EQUAL(  0.9101970, v3[2], 1E-7);
+	}
+
+	void testCopy()
+	{
+		double b[3] = { 1.25, -3.21, 2.33 };
+		double a[5] = { 9.0, 9.0, 9.0, 9.0, 9.0 };
+		Open3DMotion::Vector3::Copy(a, b);
+		CPPUNIT_ASSERT_EQUAL( 1.25, a[0]);
+		CPPUNIT_ASSERT_EQUAL(-3.21, a[1]);
+		CPPUNIT_ASSERT_EQUAL( 2.33, a[2]);
+		CPPUNIT_ASSERT_EQUAL(  9.0, a[3]);
+		CPPUNIT_ASSERT_EQUAL(  9.0, a[4]);
 	}
 };
 

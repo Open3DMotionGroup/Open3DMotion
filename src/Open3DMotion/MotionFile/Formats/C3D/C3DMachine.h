@@ -5,7 +5,8 @@
   See LICENSE.txt for more information.
 --*/
 
-#pragma once
+#ifndef _OPEN3DMOTION_C3DMACHINE_H_
+#define _OPEN3DMOTION_C3DMACHINE_H_
 
 #include <iostream>
 
@@ -87,3 +88,5 @@ namespace Open3DMotion
   };
 
 }
+
+#endif

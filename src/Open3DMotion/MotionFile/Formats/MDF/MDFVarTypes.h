@@ -5,8 +5,8 @@
   See LICENSE.txt for more information.
 --*/
 
-#ifndef _MDF_VAR_TYPES_H_
-#define _MDF_VAR_TYPES_H_
+#ifndef _OPEN3DMOTION_MDF_VAR_TYPES_H_
+#define _OPEN3DMOTION_MDF_VAR_TYPES_H_
 
 namespace Open3DMotion
 {

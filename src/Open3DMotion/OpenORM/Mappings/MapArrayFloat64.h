@@ -5,7 +5,8 @@
   See LICENSE.txt for more information.
 --*/
 
-#pragma once
+#ifndef _ORMPP_MAP_ARRAY_FLOAT64_H_
+#define _ORMPP_MAP_ARRAY_FLOAT64_H_
 
 #include "Open3DMotion/OpenORM/Mappings/MapArraySimpleValue.h"
 #include "Open3DMotion/OpenORM/Leaves/TreeFloat64.h"
@@ -21,3 +22,4 @@ namespace Open3DMotion
 		}
 	};
 }
+#endif

@@ -5,7 +5,8 @@
   See LICENSE.txt for more information.
 --*/
 
-#pragma once
+#ifndef _OPEN3DMOTION_TIME_RANGE_H_
+#define _OPEN3DMOTION_TIME_RANGE_H_
 
 #include "Open3DMotion/OpenORM/Mappings/MapCompound.h"
 #include "Open3DMotion/OpenORM/Mappings/MapInt32.h"
@@ -25,3 +26,4 @@ namespace Open3DMotion
 	};
 
 }
+#endif

@@ -5,8 +5,8 @@
   See LICENSE.txt for more information.
 --*/
 
-#ifndef _FORCE_PLATE_MDF_H_
-#define _FORCE_PLATE_MDF_H_
+#ifndef _OPEN3DMOTION_FORCE_PLATE_MDF_H_
+#define _OPEN3DMOTION_FORCE_PLATE_MDF_H_
 
 #include <map>
 #include "Open3DMotion/Biomechanics/Trial/ForcePlate.h"

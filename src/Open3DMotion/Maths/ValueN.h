@@ -5,7 +5,8 @@
   See LICENSE.txt for more information.
 --*/
 
-#pragma once
+#ifndef _OPEN3DMOTION_VALUE_N_H_
+#define _OPEN3DMOTION_VALUE_N_H_
 
 #include "Open3DMotion/OpenORM/Types.h"
 
@@ -50,3 +51,4 @@ namespace Open3DMotion
     ValueType x[ValueDim];
 	};
 }
+#endif

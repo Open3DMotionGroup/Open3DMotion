@@ -5,7 +5,8 @@
   See LICENSE.txt for more information.
 --*/
 
-#pragma once
+#ifndef _OPEN3DMOTION_TRIAL_H_
+#define _OPEN3DMOTION_TRIAL_H_
 
 #include "Open3DMotion/Biomechanics/Trial/TimeSequence.h"
 #include "Open3DMotion/Biomechanics/Trial/EventGroup.h"
@@ -77,6 +78,45 @@ namespace Open3DMotion
 		MapOptionalInt32 Day;
 	};
 
+	class TrialVideoCameraCalibration : public MapCompound
+	{
+	public:
+		TrialVideoCameraCalibration() :
+			ProjectionMatrix("p")
+		{
+			REGISTER_MEMBER(ProjectionMatrix);
+		}
+
+	public:
+		MapArrayFloat64 ProjectionMatrix;
+	};
+
+	class TrialVideoCameraFileSpec : public MapCompound
+	{
+	public:
+		TrialVideoCameraFileSpec()
+		{
+			REGISTER_MEMBER(VideoFilePattern);
+		}
+
+	public:
+		MapOptionalString VideoFilePattern;
+	};
+
+	class TrialVideoCamera : public MapCompound
+	{
+	public:
+		TrialVideoCamera()
+		{
+			REGISTER_MEMBER(Calibration);
+			REGISTER_MEMBER(VideoSpec);
+		}
+
+	public:
+		MapOptional<TrialVideoCameraCalibration> Calibration;
+		MapOptional<TrialVideoCameraFileSpec> VideoSpec;
+	};
+
 	class TrialSectionAcq : public TrialSection
 	{
 	public:
@@ -85,17 +125,20 @@ namespace Open3DMotion
 
 	public:
 		TrialSectionAcq() :
-			ForcePlates("ForcePlate")
+			ForcePlates("ForcePlate"),
+			Video("Camera")
 		{
 			REGISTER_MEMBER(Date);
 			REGISTER_MEMBER(MeasurementSystem);
 			REGISTER_MEMBER(ForcePlates);
+			REGISTER_MEMBER(Video);
 		}
 
 	public:
 		MapOptional<TrialDate> Date;
 		MapOptional<MeasurementSystemSpec> MeasurementSystem;
 		MapArrayCompound<ForcePlate> ForcePlates;
+		MapArrayCompound<TrialVideoCamera> Video;
 	};
 
 	class TrialSubject : public MapCompound
@@ -216,11 +259,16 @@ namespace Open3DMotion
 	public:
 		TrialSectionUserInput()
 		{
+			REGISTER_MEMBER(Comment);
+			REGISTER_MEMBER(RepLabel);
+			REGISTER_MEMBER(TrialCondition);
 			REGISTER_MEMBER(Subject);
 		}
 
 	public:
 		MapOptionalString Comment;
+		MapOptionalString RepLabel;
+		MapOptionalString TrialCondition;
 		MapOptional<TrialSubject> Subject;
 	};
 
@@ -253,3 +301,4 @@ namespace Open3DMotion
 		MapOptional<TrialSection> Calc;
 	};
 }
+#endif

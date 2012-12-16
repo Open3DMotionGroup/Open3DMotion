@@ -5,13 +5,14 @@
   See LICENSE.txt for more information.
 --*/
 
-#ifndef _BSON_READER_H_
-#define _BSON_READER_H_
+#ifndef _ORMPP_BSON_READER_H_
+#define _ORMPP_BSON_READER_H_
 
 #include "Open3DMotion/OpenORM/TreeValue.h"
 #include "Open3DMotion/OpenORM/Branches/TreeCompound.h"
 #include "Open3DMotion/OpenORM/Branches/TreeList.h"
 #include "Open3DMotion/OpenORM/IO/BSON/BSONReadException.h"
+#include "Open3DMotion/OpenORM/IO/BSON/BSONInputStream.h"
 
 namespace Open3DMotion
 {
@@ -20,21 +21,11 @@ namespace Open3DMotion
 	{
 	public:
 
-		/** Empty constructor */
-		BSONReader();
+		/** Construct for given stream */
+		BSONReader(BSONInputStream& _input);
 
-		/** Virtual destructory */
+		/** Virtual destructor */
 		virtual ~BSONReader();
-
-	public:
-
-		/** Option for motion bundle compatibility of binary data (ignores first four bytes) */
-		bool& BinaryMOBLCompatible()
-		{ return binary_mobl_compatible; }
-
-		/** Option for motion bundle compatibility of binary data (ignores first four bytes) */
-		const bool& BinaryMOBLCompatible() const
-		{ return binary_mobl_compatible; }
 
 	public:
 
@@ -58,26 +49,34 @@ namespace Open3DMotion
 		/** Read generic UTF-8 string */
 		void ReadString(std::string& s) throw(BSONReadException);
 
+	protected:
+
+		/** Read the value part of a BSON element */
+		virtual TreeValue* ReadElementValue(UInt8 elementcode) throw (BSONReadException);
+
 	public:
 
 		/** Skip forwards by a specified number of bytes 
 		    @param count number of bytes to skip
 		 */
-		virtual void SkipBytes(UInt32 count)  throw(BSONReadException) = 0;
+		void SkipBytes(UInt32 count)  throw(BSONReadException)
+		{ input.SkipBytes(count); }
 
 		/** Read a specified amount of data 
 		    @param binary pointer to buffer of required size to hold data
 				@param size the amount of data to read, in bytes
 		  */
-		virtual void ReadBinary(void* binary, UInt32 size)  throw(BSONReadException) = 0;
+		void ReadBinary(void* binary, UInt32 size)  throw(BSONReadException)
+		{ input.ReadBinary(binary, size); }
 
 		/** Discover whether there are more bytes available for subsequent read or skip operations
 		    @return true if more bytes, false otherwise
 			*/
-		virtual bool HaveMore() = 0;
+		bool HaveMore()
+		{ return input.HaveMore(); }
 
-	protected:
-		bool binary_mobl_compatible;
+	private:
+		BSONInputStream& input;
 	};
 
 }

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XML Spy v4.4 U (http://www.xmlspy.com) by Elsevier Science BV Elsevier Science BV (Elsevier Science BV) -->
+<!-- edited with XMLSPY v5 rel. 2 U (http://www.xmlspy.com) by Lia Out (VUmc) -->
+<xs:schema targetNamespace="http://www.smalll.nl/vumc/rev/moxie" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:moxie="http://www.smalll.nl/vumc/rev/moxie">
+	<xs:include schemaLocation="moxie_elements.xsd"/>
+	<!-- definition of complex elements -->
+	<xs:element name="daq_header">
+		<xs:annotation>
+			<xs:documentation>Descriptive part of the datafile</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:all>
+				<xs:element ref="moxie:admitting_diagnoses_description"/>
+				<xs:element ref="moxie:attention_modality" minOccurs="0"/>
+				<xs:element ref="moxie:comments"/>
+				<xs:element ref="moxie:file_characterisation"/>
+				<xs:element ref="moxie:filename"/>
+				<xs:element ref="moxie:force" minOccurs="0"/>
+				<xs:element ref="moxie:joint" minOccurs="0"/>
+				<xs:element ref="moxie:knee_angle" minOccurs="0"/>
+				<xs:element ref="moxie:moment_arm" minOccurs="0"/>
+				<xs:element ref="moxie:movement_frequency" minOccurs="0"/>
+				<xs:element ref="moxie:movement_frequency_modality" minOccurs="0"/>
+				<xs:element ref="moxie:movement_modality" minOccurs="0"/>
+				<xs:element ref="moxie:nr_of_channels"/>
+				<xs:element ref="moxie:nr_of_samples"/>
+				<xs:element ref="moxie:optotrak_filename" minOccurs="0"/>
+				<xs:element ref="moxie:patient_birth_date"/>
+				<xs:element ref="moxie:patient_id"/>
+				<xs:element ref="moxie:patient_name"/>
+				<xs:element ref="moxie:performing_physician_name"/>
+				<xs:element ref="moxie:plateau_height" minOccurs="0"/>
+				<xs:element ref="moxie:posture" minOccurs="0"/>
+				<xs:element ref="moxie:project"/>
+				<xs:element ref="moxie:referring_physician_name"/>
+				<xs:element ref="moxie:session_date"/>
+				<xs:element ref="moxie:session_time"/>
+				<xs:element ref="moxie:trial_date"/>
+				<xs:element ref="moxie:trial_number"/>
+				<xs:element ref="moxie:trial_time"/>
+				<xs:element ref="moxie:trial_body_side" minOccurs="0"/>
+				<xs:element ref="moxie:trial_condition" minOccurs="0"/>
+				<xs:element ref="moxie:trial_walking_velocity" minOccurs="0"/>
+				<xs:element ref="moxie:tibia_angle" minOccurs="0"/>
+				<xs:element ref="moxie:version"/>
+				<xs:element ref="moxie:videofile"/>
+			</xs:all>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="daq_channel">
+		<xs:annotation>
+			<xs:documentation>Contains both data and a description of the channel</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:all>
+				<xs:element ref="moxie:channel_anatomical_label_long" minOccurs="0"/>
+				<xs:element ref="moxie:channel_anatomical_label_short" minOccurs="0"/>
+				<xs:element ref="moxie:channel_baseline"/>
+				<xs:element ref="moxie:channel_body_side" minOccurs="0"/>
+				<xs:element ref="moxie:channel_canvas_minimum"/>
+				<xs:element ref="moxie:channel_canvas_maximum"/>
+				<xs:element ref="moxie:channel_clinical_sensitivity" minOccurs="0"/>
+				<xs:element ref="moxie:channel_clinical_baseline" minOccurs="0"/>
+				<xs:element ref="moxie:channel_engineering_units"/>
+				<xs:element ref="moxie:channel_label"/>
+				<xs:element ref="moxie:channel_number"/>
+				<xs:element ref="moxie:channel_sensitivity"/>
+				<xs:element ref="moxie:channel_data_AD_units"/>
+			</xs:all>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="daq_data">
+		<xs:annotation>
+			<xs:documentation>Data part of the datafile</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="moxie:daq_channel" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!-- instantiation of root -->
+	<xs:element name="moxie_daq_datafile">
+		<xs:annotation>
+			<xs:documentation>Root element</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:all>
+				<xs:element ref="moxie:daq_header"/>
+				<xs:element ref="moxie:daq_data"/>
+			</xs:all>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

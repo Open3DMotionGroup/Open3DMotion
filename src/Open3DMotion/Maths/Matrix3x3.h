@@ -5,7 +5,8 @@
   See LICENSE.txt for more information.
 --*/
 
-#pragma once
+#ifndef _OPEN3DMOTION_MATRIX_3X3_H_
+#define _OPEN3DMOTION_MATRIX_3X3_H_
 
 #include "Open3DMotion/Maths/ValueN.h"
 #include "Open3DMotion/Maths/MathsException.h"
@@ -263,3 +264,4 @@ namespace Open3DMotion
 		}
   };
 }
+#endif

@@ -64,4 +64,14 @@ namespace Open3DMotion
 		}
 	}
 
+	const char* MemberName(const char* qualified_name)
+	{
+		const char* last_colon = NULL;
+		for (const char* c = qualified_name; *c; c++)
+		{
+			if (*c == ':')
+				last_colon = c;
+		}
+		return (last_colon != NULL) ? (last_colon+1) : qualified_name;
+	}
 }

@@ -5,12 +5,12 @@
   See LICENSE.txt for more information.
 --*/
 
-#include "BSONGZStreamReader.h"
+#include "BSONInputStreamGZ.h"
 #include <zlib.h>
 
 namespace Open3DMotion
 {
-	BSONGZStreamReader::BSONGZStreamReader(std::istream& _input, UInt32 _chunk_size /*= 4096UL*/) :
+	BSONInputStreamGZ::BSONInputStreamGZ(std::istream& _input, UInt32 _chunk_size /*= 4096UL*/) :
 		input(_input),
 		chunk_size(_chunk_size),
 		bytes_in_buffer(0),
@@ -23,7 +23,7 @@ namespace Open3DMotion
 		inflateInit2(strm, (16UL + 15UL));
 	}
 
-	BSONGZStreamReader::~BSONGZStreamReader()
+	BSONInputStreamGZ::~BSONInputStreamGZ()
 	{
 		inflateEnd(strm);
 		free(strm);
@@ -31,12 +31,12 @@ namespace Open3DMotion
 		free(output_buffer);
 	}
 
-	void BSONGZStreamReader::SkipBytes(UInt32 count)  throw(BSONReadException)
+	void BSONInputStreamGZ::SkipBytes(UInt32 count)  throw(BSONReadException)
 	{
 		ReadBinary(NULL, count);
 	}
 
-	void BSONGZStreamReader::ReadBinary(void* binary, UInt32 size)  throw(BSONReadException)
+	void BSONInputStreamGZ::ReadBinary(void* binary, UInt32 size)  throw(BSONReadException)
 	{
 		UInt32 bytes_remaining = size;
 		while (true)
@@ -90,7 +90,7 @@ namespace Open3DMotion
 		}
 	}
 
-	bool BSONGZStreamReader::HaveMore()
+	bool BSONInputStreamGZ::HaveMore()
 	{
 		return bytes_in_buffer || input.good();
 	}

@@ -15,10 +15,10 @@ namespace Open3DMotion
 	using namespace std;
 
 	// library name
-	const char MotionFileHandler::LibraryName[] = "Codamotion File Library";
+	const char MotionFileHandler::LibraryName[] = "Open3DMotion";
 
 	// library version: update this each time changes are made
-	const char MotionFileHandler::LibraryVersion[] =  "2.00 Build 0 Revision 0";
+	const char MotionFileHandler::LibraryVersion[] =  "2.00 Build 1 Revision 0";
 
 	MotionFileHandler::MotionFileHandler(const char* _programname, const char* _programversion) :
 		programname(_programname),
@@ -26,10 +26,8 @@ namespace Open3DMotion
 	{
 	}
 
-	TreeValue* MotionFileHandler::Read(const char* filename) throw(MotionFileException)
+	TreeValue* MotionFileHandler::Read(const char* filename, const MotionFileFormatList& formatlist /*=MotionFileFormatListAll()*/) throw(MotionFileException)
 	{
-		const MotionFileFormatList& formatlist =  *MotionFileFormatList::GetInstance();
-
 		// default for now
 		BinMemFactoryDefault memfactory;
 
@@ -41,20 +39,20 @@ namespace Open3DMotion
 		// assign C++ style object
 		ifstream is(cfile);
 #else
-        ifstream is(filename, std::ios::binary);
+		ifstream is(filename, std::ios::binary);
 #endif
 
 		// establish the format
 		TreeValue* readoptions(NULL);
 		const MotionFileFormat* format(NULL);
-		for (MotionFileFormatList::const_iterator i( formatlist.begin() ); i != formatlist.end(); i++)
+		for (MotionFileFormatList::ConstIterator i( formatlist.Begin() ); i != formatlist.End(); i++)
 		{
       // can i get a rewind?
       is.clear();
       is.seekg(0, ios::beg);
 
       // probe this format
-			const MotionFileFormat* testformat = i->second;
+			const MotionFileFormat* testformat = i.Format();
 			if (testformat->Probe(*this, readoptions, is))
 			{
 				format = testformat;
@@ -87,14 +85,11 @@ namespace Open3DMotion
 		// explicitly close file
 		is.close();
 
-    // TODO: insert format id in parameters
-		// trial->FileFormat.ID = format->FormatID();
-
 		// return new trial object
 		return trialobject;
 	}
 
-	void MotionFileHandler::Write(const char* filename, const TreeValue* contents, const TreeValue* writeoptions) throw(MotionFileException)
+	void MotionFileHandler::Write(const char* filename, const TreeValue* contents, const TreeValue* writeoptions, const MotionFileFormatList& formatlist /*=MotionFileFormatListAll()*/) throw(MotionFileException)
 	{
 		// ensure write options non-NULL
 		TreeCompound emptyoptions;
@@ -108,9 +103,15 @@ namespace Open3DMotion
 		formatoptions.FromTree(writeoptions);
 
 		// take specified format if found, otherwise default
-		const MotionFileFormatList& formatlist = *MotionFileFormatList::GetInstance();
-		map<string, MotionFileFormat*>::const_iterator iformat =  formatlist.find(formatoptions.FormatID);
-		MotionFileFormat* chosenformat = (iformat != formatlist.end()) ? iformat->second : formatlist.begin()->second;
+		MotionFileFormat* chosenformat = formatlist.Find(formatoptions.FormatID);
+		if (chosenformat == NULL)
+		{
+			chosenformat = formatlist.DefaultFormat();
+			if (chosenformat == NULL)
+			{
+				throw MotionFileException(MotionFileException::libraryerror, "no formats provided in format list");
+			}
+		}
 
 #ifdef _MSC_VER
 		// creating a C-style file object may work better with UTF-8
@@ -120,11 +121,16 @@ namespace Open3DMotion
 		// assign C++ style object
 		ofstream os(cfile);
 #else
-        ofstream os(filename, std::ios::binary);
+		ofstream os(filename, std::ios::binary);
 #endif
 
+		// append filename in case needed
+		TreeCompound writeoptions_with_filename;
+		writeoptions_with_filename.CopyFrom(writeoptions);
+		writeoptions_with_filename.Set(MEMBER_NAME(FileFormatOptions::PathName), new TreeString(filename));
+
     // write
-		chosenformat->Write(*this, contents, os, writeoptions);
+		chosenformat->Write(*this, contents, os, &writeoptions_with_filename);
 
 		// explicitly close file
 		os.close();

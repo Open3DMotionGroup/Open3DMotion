@@ -5,7 +5,8 @@
   See LICENSE.txt for more information.
 --*/
 
-#pragma once
+#ifndef _ORMPP_TREE_COMPOUND_H_
+#define _ORMPP_TREE_COMPOUND_H_
 
 #include "Open3DMotion/OpenORM/Branches/TreeCompoundNode.h"
 #include <vector>
@@ -67,3 +68,4 @@ namespace Open3DMotion
 		std::vector<TreeCompoundNode*> contents;
 	};
 }
+#endif

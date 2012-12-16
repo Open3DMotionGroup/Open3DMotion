@@ -59,8 +59,8 @@ add_library(Open3DMotion ${Open3DMotion_CPP} ${Open3DMotion_H})
 
 # Build test program
 file(GLOB_RECURSE Open3DMotionTest_CPP Open3DMotionTest/*.cpp)
-# file(GLOB_RECURSE Open3DMotionTest_H Open3DMotionTest/*.h)
-add_executable(Open3DMotionTest ${Open3DMotionTest_CPP} ${Open3DMotionTest_h})
+file(GLOB_RECURSE Open3DMotionTest_H Open3DMotionTest/*.h)
+add_executable(Open3DMotionTest ${Open3DMotionTest_CPP} ${Open3DMotionTest_H})
 target_link_libraries (Open3DMotionTest Open3DMotion)
 
 if (OPEN3DMOTION_OWNBUILD_CPPUNIT)

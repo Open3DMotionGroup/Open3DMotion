@@ -5,17 +5,13 @@
   See LICENSE.txt for more information.
 --*/
 
-#pragma once
+#ifndef _ORMPP_BINARY_STRUCTURE_H_
+#define _ORMPP_BINARY_STRUCTURE_H_
 
 #include "Open3DMotion/OpenORM/Mappings/RichBinary/BinaryFieldSpec.h"
 #include "Open3DMotion/OpenORM/Mappings/RichBinary/NoSuchFieldException.h"
 #include "Open3DMotion/OpenORM/Mappings/MapArrayCompound.h"
 #include <stdlib.h>
-
-#ifdef _MSC_VER
-  // Disables MS warning C4290: C++ exception specification ignored except to indicate a function is not __declspec(nothrow)
-  #pragma warning( disable : 4290 )
-#endif
 
 namespace Open3DMotion
 {
@@ -45,3 +41,5 @@ namespace Open3DMotion
 		MapArrayCompound<BinaryFieldSpec> Layout;
 	};
 }
+
+#endif

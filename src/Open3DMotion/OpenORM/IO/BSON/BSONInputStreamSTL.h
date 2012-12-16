@@ -5,19 +5,19 @@
   See LICENSE.txt for more information.
 --*/
 
-#ifndef _BSON_STREAM_READER_H_
-#define _BSON_STREAM_READER_H_
+#ifndef _ORMPP_BSON_INPUT_STREAM_STL_H_
+#define _ORMPP_BSON_INPUT_STREAM_STL_H_
 
-#include "BSONReader.h"
+#include "BSONInputStream.h"
 #include <istream>
 
 namespace Open3DMotion
 {
 	/** Implementation of BSONReader for reading from STL stream */
-	class BSONStreamReader : public BSONReader
+	class BSONInputStreamSTL : public BSONInputStream
 	{
 	public:
-		BSONStreamReader(std::istream& _input);
+		BSONInputStreamSTL(std::istream& _input);
 
 	public:
 

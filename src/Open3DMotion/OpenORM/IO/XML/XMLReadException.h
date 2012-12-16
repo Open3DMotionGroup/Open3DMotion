@@ -5,8 +5,8 @@
   See LICENSE.txt for more information.
 --*/
 
-#ifndef _XML_READ_EXCEPTION_H_
-#define _XML_READ_EXCEPTION_H_
+#ifndef _OPEN3DMOTION_XML_READ_EXCEPTION_H_
+#define _OPEN3DMOTION_XML_READ_EXCEPTION_H_
 
 #include "Open3DMotion/OpenORM/IO/ORMIOException.h"
 

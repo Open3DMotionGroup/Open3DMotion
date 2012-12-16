@@ -5,7 +5,8 @@
   See LICENSE.txt for more information.
 --*/
 
-#pragma once
+#ifndef _ORMPP_MAP_INT32_H_
+#define _ORMPP_MAP_INT32_H_
 
 #include "Open3DMotion/OpenORM/Leaves/TreeInt32.h"
 #include "Open3DMotion/OpenORM/Mappings/MapSimpleValue.h"
@@ -36,3 +37,4 @@ namespace Open3DMotion
 	};
 
 }
+#endif

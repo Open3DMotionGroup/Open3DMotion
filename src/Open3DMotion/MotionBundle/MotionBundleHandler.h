@@ -5,8 +5,8 @@
   See LICENSE.txt for more information.
 --*/
 
-#ifndef _MOTION_BUNDLE_HANDLER_H_
-#define _MOTION_BUNDLE_HANDLER_H_
+#ifndef _OPEN3DMOTION_MOTION_BUNDLE_HANDLER_H_
+#define _OPEN3DMOTION_MOTION_BUNDLE_HANDLER_H_
 
 #include "Open3DMotion/MotionFile/MotionFileException.h"
 #include "Open3DMotion/OpenORM/TreeValue.h"

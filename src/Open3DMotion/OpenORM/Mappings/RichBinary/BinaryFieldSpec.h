@@ -5,7 +5,8 @@
   See LICENSE.txt for more information.
 --*/
 
-#pragma once
+#ifndef _ORMPP_BINARY_FIELD_SPEC_H_
+#define _ORMPP_BINARY_FIELD_SPEC_H_
 
 #include "Open3DMotion/OpenORM/Mappings/MapCompound.h"
 #include "Open3DMotion/OpenORM/Mappings/MapString.h"
@@ -55,3 +56,5 @@ namespace Open3DMotion
 	};
 
 }
+
+#endif

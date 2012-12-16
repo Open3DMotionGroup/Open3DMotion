@@ -6,8 +6,9 @@
 --*/
 
 #include "Open3DMotion/MotionBundle/MOBL.h"
-#include "Open3DMotion/OpenORM/IO/BSON/BSONGZStreamReader.h"
-#include "Open3DMotion/OpenORM/IO/BSON/BSONStreamReader.h"
+#include "Open3DMotion/OpenORM/IO/BSON/BSONReaderMOBL.h"
+#include "Open3DMotion/OpenORM/IO/BSON/BSONInputStreamSTL.h"
+#include "Open3DMotion/OpenORM/IO/BSON/BSONInputStreamGZ.h"
 
 namespace Open3DMotion
 {
@@ -84,7 +85,7 @@ namespace Open3DMotion
 	MOBLFormatReader::MOBLFormatReader(std::istream* _is, const MOBLReadOptions& _readoptions) :
 		is(_is),
 		readoptions(_readoptions),
-		reader(NULL),
+		stream(NULL),
 		num_docs_read(0UL)
 	{
 	}
@@ -96,10 +97,10 @@ namespace Open3DMotion
 
 	void MOBLFormatReader::ClearReader()
 	{
-		if (reader != NULL)
+		if (stream != NULL)
 		{
-			delete reader;
-			reader = NULL;
+			delete stream;
+			stream = NULL;
 		}
 	}
 
@@ -107,7 +108,7 @@ namespace Open3DMotion
 	{
 		// must reset reader if we've already read past this index
 		// or if no reader yet created
-		if ((num_docs_read > doc_index_needed) || (reader == NULL))
+		if ((num_docs_read > doc_index_needed) || (stream == NULL))
 		{
 			// remove previous reader if any
 			ClearReader();
@@ -120,12 +121,9 @@ namespace Open3DMotion
 
 			// use appropriate decoder
 			if (readoptions.UseGZIP)
-				reader = new BSONGZStreamReader(*is);
+				stream = new BSONInputStreamGZ(*is);
 			else
-				reader = new BSONStreamReader(*is);
-
-			// always ignore first 4 bytes of binary blobs for MOBL compatibility
-			reader->BinaryMOBLCompatible() = true;
+				stream = new BSONInputStreamSTL(*is);
 
 			// reset docs read
 			num_docs_read = 0;
@@ -137,8 +135,8 @@ namespace Open3DMotion
 			while (num_docs_read < doc_index_needed)
 			{
 				UInt32 docsize(0);
-				reader->ReadBinary(&docsize, 4);
-				reader->SkipBytes(docsize-4);
+				stream->ReadBinary(&docsize, 4);
+				stream->SkipBytes(docsize-4);
 				++num_docs_read;
 			}
 		}
@@ -147,7 +145,7 @@ namespace Open3DMotion
 			throw MotionFileException(MotionFileException::formaterror, e.message.c_str());
 		}
 
-		return reader->HaveMore();
+		return stream->HaveMore();
 	}
 
 	UInt32 MOBLFormatReader::TrialCount()  throw(MotionFileException)
@@ -171,7 +169,8 @@ namespace Open3DMotion
 		// read
 		try
 		{
-			reader->ReadDocument(*MOBLresult);
+			BSONReaderMOBL reader(*stream);
+			reader.ReadDocument(*MOBLresult);
 		}
 		catch (const BSONReadException& e)
 		{

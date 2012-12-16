@@ -5,7 +5,8 @@
   See LICENSE.txt for more information.
 --*/
 
-#pragma once
+#ifndef _OPEN3DMOTION_EVENT_GROUP_H_
+#define _OPEN3DMOTION_EVENT_GROUP_H_
 
 #include "Open3DMotion/OpenORM/Mappings/RichBinary/RichBinary.h"
 #include "Open3DMotion/OpenORM/Mappings/RichBinary/BinIter.h"
@@ -79,3 +80,4 @@ namespace Open3DMotion
 		{ return *ValuePtr1(); }
 	};
 }
+#endif

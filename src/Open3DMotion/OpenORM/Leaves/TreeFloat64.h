@@ -5,7 +5,8 @@
   See LICENSE.txt for more information.
 --*/
 
-#pragma once
+#ifndef _ORMPP_TREE_FLOAT64_H_
+#define _ORMPP_TREE_FLOAT64_H_
 
 #include "Open3DMotion/OpenORM/Leaves/TreeSimpleValue.h"
 
@@ -21,3 +22,4 @@ namespace Open3DMotion
 		virtual TreeFloat64* NewBlank() const;
 	};
 }
+#endif

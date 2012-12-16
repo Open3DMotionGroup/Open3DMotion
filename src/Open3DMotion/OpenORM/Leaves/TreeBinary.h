@@ -5,7 +5,8 @@
   See LICENSE.txt for more information.
 --*/
 
-#pragma once
+#ifndef _ORMPP_TREE_BINARY_H_
+#define _ORMPP_TREE_BINARY_H_
 
 #include "Open3DMotion/OpenORM/TreeValue.h"
 #include "Open3DMotion/OpenORM/Leaves/MemoryHandler.h"
@@ -45,3 +46,4 @@ namespace Open3DMotion
 		MemoryHandler* binmemory;
 	};
 }
+#endif

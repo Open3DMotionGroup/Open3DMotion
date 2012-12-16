@@ -5,7 +5,8 @@
   See LICENSE.txt for more information.
 --*/
 
-#pragma once
+#ifndef _OPEN3DMOTION_MOTION_FILE_FORMAT_H_
+#define _OPEN3DMOTION_MOTION_FILE_FORMAT_H_
 
 #include "Open3DMotion/OpenORM/Types.h"
 #include "Open3DMotion/MotionFile/MotionFileHandler.h"
@@ -23,8 +24,6 @@ namespace Open3DMotion
 	// Motion file format
   class MotionFileFormat
   {
-		friend class MotionFileFormatList;
-
   protected:
     // Protected constructor for derived classes
     // Parameters 
@@ -34,6 +33,8 @@ namespace Open3DMotion
       const char* _formatid,
       const char* _summary, 
       const char* _extensions);
+
+	public:
 
     // Destructor
     virtual ~MotionFileFormat()
@@ -80,27 +81,5 @@ namespace Open3DMotion
 		std::vector<std::string> extension_array;
   };
 
-  // Simple linked list of supported formats
-  class MotionFileFormatList : public std::map<std::string, MotionFileFormat*>
-  {
-	private:
-
-		static MotionFileFormatList* instance;
-
-	private:
-
-		MotionFileFormatList();
-
-		static void CloseInstance();
-
-		void Register(MotionFileFormat* format);
-
-		void RegisterAll();
-
-	public:
-
-		~MotionFileFormatList();
-
-		static MotionFileFormatList* GetInstance();
-  };
 }
+#endif

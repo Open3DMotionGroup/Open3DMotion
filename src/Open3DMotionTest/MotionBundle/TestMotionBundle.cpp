@@ -5,7 +5,6 @@
   See LICENSE.txt for more information.
 --*/
 
-
 #include "Open3DMotion/MotionBundle/MotionBundleHandler.h"
 #include "Open3DMotion/MotionBundle/MOBL.h"
 #include "Open3DMotion/OpenORM/Mappings/RichBinary/BinMemFactoryDefault.h"
@@ -15,9 +14,11 @@
 #include "Open3DMotion/MotionFile/MotionFileFormat.h"
 #include "Open3DMotion/MotionFile/Formats/XMove/FileFormatOptionsXMove.h"
 #include "Open3DMotionTest/MotionFile/testADemo1File.h"
+#include "Open3DMotion/OpenORM/IO/BSON/BSONInputStreamSTL.h"
+
 #include <cppunit/extensions/HelperMacros.h>
 #include <fstream>
-#include <strstream>
+#include <sstream>
 #include <iomanip>
 
 using namespace Open3DMotion;
@@ -65,9 +66,9 @@ public:
 				MotionFileHandler filehandler("TestMotionBundle", "UNVERSIONED");
 				FileFormatOptionsXMove xmove_options;
 				std::auto_ptr<TreeValue> xmove_options_tree( xmove_options.ToTree() );
-				std::ostrstream dbg_filename;
-				dbg_filename << "Open3DMotionTest/Data/Temp/TestMotionBundle.testLoad" << std::setfill('0') << std::setw(2) << index << ".xml" << std::ends;
-				filehandler.Write(dbg_filename.str(), tree.get(), xmove_options_tree.get());
+				std::ostringstream dbg_filename;
+				dbg_filename << "Open3DMotionTest/Data/Temp/TestMotionBundle.testLoad" << std::setfill('0') << std::setw(2) << index << ".xml";
+				filehandler.Write(dbg_filename.str().c_str(), tree.get(), xmove_options_tree.get());
 
 			}
 		}

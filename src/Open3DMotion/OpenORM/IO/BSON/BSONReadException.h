@@ -5,8 +5,8 @@
   See LICENSE.txt for more information.
 --*/
 
-#ifndef _BSON_READ_EXCEPTION_H_
-#define _BSON_READ_EXCEPTION_H_
+#ifndef _ORMPP_BSON_READ_EXCEPTION_H_
+#define _ORMPP_BSON_READ_EXCEPTION_H_
 
 #include "Open3DMotion/OpenORM/IO/ORMIOException.h"
 

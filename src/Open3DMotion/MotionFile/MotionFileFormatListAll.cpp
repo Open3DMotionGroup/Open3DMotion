@@ -5,17 +5,21 @@
   See LICENSE.txt for more information.
 --*/
 
-#include "MotionFileFormat.h"
+#include "MotionFileFormatListAll.h"
 #include "Formats/MDF/FileFormatMDF.h"
 #include "Formats/C3D/FileFormatC3D.h"
 #include "Formats/XMove/FileFormatXMove.h"
+#include "Formats/CODAText/FileFormatCODAText.h"
+#include "Formats/MoXie/FileFormatMoXie.h"
 
 namespace Open3DMotion
 {
-	void MotionFileFormatList::RegisterAll()
+	MotionFileFormatListAll::MotionFileFormatListAll()
 	{
+		Register(new FileFormatXMove);
 		Register(new FileFormatMDF);
 		Register(new FileFormatC3D);
-		Register(new FileFormatXMove);
+		Register(new FileFormatCODAText);
+		Register(new FileFormatMoXie);
 	}
 }

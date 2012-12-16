@@ -5,7 +5,8 @@
   See LICENSE.txt for more information.
 --*/
 
-#pragma once
+#ifndef _OPEN3DMOTION_FORCE_PLATE_H_
+#define _OPEN3DMOTION_FORCE_PLATE_H_
 
 #include "Open3DMotion/OpenORM/Branches/TreeCompound.h"
 #include "Open3DMotion/OpenORM/Mappings/MapSimpleValue.h"
@@ -45,3 +46,4 @@ namespace Open3DMotion
 	};
 
 }
+#endif

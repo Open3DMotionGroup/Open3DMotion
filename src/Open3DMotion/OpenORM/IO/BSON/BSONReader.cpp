@@ -19,8 +19,8 @@
 
 namespace Open3DMotion
 {
-	BSONReader::BSONReader() :
-		binary_mobl_compatible(false)
+	BSONReader::BSONReader(BSONInputStream& _input) :
+		input(_input)
 	{
 	}
 
@@ -113,181 +113,144 @@ namespace Open3DMotion
 		// read name
 		ReadCString(name);
 
-		try
-		{
-			// read element data
-			// take care that any allocated memory is either freed or left pointed to by value
-			// so that it gets freed in the catch block below
-			switch (elementcode)
-			{
-				case 0x01:	// double (float64)
-				{
-					TreeFloat64* f = new TreeFloat64;
-					value = f;
-					ReadBinary(&f->Value(), 8);
-					break;
-				}
-			
-				case 0x02:	// string
-				case 0x0D:	// javascript code
-				case 0x0E:	// symbol (deprecated)
-				{
-					TreeString* s = new TreeString;
-					value = s;
-					ReadString(s->Value());
-					break;
-				}
+		// read value
+		value = ReadElementValue(elementcode);
 
-				case 0x03:	// compound document
-				{
-					TreeCompound* c = new TreeCompound;
-					value = c;
-					ReadDocument(*c);
-					break;
-				}
-
-				case 0x04:	// array document
-				{
-					value = ReadList();
-					break;
-				}
-
-				case 0x05:  // binary
-				{
-					UInt32 numbytes(0);
-					UInt8 subtype(0);
-					ReadBinary(&numbytes, 4);
-					ReadBinary(&subtype, 1);
-					if (BinaryMOBLCompatible())
-					{
-						// MOBL files insert an additional 4 bytes containing length of subsequent data.
-						// This will always be equal to (numbytes-4) so just skip these for MOBL compatibility.
-						if (numbytes > 4)
-						{
-							SkipBytes(4);
-							numbytes -= 4;
-							MemoryHandlerBasic memory(numbytes);
-							ReadBinary(memory.Data(), numbytes);
-							value = new TreeBinary(&memory);
-						}
-						else
-						{
-							// When <= than 4 bytes available data was not actually MOBL-compatible
-							// - don't know how to read this so just skip and return NULL
-							SkipBytes(numbytes);
-							return NULL;
-						}
-					}
-					else
-					{
-						// Read binary data
-						MemoryHandlerBasic memory(numbytes);
-						ReadBinary(memory.Data(), numbytes);
-						value = new TreeBinary(&memory);
-					}
-					break;
-				}
-
-				case 0x08:	// boolean
-				{
-					UInt8 b(0);
-					ReadBinary(&b, 1);
-					value = new TreeBool(b ? true : false);
-					break;
-				}
-
-				case 0x10:	// Int32
-				{
-					TreeInt32* n = new TreeInt32;
-					value = n;
-					ReadBinary(&n->Value(), 4);
-					break;
-				}
-
-				case 0x12:	// Int64
-				{
-					Int64 x;
-					ReadBinary(&x, 8);
-					value = new TreeInt32((Int32)x);
-					break;
-				}
-
-				case 0x06:	// undefined
-				case 0x0A:	// null
-				case 0x7F:  // min key
-				case 0xFF:  // max key
-				{
-					break;
-				}
-
-				case 0x07:  // object id (byte*12)
-				{
-					BSONObjectIdBinary binary;
-					ReadBinary(binary, BSONObjectIdBytes);
-					BSONObjectIdHolder holder;
-					holder.FromBinary(binary);
-					value = holder.ToTree();
-					break;
-				}
-
-				case 0x11:	// Timestamp (Int32 increment, Int32 time)
-				{
-					BSONTimestampHolder holder;
-					ReadBinary(&holder.BSONTimestamp.Increment.Value(), 4);
-					ReadBinary(&holder.BSONTimestamp.Seconds.Value(), 4);
-					value = holder.ToTree();
-					break;
-				}
-
-				case 0x09: // 64-bit UTC date/time
-				{
-					SkipBytes(8);
-					break;
-				}
-
-				case 0x0B: // regular exp (cstring, cstring)
-				{
-					std::string s1, s2;
-					ReadCString(s1);
-					ReadCString(s2);
-					break;
-				}
-
-				case 0x0C: // DBPointer (deprecated) (cstring, (byte*12))
-				{
-					std::string s1;
-					ReadCString(s1);
-					SkipBytes(12);
-					break;
-				}
-
-				case 0x0F: // Code-with-scope (int32, string, document)
-				{
-					UInt32 size = 0;
-					ReadBinary(&size, 4);
-					SkipBytes(size-4);
-					break;
-				}
-
-				default:
-				{
-					throw BSONReadException("unrecognised BSON element");
-				}
-			}
-		}
-		catch (const BSONReadException& e)
-		{
-			// Avoid memory leak by removing value if exists
-			if (value != NULL)
-			{
-				delete value;
-				value = NULL;
-			}
-
-			throw e;
-		}
-
+		// value read ok (will have throw exception if not)
 		return true;
+	}
+
+	TreeValue* BSONReader::ReadElementValue(UInt8 elementcode) throw (BSONReadException)
+	{
+		// read element data
+		// take care that any allocated memory is either freed or left pointed to by value
+		// so that it gets freed in the catch block below
+		switch (elementcode)
+		{
+			case 0x01:	// double (float64)
+			{
+				std::auto_ptr<TreeFloat64> f( new TreeFloat64 );
+				ReadBinary(&f->Value(), 8);
+				return f.release();
+			}
+			
+			case 0x02:	// string
+			case 0x0D:	// javascript code
+			case 0x0E:	// symbol (deprecated)
+			{
+				std::auto_ptr<TreeString> s( new TreeString );
+				ReadString(s->Value());
+				return s.release();
+			}
+
+			case 0x03:	// compound document
+			{
+				std::auto_ptr<TreeCompound> c( new TreeCompound );
+				ReadDocument(*c);
+				return c.release();
+			}
+
+			case 0x04:	// array document
+			{
+				return ReadList();
+			}
+
+			case 0x05:  // binary
+			{
+				UInt32 numbytes(0);
+				UInt8 subtype(0);
+				ReadBinary(&numbytes, 4);
+				ReadBinary(&subtype, 1);
+				MemoryHandlerBasic memory(numbytes);
+				ReadBinary(memory.Data(), numbytes);
+				return new TreeBinary(&memory);
+			}
+
+			case 0x08:	// boolean
+			{
+				UInt8 b(0);
+				ReadBinary(&b, 1);
+				return new TreeBool(b ? true : false);
+			}
+
+			case 0x10:	// Int32
+			{
+				std::auto_ptr<TreeInt32> n( new TreeInt32 );
+				ReadBinary(&n->Value(), 4);
+				return n.release();
+			}
+
+			case 0x12:	// Int64
+			{
+				Int64 x;
+				ReadBinary(&x, 8);
+				return new TreeInt32((Int32)x);
+			}
+
+			case 0x06:	// undefined
+			case 0x0A:	// null
+			case 0x7F:  // min key
+			case 0xFF:  // max key
+			{
+				break;
+			}
+
+			case 0x07:  // object id (byte*12)
+			{
+				BSONObjectIdBinary binary;
+				ReadBinary(binary, BSONObjectIdBytes);
+				BSONObjectIdHolder holder;
+				holder.FromBinary(binary);
+				return holder.ToTree();
+				break;
+			}
+
+			case 0x11:	// Timestamp (Int32 increment, Int32 time)
+			{
+				BSONTimestampHolder holder;
+				ReadBinary(&holder.BSONTimestamp.Increment.Value(), 4);
+				ReadBinary(&holder.BSONTimestamp.Seconds.Value(), 4);
+				return holder.ToTree();
+				break;
+			}
+
+			case 0x09: // 64-bit UTC date/time
+			{
+				SkipBytes(8);
+				break;
+			}
+
+			case 0x0B: // regular exp (cstring, cstring)
+			{
+				std::string s1, s2;
+				ReadCString(s1);
+				ReadCString(s2);
+				break;
+			}
+
+			case 0x0C: // DBPointer (deprecated) (cstring, (byte*12))
+			{
+				std::string s1;
+				ReadCString(s1);
+				SkipBytes(12);
+				break;
+			}
+
+			case 0x0F: // Code-with-scope (int32, string, document)
+			{
+				UInt32 size = 0;
+				ReadBinary(&size, 4);
+				SkipBytes(size-4);
+				break;
+			}
+
+			default:
+			{
+				throw BSONReadException("unrecognised BSON element");
+			}
+		}
+
+		return NULL;
 	}
 
 	void BSONReader::ReadCString(std::string& s) throw(BSONReadException)

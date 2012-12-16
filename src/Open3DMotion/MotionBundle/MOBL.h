@@ -5,8 +5,8 @@
   See LICENSE.txt for more information.
 --*/
 
-#ifndef _MOBL_H_
-#define _MOBL_H_
+#ifndef _OPEN3DMOTION_MOBL_H_
+#define _OPEN3DMOTION_MOBL_H_
 
 #include "Open3DMotion/OpenORM/Mappings/MapCompound.h"
 #include "Open3DMotion/OpenORM/Mappings/MapBool.h"
@@ -15,7 +15,7 @@
 
 namespace Open3DMotion
 {
-	class BSONReader;
+	class BSONInputStream;
 
 	/** Used internally by MOBLReader to hold format information during a read */
 	class MOBLReadOptions : public MapCompound
@@ -59,7 +59,7 @@ namespace Open3DMotion
 	protected:
     std::auto_ptr<std::istream> is;
 		MOBLReadOptions readoptions;
-		BSONReader* reader;
+		BSONInputStream* stream;
 		UInt32 num_docs_read;
 	};
 

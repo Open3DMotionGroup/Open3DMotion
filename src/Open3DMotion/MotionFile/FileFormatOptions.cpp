@@ -13,5 +13,6 @@ namespace Open3DMotion
 	FileFormatOptions::FileFormatOptions()
 	{
 		REGISTER_MEMBER(FormatID);
+		REGISTER_MEMBER(PathName);
 	}
 }

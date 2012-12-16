@@ -5,8 +5,8 @@
   See LICENSE.txt for more information.
 --*/
 
-#ifndef _LINEAR_SOLVE_3_H_
-#define _LINEAR_SOLVE_3_H_
+#ifndef _OPEN3DMOTION_LINEAR_SOLVE_3_H_
+#define _OPEN3DMOTION_LINEAR_SOLVE_3_H_
 
 #include <stdlib.h>
 

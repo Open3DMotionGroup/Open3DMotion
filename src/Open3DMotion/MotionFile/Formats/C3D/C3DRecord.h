@@ -5,7 +5,8 @@
   See LICENSE.txt for more information.
 --*/
 
-#pragma once
+#ifndef _OPEN3DMOTION_C3DRECORD_H_
+#define _OPEN3DMOTION_C3DRECORD_H_
 
 #include "Open3DMotion/OpenORM/Mappings/MapCompoundElement.h"
 #include "Open3DMotion/OpenORM/Leaves/MemoryHandlerBasic.h"
@@ -508,3 +509,5 @@ namespace Open3DMotion
  };
 
 }
+
+#endif

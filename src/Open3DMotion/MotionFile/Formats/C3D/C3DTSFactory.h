@@ -5,6 +5,9 @@
   See LICENSE.txt for more information.
 --*/
 
+#ifndef _OPEN3DMOTION_C3D_TS_FACTORY_H_
+#define _OPEN3DMOTION_C3D_TS_FACTORY_H_
+
 #include "Open3DMotion/Biomechanics/Trial/TSFactory.h"
 
 namespace Open3DMotion
@@ -100,3 +103,4 @@ namespace Open3DMotion
 	};
 
 }
+#endif

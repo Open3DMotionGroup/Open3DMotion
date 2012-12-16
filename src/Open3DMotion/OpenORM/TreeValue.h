@@ -5,8 +5,8 @@
   See LICENSE.txt for more information.
 --*/
 
-#ifndef _TREE_VALUE_H_
-#define _TREE_VALUE_H_
+#ifndef _ORMPP_TREE_VALUE_H_
+#define _ORMPP_TREE_VALUE_H_
 
 #include "Open3DMotion/OpenORM/Types.h"
 #include <stdlib.h>

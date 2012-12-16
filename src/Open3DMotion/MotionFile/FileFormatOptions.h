@@ -5,8 +5,8 @@
   See LICENSE.txt for more information.
 --*/
 
-#ifndef _FILE_FORMAT_OPTIONS_H_
-#define _FILE_FORMAT_OPTIONS_H_
+#ifndef _OPEN3DMOTION_FILE_FORMAT_OPTIONS_H_
+#define _OPEN3DMOTION_FILE_FORMAT_OPTIONS_H_
 
 #include "Open3DMotion/OpenORM/Mappings/MapCompound.h"
 #include "Open3DMotion/OpenORM/Mappings/MapString.h"
@@ -21,8 +21,8 @@ namespace Open3DMotion
 
 	public:
 		MapString FormatID;
+		MapOptionalString PathName;
 	};
 
 }
-
 #endif

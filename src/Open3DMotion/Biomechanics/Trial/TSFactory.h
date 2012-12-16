@@ -5,6 +5,9 @@
   See LICENSE.txt for more information.
 --*/
 
+#ifndef _OPEN3DMOTION_TS_FACTORY_H_
+#define _OPEN3DMOTION_TS_FACTORY_H_
+
 #include "Open3DMotion/Biomechanics/Trial/TimeSequence.h"
 #include "Open3DMotion/OpenORM/Mappings/RichBinary/BinIter.h"
 
@@ -156,3 +159,5 @@ namespace Open3DMotion
 	};
 
 };
+
+#endif
