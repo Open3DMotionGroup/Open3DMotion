@@ -14,6 +14,8 @@ namespace Open3DMotion
 	class C3DMachine
 	{
   public:
+    
+    virtual ~C3DMachine() {};
 
     static void ReadByte(UInt8& x, std::istream& is)
     { is.read((char*)&x,1); }

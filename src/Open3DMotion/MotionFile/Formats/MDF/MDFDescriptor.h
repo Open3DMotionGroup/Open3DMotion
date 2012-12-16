@@ -16,6 +16,8 @@ namespace Open3DMotion
 	class MDFDescriptor
 	{
 	public:
+	  
+    virtual ~MDFDescriptor() {};
 
     virtual UInt16 FormatVersionNumber() = 0;
 

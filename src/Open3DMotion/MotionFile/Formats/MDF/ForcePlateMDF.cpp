@@ -78,7 +78,7 @@ namespace Open3DMotion
 
 	void ForcePlateMDF::ParseMDF(
 			std::map<size_t, std::vector< std::vector<UInt8> >, std::less<size_t> >& data,
-			std::map<size_t, size_t, std::less<size_t> >& elementsize,
+			std::map<size_t, size_t, std::less<size_t> >& /*elementsize*/,
 			size_t iplate) throw(MotionFileException)
   {
 		// MDF plate ID - init to zero (invalid)
@@ -620,7 +620,7 @@ namespace Open3DMotion
 		{
 			for (int i = 0; i < 6; i++)
 			{
-				if ((abs(mdf_remap_amti[orient][i])-1) == runchannel)
+				if ((abs(mdf_remap_amti[orient][i])-1) == static_cast<int>(runchannel))
 					return i;
 			}
 		}
@@ -628,7 +628,7 @@ namespace Open3DMotion
 		{
 			for (int i = 0; i < 8; i++)
 			{
-				if ((abs(mdf_remap_kistler[orient][i])-1) == runchannel)
+				if ((abs(mdf_remap_kistler[orient][i])-1) == static_cast<int>(runchannel))
 					return i;
 			}
 		}

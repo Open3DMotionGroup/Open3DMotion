@@ -40,9 +40,6 @@ namespace Open3DMotion
 			}
 		}
 
-		virtual const DataType& operator=(const DataType& _x)
-		{ x = _x; return x; }
-
 		const DataType& Value() const
 		{ return x; }
 

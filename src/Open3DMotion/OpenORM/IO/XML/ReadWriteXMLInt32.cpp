@@ -12,7 +12,7 @@
 
 namespace Open3DMotion
 {
-	TreeValue* ReadWriteXMLInt32::ReadValue(XMLReadingMachine& reader, const pugi::xml_node& element) const
+	TreeValue* ReadWriteXMLInt32::ReadValue(XMLReadingMachine& /*reader*/, const pugi::xml_node& element) const
 	{
 		std::string text;
 		ReadText(text, element);

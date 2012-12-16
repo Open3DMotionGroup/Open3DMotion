@@ -48,7 +48,7 @@ namespace Open3DMotion
 		}
 	}
 		
-	TreeValue* ReadWriteXMLBinary::ReadValue(XMLReadingMachine& reader, const pugi::xml_node& element) const
+	TreeValue* ReadWriteXMLBinary::ReadValue(XMLReadingMachine& /*reader*/, const pugi::xml_node& element) const
 	{
 		// find text element with base64 encoding in it
 		const char* text = "";

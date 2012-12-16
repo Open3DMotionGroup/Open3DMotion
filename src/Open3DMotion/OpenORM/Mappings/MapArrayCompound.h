@@ -27,7 +27,7 @@ namespace Open3DMotion
 			}
 		}
 
-		MapArrayCompound(const MapArrayCompound<MapCompoundClass>& src)
+		MapArrayCompound(const MapArrayCompound<MapCompoundClass>& src) : MapElement(src)
 		{
 			operator=( src );
 		}

@@ -154,19 +154,19 @@ namespace Open3DMotion
 
 	protected:
 
-		virtual void ValueFromFile(const C3DMachine& machine, std::istream& is) 
+		virtual void ValueFromFile(const C3DMachine& /*machine*/, std::istream& /*is*/) 
 		{
 		}
 
-		virtual void ValueToFile(const C3DMachine& machine, std::ostream& os) const 
+		virtual void ValueToFile(const C3DMachine& /*machine*/, std::ostream& /*os*/) const 
 		{
 		}
 
-		virtual void ValueToTree(TreeCompound* rec) const
+		virtual void ValueToTree(TreeCompound* /*rec*/) const
 		{
 		}
 
-		virtual void ValueFromTree(const TreeCompound* rec)
+		virtual void ValueFromTree(const TreeCompound* /*rec*/)
 		{
 		}
 	};

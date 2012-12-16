@@ -312,12 +312,12 @@ namespace Open3DMotion
 		}
 	}
 
-	void C3DRecordByte::ValueElementsToFile(const C3DMachine& machine, std::ostream& os) const
+	void C3DRecordByte::ValueElementsToFile(const C3DMachine& /*machine*/, std::ostream& os) const
 	{
 		os.write(&data[0], data.size());
 	}
 
-	void C3DRecordByte::ValueElementsFromFile(const C3DMachine& machine, std::istream& is)
+	void C3DRecordByte::ValueElementsFromFile(const C3DMachine& /*machine*/, std::istream& is)
 	{
 		size_t numbytes = TotalElements();
 		data.resize(numbytes, 0);
@@ -430,7 +430,7 @@ namespace Open3DMotion
 		}
 	}
 
-	void C3DRecordText::ValueElementsToFile(const C3DMachine& machine, std::ostream& os) const
+	void C3DRecordText::ValueElementsToFile(const C3DMachine& /*machine*/, std::ostream& os) const
 	{
 		size_t fixedlength = range[0];
 		for (vector<string>::const_iterator i( data.begin() ); i != data.end(); i++)
@@ -448,7 +448,7 @@ namespace Open3DMotion
 		}
 	}
 
-	void C3DRecordText::ValueElementsFromFile(const C3DMachine& machine, std::istream& is)
+	void C3DRecordText::ValueElementsFromFile(const C3DMachine& /*machine*/, std::istream& is)
 	{
 		size_t fixedlength = range[0];
 		size_t numstrings = TotalElements() / fixedlength;
@@ -471,12 +471,12 @@ namespace Open3DMotion
 		}
 	}
 
-	TreeValue* C3DRecordText::ValueElementToTree(size_t elementindex) const
+	TreeValue* C3DRecordText::ValueElementToTree(size_t /*elementindex*/) const
 	{
 		return NULL;
 	}
 
-	void C3DRecordText::AddValueElementFromTree(const TreeValue* v)
+	void C3DRecordText::AddValueElementFromTree(const TreeValue* /*v*/)
 	{
 	}
 }

@@ -16,7 +16,7 @@ namespace Open3DMotion
 		writer.WriteTextNode( static_cast<const TreeString*>( value )->Value() );
 	}
 
-	TreeValue* ReadWriteXMLString::ReadValue(XMLReadingMachine& reader, const pugi::xml_node& element) const
+	TreeValue* ReadWriteXMLString::ReadValue(XMLReadingMachine& /*reader*/, const pugi::xml_node& element) const
 	{
 		std::string text;
 		ReadText(text, element);
