@@ -6,7 +6,7 @@
 --*/
 
 #include "BSONObjectIdHolder.h"
-#include <strstream>
+#include <sstream>
 #include <iomanip>
 
 namespace Open3DMotion
@@ -18,13 +18,13 @@ namespace Open3DMotion
 
 	void BSONObjectIdHolder::FromBinary(const BSONObjectIdBinary& binary)
 	{
-		std::ostrstream buffer;
+		std::ostringstream buffer;
 		for (size_t i = 0; i < BSONObjectIdBytes; i++)
 		{
 			buffer << std::setfill('0') << std::setw(2) << std::hex << (int)binary[i];
 		}
 		buffer << std::ends;
-		BSONObjectId.Value() = buffer.str();
+		BSONObjectId.Value() = buffer.str().c_str();
 	}
 
 	void BSONObjectIdHolder::ToBinary(BSONObjectIdBinary& binary) const

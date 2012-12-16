@@ -13,7 +13,7 @@
 #include "Open3DMotion/Biomechanics/Trial/Gait/GaitEvents.h"
 #include "Open3DMotion/MotionFile/Formats/MDF/ForcePlateMDF.h"
 
-#include <strstream>
+#include <sstream>
 
 #ifdef __GNUC__
 #define _stricmp strcasecmp
@@ -412,7 +412,7 @@ namespace Open3DMotion
 			// generate name from marker number if none exists
 			if (name.empty())
       {
-        std::ostrstream sname;
+        std::ostringstream sname;
         sname << "Marker" << (i+1) << std::ends;
         name = sname.str();
 			}
@@ -486,7 +486,7 @@ namespace Open3DMotion
       }
       else
       {
-        std::ostrstream sname;
+        std::ostringstream sname;
         sname << "EMG" << (i+1) << std::ends;
         name = sname.str();
       }
@@ -578,7 +578,7 @@ namespace Open3DMotion
           {
             // TODO: construct name according to force plate type
             //       (Fx, Mx, etc)
-            std::ostrstream sname;
+            std::ostringstream sname;
             sname << "Force" << (index_file_force+1) << std::ends;
 						name = sname.str();
           }
@@ -1483,7 +1483,7 @@ namespace Open3DMotion
 			// "NotUsedX" names for dummy channels
 			for (i = emgindex.size(); i < num_emg; i++)
 			{
-				std::ostrstream unusedname;
+				std::ostringstream unusedname;
 				unusedname << "NotUsed" << (i+1) << std::ends;
 				EncodeMDFString(os, unusedname.str(), true);
 			}
@@ -1628,11 +1628,11 @@ namespace Open3DMotion
         if (index == NODATA)
         {
 	        // dummy entries for nodata channels
-          std::ostrstream strName;
+          std::ostringstream strName;
           strName << "NotUsed" << (ichannel+1) << '\0';
-          wElements = (UInt16)strlen(strName.str()) + 1;
+          wElements = (UInt16)strName.str().length() + 1;
           os.write((const char*)&wElements,2);
-          os.write(strName.str(),wElements);
+          os.write(strName.str().c_str(),wElements);
         }
 				else
 				{
