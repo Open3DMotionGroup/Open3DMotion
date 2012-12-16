@@ -23,7 +23,7 @@ FileFormatCODAText::~FileFormatCODAText()
 {
 }
 
-bool FileFormatCODAText::Probe(const MotionFileHandler& context, TreeValue*& readoptions, std::istream& is) const throw(MotionFileException)
+bool FileFormatCODAText::Probe(const MotionFileHandler& /*context*/, TreeValue*& /*readoptions*/, std::istream& is) const throw(MotionFileException)
 {
 	// string id to find
 	static const char* str_id = "CODA Motion Analysis Text";
@@ -34,7 +34,7 @@ bool FileFormatCODAText::Probe(const MotionFileHandler& context, TreeValue*& rea
 	return (strncmp(buffID, str_id, 26) == 0);
 }
 
-TreeValue* FileFormatCODAText::Read(const MotionFileHandler& context, std::istream& is, BinMemFactory& memfactory, const TreeValue* readoptions) const throw(MotionFileException)
+TreeValue* FileFormatCODAText::Read(const MotionFileHandler& /*context*/, std::istream& is, BinMemFactory& memfactory, const TreeValue* /*readoptions*/) const throw(MotionFileException)
 {
 	// read it in
 	MATextReader reader;
@@ -70,7 +70,7 @@ TreeValue* FileFormatCODAText::Read(const MotionFileHandler& context, std::istre
 	return trial.ToTree();
 }
 
-	void FileFormatCODAText::Write(const MotionFileHandler& context, const TreeValue* contents, std::ostream& os, const TreeValue* writeoptions) const throw(MotionFileException)
+	void FileFormatCODAText::Write(const MotionFileHandler& /*context*/, const TreeValue* contents, std::ostream& os, const TreeValue* /*writeoptions*/) const throw(MotionFileException)
 	{
 		Trial trial;
 		trial.FromTree(contents);

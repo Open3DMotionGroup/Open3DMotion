@@ -44,7 +44,7 @@ namespace Open3DMotion
 		const double* Confidence() const
 		{ return confidence; }
 
-		const UInt8 CameraFlag() const
+		UInt8 CameraFlag() const
 		{ return (cameraflag != NULL) ? *cameraflag : 0UL; }
 
 		size_t ConfidenceDimension() const

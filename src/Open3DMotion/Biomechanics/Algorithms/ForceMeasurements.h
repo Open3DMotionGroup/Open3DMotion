@@ -24,6 +24,9 @@ namespace Open3DMotion
 	class ForceMeasurements
 	{
 	public:
+    virtual ~ForceMeasurements()
+    {
+    }
 
 		size_t NumChannels() const
 		{ return linear.size(); }

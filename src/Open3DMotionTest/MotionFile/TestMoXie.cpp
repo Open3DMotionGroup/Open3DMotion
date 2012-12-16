@@ -305,7 +305,7 @@ void TestMoXie::CompareTS(const TimeSequence& expected, const TimeSequence& actu
 	CPPUNIT_ASSERT(expected.NumFrames() > 0);
 	CPPUNIT_ASSERT_EQUAL(expected.NumFrames(), actual.NumFrames());
 
-	for ( ; iter_expected.FrameIndex() < expected.NumFrames(); iter_expected.Next(), iter_actual.Next())
+	for ( ; iter_expected.FrameIndex() < (size_t)expected.NumFrames(); iter_expected.Next(), iter_actual.Next())
 	{
 		double frameprecision(precision);
 		if (thresholdFz)

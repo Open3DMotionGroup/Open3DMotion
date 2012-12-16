@@ -38,13 +38,13 @@ public:
 		}
 
 	public:
-    virtual bool Probe(const MotionFileHandler& context, TreeValue*& readoptions, std::istream& is) const throw(MotionFileException)
+    virtual bool Probe(const MotionFileHandler&, TreeValue*&, std::istream&) const throw(MotionFileException)
 		{ return false; }
 
-    virtual TreeValue* Read(const MotionFileHandler& context, std::istream& is, BinMemFactory& memfactory, const TreeValue* readoptions) const throw(MotionFileException)
+    virtual TreeValue* Read(const MotionFileHandler&, std::istream&, BinMemFactory&, const TreeValue*) const throw(MotionFileException)
 		{ throw MotionFileException(MotionFileException::libraryerror, "not implemented"); }
 
-    virtual void Write(const MotionFileHandler& context, const TreeValue* contents, std::ostream& os, const TreeValue* writeoptions) const throw(MotionFileException)
+    virtual void Write(const MotionFileHandler&, const TreeValue*, std::ostream&, const TreeValue*) const throw(MotionFileException)
 		{ throw MotionFileException(MotionFileException::libraryerror, "not implemented"); }
 
 	private:
@@ -68,13 +68,13 @@ public:
 		}
 
 	public:
-    virtual bool Probe(const MotionFileHandler& context, TreeValue*& readoptions, std::istream& is) const throw(MotionFileException)
+    virtual bool Probe(const MotionFileHandler&, TreeValue*&, std::istream&) const throw(MotionFileException)
 		{ return false; }
 
-    virtual TreeValue* Read(const MotionFileHandler& context, std::istream& is, BinMemFactory& memfactory, const TreeValue* readoptions) const throw(MotionFileException)
+    virtual TreeValue* Read(const MotionFileHandler&, std::istream&, BinMemFactory&, const TreeValue*) const throw(MotionFileException)
 		{ throw MotionFileException(MotionFileException::libraryerror, "not implemented"); }
 
-    virtual void Write(const MotionFileHandler& context, const TreeValue* contents, std::ostream& os, const TreeValue* writeoptions) const throw(MotionFileException)
+    virtual void Write(const MotionFileHandler&, const TreeValue*, std::ostream&, const TreeValue*) const throw(MotionFileException)
 		{ throw MotionFileException(MotionFileException::libraryerror, "not implemented"); }
 
 	private:

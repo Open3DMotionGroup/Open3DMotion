@@ -118,7 +118,7 @@ namespace Open3DMotion
 			return false;
 
 		// must have valid time range
-		if (frame_start < 0 || min_frames < 0 || min_time < -1E-12)
+		if (min_time < -1E-12)
 			return false;
 
 		// convert requested min time to frames value

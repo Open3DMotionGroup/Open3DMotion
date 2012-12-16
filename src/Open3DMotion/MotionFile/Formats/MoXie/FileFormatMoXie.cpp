@@ -53,12 +53,12 @@ namespace Open3DMotion
 	}
 	
 			// examine stream for xmove info
-  bool FileFormatMoXie::Probe(const MotionFileHandler& context, TreeValue*& readoptions, std::istream& is)  const throw(MotionFileException)
+  bool FileFormatMoXie::Probe(const MotionFileHandler& /*context*/, TreeValue*& /*readoptions*/, std::istream& is)  const throw(MotionFileException)
   {
     return ProbeTextString(is, moxie_xml_doc, 1024);
   }
 
-  TreeValue* FileFormatMoXie::Read(const MotionFileHandler& context, std::istream& is, BinMemFactory& memfactory, const TreeValue* readoptions) const throw(MotionFileException)
+  TreeValue* FileFormatMoXie::Read(const MotionFileHandler& /*context*/, std::istream& is, BinMemFactory& memfactory, const TreeValue* /*readoptions*/) const throw(MotionFileException)
   {
 		// trial to fill
 		std::auto_ptr<Trial> trial(new Trial);
@@ -269,7 +269,7 @@ namespace Open3DMotion
 		return trial->ToTree();
   }
 
-  void FileFormatMoXie::Write(const MotionFileHandler& context, const TreeValue* contents, std::ostream& os, const TreeValue* writeoptions) const throw(MotionFileException)
+  void FileFormatMoXie::Write(const MotionFileHandler& /*context*/, const TreeValue* contents, std::ostream& os, const TreeValue* writeoptions) const throw(MotionFileException)
   {
 		// parse to trial
 		std::auto_ptr<Trial> trial( new Trial );

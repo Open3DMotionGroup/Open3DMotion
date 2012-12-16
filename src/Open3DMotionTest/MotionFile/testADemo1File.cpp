@@ -121,7 +121,7 @@ void testADemo1File(Open3DMotion::MotionFileHandler& handler, const char* filena
 
 			// must have at least enough frames for EMG
 			// - C3D files will round up to be whole multiple of marker frames
-			CPPUNIT_ASSERT(TestData::ADemo1_numframes_EMG <= ts->NumFrames());
+			CPPUNIT_ASSERT(TestData::ADemo1_numframes_EMG <= (size_t)ts->NumFrames());
 
 			// check each frame
 			for (size_t j = 0; j < TestData::ADemo1_numframes_EMG; j++, iter_ts.Next())

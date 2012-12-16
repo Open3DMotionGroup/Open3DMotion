@@ -21,7 +21,7 @@
 
 #ifdef __GNUC__
 #define _stricmp strcasecmp
-#define _finite finite
+#define _finite isfinite
 #endif
 
 namespace Open3DMotion

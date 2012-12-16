@@ -8,6 +8,7 @@
 #include "Open3DMotion/Biomechanics/Algorithms/ForceCalcKistler.h"
 #include "Open3DMotion/Biomechanics/Trial/ForcePlate.h"
 #include <float.h>
+#include <math.h>
 
 namespace Open3DMotion
 {

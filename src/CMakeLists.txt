@@ -23,10 +23,10 @@ set(OPEN3DMOTION_LINEAR_ALGEBRA_EIGEN_INCLUDEPATH "/usr/include" CACHE PATH "Pat
 
 SET(CMAKE_DEBUG_POSTFIX d)
 
-# Additional warning flags on GNU C
-if (CMAKE_COMPILER_IS_GNUCC)
-  set(CMAKE_CXX_FLAGS_DEBUG  "-g -Wnon-virtual-dtor -Wno-long-long -ansi -Wcast-align -Wchar-subscripts -Wall -Wextra -Wpointer-arith -Wformat-security -Woverloaded-virtual -Wunused-parameter -fno-check-new -fno-common")
-endif (CMAKE_COMPILER_IS_GNUCC)
+# Additional warning flags on GNU C on Apple
+if(APPLE)
+  set(CMAKE_CXX_FLAGS_DEBUG  "-g -Wnon-virtual-dtor -Wno-long-long -ansi -Wchar-subscripts -Wall -Wextra -Wpointer-arith -Wformat-security -Woverloaded-virtual -fno-check-new -fno-common")
+endif(APPLE)
 
 # Optionally use static libraries on windows
 if (OPEN3DMOTION_MSVC_RUNTIME_STATIC)
