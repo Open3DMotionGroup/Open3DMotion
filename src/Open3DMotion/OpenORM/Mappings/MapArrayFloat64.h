@@ -16,7 +16,7 @@ namespace Open3DMotion
 	{
 	public:
 		MapArrayFloat64(const char* _elementname) :
-			MapArraySimpleValue(_elementname)
+			MapArraySimpleValue<TreeFloat64, double>(_elementname)
 		{
 		}
 	};
