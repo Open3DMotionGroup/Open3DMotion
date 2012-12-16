@@ -28,9 +28,6 @@ namespace Open3DMotion
 
 	TreeValue* MotionFileHandler::Read(const char* filename, const MotionFileFormatList& formatlist /*=MotionFileFormatListAll()*/) throw(MotionFileException)
 	{
-		// default for now
-		BinMemFactoryDefault memfactory;
-
 #ifdef _MSC_VER
 		// creating a C-style file object may work better with UTF-8
 		FILE* cfile = fopen(filename, "rb");
@@ -41,6 +38,13 @@ namespace Open3DMotion
 #else
 		ifstream is(filename, std::ios::binary);
 #endif
+		return Read(is, formatlist);
+	}
+
+	TreeValue* MotionFileHandler::Read(std::istream& is, const MotionFileFormatList& formatlist /*=MotionFileFormatListAll()*/) throw(MotionFileException)
+	{
+		// default for now
+		BinMemFactoryDefault memfactory;
 
 		// establish the format
 		TreeValue* readoptions(NULL);
@@ -91,6 +95,21 @@ namespace Open3DMotion
 
 	void MotionFileHandler::Write(const char* filename, const TreeValue* contents, const TreeValue* writeoptions, const MotionFileFormatList& formatlist /*=MotionFileFormatListAll()*/) throw(MotionFileException)
 	{
+#ifdef _MSC_VER
+		// creating a C-style file object may work better with UTF-8
+		FILE* cfile = fopen(filename, "wb");
+        if (cfile == NULL)
+            throw MotionFileException(MotionFileException::noaccess, "file does not exist or you have insufficient permissions to open it");
+		// assign C++ style object
+		ofstream os(cfile);
+#else
+		ofstream os(filename, std::ios::binary);
+#endif
+		Write(os, contents, writeoptions, formatlist);
+	}
+
+	void MotionFileHandler::Write(std::ostream& os, const TreeValue* contents, const TreeValue* writeoptions, const MotionFileFormatList& formatlist /*=MotionFileFormatListAll()*/) throw(MotionFileException)
+	{
 		// ensure write options non-NULL
 		TreeCompound emptyoptions;
 		if (writeoptions == NULL)
@@ -112,17 +131,6 @@ namespace Open3DMotion
 				throw MotionFileException(MotionFileException::libraryerror, "no formats provided in format list");
 			}
 		}
-
-#ifdef _MSC_VER
-		// creating a C-style file object may work better with UTF-8
-		FILE* cfile = fopen(filename, "wb");
-        if (cfile == NULL)
-            throw MotionFileException(MotionFileException::noaccess, "file does not exist or you have insufficient permissions to open it");
-		// assign C++ style object
-		ofstream os(cfile);
-#else
-		ofstream os(filename, std::ios::binary);
-#endif
 
 		// append filename in case needed
 		TreeCompound writeoptions_with_filename;

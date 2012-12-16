@@ -35,9 +35,17 @@ namespace Open3DMotion
 		const std::string& ProgramVersion() const
 		{ return programname; }
 
+		/** Read from file */
 		TreeValue* Read(const char* filename, const MotionFileFormatList& formatlist = MotionFileFormatListAll()) throw(MotionFileException);
 
+		/** Read from STL stream */
+		TreeValue* Read(std::istream& is, const MotionFileFormatList& formatlist = MotionFileFormatListAll()) throw(MotionFileException);
+
+		/** Write to file */
 		void Write(const char* filename, const TreeValue* contents, const TreeValue* writeoptions, const MotionFileFormatList& formatlist = MotionFileFormatListAll()) throw(MotionFileException);
+
+		/** Write to STL stream */
+		void Write(std::ostream& os, const TreeValue* contents, const TreeValue* writeoptions, const MotionFileFormatList& formatlist = MotionFileFormatListAll()) throw(MotionFileException);
 
 	private:
 		std::string programname;
