@@ -19,6 +19,7 @@
 #include "Open3DMotionTest/Data/CODAText/CartWheel.h"
 #include "Open3DMotion/MotionFile/Formats/CODAText/FileFormatOptionsCODAText.h"
 #include <cppunit/extensions/HelperMacros.h>
+#include <math.h>
 
 /* Summary
    Unit test fixture for Codamotion TXT (CODAText) files.

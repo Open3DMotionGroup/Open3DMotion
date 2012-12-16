@@ -64,6 +64,7 @@ public:
 
 		// set force plate info
 		bool setresult = calculator.SetModel(model);
+    CPPUNIT_ASSERT_EQUAL(true, setresult);
 
 		// apply
 		Vector3 force, point;

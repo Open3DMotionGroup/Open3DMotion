@@ -107,7 +107,7 @@ namespace Open3DMotion
 		const char* trial_date = header.child_value("trial_date");
 		if (trial_date)
 		{
-			long year(0), month(0), day(0);
+			int year(0), month(0), day(0);
 			if (sscanf(trial_date, " %d-%d-%d ", &year, &month, &day) == 3)
 			{
 				trial->Acq.Date.Year = year;
@@ -414,7 +414,8 @@ namespace Open3DMotion
 				TimeSequence* force(NULL);
 				TimeSequence* point(NULL);
 				TimeSequence* freemoment(NULL);
-				if (calculator->Compute(force, point, freemoment, mts, BinMemFactoryDefault()))
+        BinMemFactoryDefault memfactory_default;
+				if (calculator->Compute(force, point, freemoment, mts, memfactory_default))
 				{
 					// reverse compute canonical strain gauge force values 
 					
@@ -425,13 +426,13 @@ namespace Open3DMotion
 					tr.Rate = mts.Rate();
 
 					// sequences for results in canonical coords
-					std::auto_ptr<TimeSequence> timecode( TSFactoryValue(1).New(tr, BinMemFactoryDefault()) );
-					std::auto_ptr<TimeSequence> Fx( TSFactoryValue(1).New(tr, BinMemFactoryDefault()) );
-					std::auto_ptr<TimeSequence> Fy( TSFactoryValue(1).New(tr, BinMemFactoryDefault()) );
-					std::auto_ptr<TimeSequence> Fz( TSFactoryValue(1).New(tr, BinMemFactoryDefault()) );
-					std::auto_ptr<TimeSequence> Mx( TSFactoryValue(1).New(tr, BinMemFactoryDefault()) );
-					std::auto_ptr<TimeSequence> My( TSFactoryValue(1).New(tr, BinMemFactoryDefault()) );
-					std::auto_ptr<TimeSequence> Mz( TSFactoryValue(1).New(tr, BinMemFactoryDefault()) );
+					std::auto_ptr<TimeSequence> timecode( TSFactoryValue(1).New(tr, memfactory_default) );
+					std::auto_ptr<TimeSequence> Fx( TSFactoryValue(1).New(tr, memfactory_default) );
+					std::auto_ptr<TimeSequence> Fy( TSFactoryValue(1).New(tr, memfactory_default) );
+					std::auto_ptr<TimeSequence> Fz( TSFactoryValue(1).New(tr, memfactory_default) );
+					std::auto_ptr<TimeSequence> Mx( TSFactoryValue(1).New(tr, memfactory_default) );
+					std::auto_ptr<TimeSequence> My( TSFactoryValue(1).New(tr, memfactory_default) );
+					std::auto_ptr<TimeSequence> Mz( TSFactoryValue(1).New(tr, memfactory_default) );
 
 					// iterators
 					TSVector3ConstIter iter_force( *force );

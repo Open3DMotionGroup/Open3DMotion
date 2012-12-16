@@ -347,7 +347,8 @@ void TestMoXie::ComputeForce(TimeSequence*& force, TimeSequence*& point, const T
 	mts.Set(fp, analog_all);
 	CPPUNIT_ASSERT_EQUAL(size_t(6), mts.NumChannels());
 	TimeSequence* freemoment(NULL);
-	CPPUNIT_ASSERT( calculator->Compute(force, point, freemoment, mts, BinMemFactoryDefault()) );
+  BinMemFactoryDefault memfactory;
+	CPPUNIT_ASSERT( calculator->Compute(force, point, freemoment, mts, memfactory) );
 	
 	// ignore height of plate - not supported in MoXie
 	for (TSVector3Iter iter_point(*point); iter_point.HasFrame(); iter_point.Next())
