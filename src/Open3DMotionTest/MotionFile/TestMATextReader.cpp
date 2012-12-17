@@ -9,15 +9,24 @@ class TestMATextReader : public CppUnit::TestFixture
 {
 public:
 	CPPUNIT_TEST_SUITE( TestMATextReader );
+	CPPUNIT_TEST(testMispelledFile);
 	CPPUNIT_TEST(testGraphData);
 	CPPUNIT_TEST_SUITE_END();
 
 public:
 
+  void testMispelledFile();
 	void testGraphData();
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION( TestMATextReader );
+
+void TestMATextReader::testMispelledFile()
+{
+  MATextReader reader;
+	ifstream input("Open3DMotionTest/Data/CODAText/NoFile.txt", ios::binary);
+	CPPUNIT_ASSERT( reader.Read(input) == false);
+}
 
 void TestMATextReader::testGraphData()
 {
