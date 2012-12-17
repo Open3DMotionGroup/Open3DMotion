@@ -38,7 +38,14 @@ namespace Open3DMotion
 #else
 		ifstream is(filename, std::ios::binary);
 #endif
-		return Read(is, formatlist);
+
+		// read
+		TreeValue* result = Read(is, formatlist);
+
+		// explicitly close file
+		is.close();
+
+		return result;
 	}
 
 	TreeValue* MotionFileHandler::Read(std::istream& is, const MotionFileFormatList& formatlist /*=MotionFileFormatListAll()*/) throw(MotionFileException)
@@ -86,9 +93,6 @@ namespace Open3DMotion
       throw(MotionFileException(MotionFileException::formaterror, "Format error - unexpected end of file"));
     }
 
-		// explicitly close file
-		is.close();
-
 		// return new trial object
 		return trialobject;
 	}
@@ -105,10 +109,13 @@ namespace Open3DMotion
 #else
 		ofstream os(filename, std::ios::binary);
 #endif
-		Write(os, contents, writeoptions, formatlist);
+		Write(os, filename, contents, writeoptions, formatlist);
+
+		// explicitly close file
+		os.close();
 	}
 
-	void MotionFileHandler::Write(std::ostream& os, const TreeValue* contents, const TreeValue* writeoptions, const MotionFileFormatList& formatlist /*=MotionFileFormatListAll()*/) throw(MotionFileException)
+	void MotionFileHandler::Write(std::ostream& os, const char* filename, const TreeValue* contents, const TreeValue* writeoptions, const MotionFileFormatList& formatlist /*=MotionFileFormatListAll()*/) throw(MotionFileException)
 	{
 		// ensure write options non-NULL
 		TreeCompound emptyoptions;
@@ -139,9 +146,6 @@ namespace Open3DMotion
 
     // write
 		chosenformat->Write(*this, contents, os, &writeoptions_with_filename);
-
-		// explicitly close file
-		os.close();
 	}
 
 }
