@@ -21,6 +21,8 @@
 #include <cppunit/extensions/HelperMacros.h>
 #include <math.h>
 
+#include "MotionFileTest.h"
+
 /* Summary
    Unit test fixture for Codamotion TXT (CODAText) files.
    
@@ -52,7 +54,10 @@ public:
 		testReWriteCartWheel, testCartWheel
 		*/
 	void testCartWheel()
-	{ testCartWheelFile("Open3DMotionTest/Data/CODAText/CartWheel.txt"); }
+	{
+	  o3dm_test_construct_global_filename(filename, "Open3DMotionTest/Data/CODAText/CartWheel.txt");
+	  testCartWheelFile(filename);
+	}
 
 	/*
 		Summary
@@ -164,15 +169,18 @@ void TestCODAText::testCartWheelFile(const char* filename)
 
 void TestCODAText::testReWriteCartWheel()
 {
+  o3dm_test_construct_global_filename(src, "Open3DMotionTest/Data/CODAText/CartWheel.txt");
+	o3dm_test_construct_global_filename(dest, "Open3DMotionTest/Data/Temp/CartWheel_rewrite_CODAtext.txt");
+	
 	// load & rewrite file
 	try
 	{
-		// read in
-		std::auto_ptr<Open3DMotion::TreeValue> tree( handler.Read("Open3DMotionTest/Data/CODAText/CartWheel.txt") );
+	 	// read in
+		std::auto_ptr<Open3DMotion::TreeValue> tree( handler.Read(src) );
 
 		// write as text
 		std::auto_ptr<Open3DMotion::TreeValue> options( Open3DMotion::FileFormatOptionsCODAText().ToTree() );
-		handler.Write("Open3DMotionTest/Data/Temp/CartWheel_rewrite_CODAtext.txt", tree.get(), options.get());
+		handler.Write(dest, tree.get(), options.get());
 	}
 	catch(Open3DMotion::MotionFileException& error)
 	{
@@ -180,7 +188,7 @@ void TestCODAText::testReWriteCartWheel()
 	}
 
 	// test the re-written data
-	testCartWheelFile("Open3DMotionTest/Data/Temp/CartWheel_rewrite_CODAtext.txt");
+	testCartWheelFile(dest);
 }
 
 

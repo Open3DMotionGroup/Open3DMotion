@@ -24,6 +24,7 @@
 #include <cppunit/extensions/HelperMacros.h>
 #include <istream>
 
+#include "MotionFileTest.h"
 
 using namespace Open3DMotion;
 
@@ -143,7 +144,8 @@ public:
 	void testGZStreamReadBinary()
 	{
 		// open input data (originally made using MakeGZTestData.java)
-		std::ifstream input("Open3DMotionTest/Data/GZ/GZTestData.gz", std::ios::binary);
+		o3dm_test_construct_global_filename(filename, "Open3DMotionTest/Data/GZ/GZTestData.gz");
+		std::ifstream input(filename, std::ios::binary);
 		CPPUNIT_ASSERT(input.good());
 
 		// try to read it, use tiny buffer to make sure we deal with wrap-around ok
@@ -159,7 +161,8 @@ public:
 	void testGZStreamSkipBytes()
 	{
 		// open input data (originally made using MakeGZTestData.java)
-		std::ifstream input("Open3DMotionTest/Data/GZ/GZTestData.gz", std::ios::binary);
+		o3dm_test_construct_global_filename(filename, "Open3DMotionTest/Data/GZ/GZTestData.gz");
+		std::ifstream input(filename, std::ios::binary);
 		CPPUNIT_ASSERT(input.good());
 
 		// try to read it, use tiny buffer to make sure we deal with wrap-around ok

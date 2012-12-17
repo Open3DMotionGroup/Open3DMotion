@@ -8,6 +8,8 @@
 #include "Open3DMotion/MotionFile/Formats/C3D/MapC3DParameters.h"
 #include <cppunit/extensions/HelperMacros.h>
 
+#include "MotionFileTest.h"
+
 using namespace Open3DMotion;
 using namespace std;
 
@@ -133,7 +135,7 @@ public:
 
 	void testWriteReadFile()
 	{
-		string testfile = string("Open3DMotionTest/Data/Temp/TestC3DParameters.testWriteReadFile.bin");
+		string testfile = string(o3dm_test_root) + string("Open3DMotionTest/Data/Temp/TestC3DParameters.testWriteReadFile.bin");
 		C3DMachine_PC machine;
 
 		// create test file

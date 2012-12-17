@@ -21,6 +21,8 @@
 #include <sstream>
 #include <iomanip>
 
+#include "MotionFileTest.h"
+
 using namespace Open3DMotion;
 
 /* Summary
@@ -44,7 +46,8 @@ public:
 
 	void testLoad()
 	{
-		const char* filename = "Open3DMotionTest/Data/MOBL/ReachingTaskExample-20111013.mobl";
+    // const char* filename = "Open3DMotionTest/Data/MOBL/ReachingTaskExample-20111013.mobl";
+    o3dm_test_construct_global_filename(filename, "Open3DMotionTest/Data/MOBL/ReachingTaskExample-20111013.mobl");
 
 		try
 		{
@@ -82,9 +85,11 @@ public:
 	{ 
 		try
 		{
+		  o3dm_test_construct_global_filename(filename, "Open3DMotionTest/Data/MOBL/ADemo1.ODIN.mobl");
+		  
 			// open bundle
 			MotionBundleHandler bundlehandler;
-			std::auto_ptr<MOBLFormatReader> formatreader( bundlehandler.Open("Open3DMotionTest/Data/MOBL/ADemo1.ODIN.mobl") );
+			std::auto_ptr<MOBLFormatReader> formatreader( bundlehandler.Open(filename) );
 			CPPUNIT_ASSERT(formatreader.get() != NULL);
 
 			// should have one trial
@@ -95,7 +100,8 @@ public:
 			std::auto_ptr<TreeValue> tree( formatreader->ReadTrial(0) );
 			
 			// store as XMove
-			const char* tempfilename = "Open3DMotionTest/Data/Temp/TestMotionBundle.ADemo1.ODIN.xml";
+      // const char* tempfilename = "Open3DMotionTest/Data/Temp/TestMotionBundle.ADemo1.ODIN.xml";
+      o3dm_test_construct_global_filename(tempfilename, "Open3DMotionTest/Data/Temp/TestMotionBundle.ADemo1.ODIN.xml");
 			Open3DMotion::MotionFileHandler filehandler("TestMotionBundle", "UNVESIONED");
 			FileFormatOptionsXMove xmove_options;
 			std::auto_ptr<TreeValue> xmove_options_tree( xmove_options.ToTree() );

@@ -18,6 +18,8 @@
 
 #include "testSample08File.h"
 
+#include "MotionFileTest.h"
+
 using namespace Open3DMotion;
 using namespace std;
 
@@ -90,19 +92,34 @@ public:
 
 public:
 	void testSample08_EB015()
-	{ testSample08File(handler, "Open3DMotionTest/Data/C3D/sample08/EB015PI.c3d"); }
+	{ 
+	  o3dm_test_construct_global_filename(filename, "Open3DMotionTest/Data/C3D/sample08/EB015PI.c3d");
+	  testSample08File(handler, filename);
+	}
 
 	void testSample08_TESTA()
-	{ testSample08File(handler, "Open3DMotionTest/Data/C3D/sample08/TESTAPI.c3d"); }
+	{ 
+	  o3dm_test_construct_global_filename(filename, "Open3DMotionTest/Data/C3D/sample08/TESTAPI.c3d");
+	  testSample08File(handler, filename);
+	}
 
 	void testSample08_TESTB()
-	{ testSample08File(handler, "Open3DMotionTest/Data/C3D/sample08/TESTBPI.c3d"); }
+	{ 
+	  o3dm_test_construct_global_filename(filename, "Open3DMotionTest/Data/C3D/sample08/TESTBPI.c3d");
+	  testSample08File(handler, filename);
+	}
 
 	void testSample08_TESTC()
-	{ testSample08File(handler, "Open3DMotionTest/Data/C3D/sample08/TESTCPI.c3d"); }
+	{ 
+	  o3dm_test_construct_global_filename(filename, "Open3DMotionTest/Data/C3D/sample08/TESTCPI.c3d");
+	  testSample08File(handler, filename);
+	}
 
 	void testSample08_TESTD()
-	{ testSample08File(handler, "Open3DMotionTest/Data/C3D/sample08/TESTDPI.c3d"); }
+	{ 
+	  o3dm_test_construct_global_filename(filename, "Open3DMotionTest/Data/C3D/sample08/TESTDPI.c3d");
+	  testSample08File(handler, filename);
+	}
 
 	void testReWriteSample08_c3d_pc_integer()
 	{ testReWriteSample08("C3D", FileFormatOptionsC3D::ProcessorPC, false, "c3d"); }
@@ -155,7 +172,7 @@ CPPUNIT_TEST_SUITE_REGISTRATION( TestC3D );
 void TestC3D::testReWriteSample08(const char* formatID, const char* processor, bool floatingpoint, const char* extension, double markertol, const double* analogtol, bool allow_analog_reorder, bool allow_analog_removal, bool exclude_force)
 {
 	// make save name
-	std::string savename("Open3DMotionTest/Data/Temp/EB015PI_rewrite_");
+	std::string savename = std::string(o3dm_test_root) + std::string("Open3DMotionTest/Data/Temp/EB015PI_rewrite_");
 	savename += processor;
 	savename += floatingpoint ? "_F" : "_I";
 	savename += ".";
@@ -164,7 +181,8 @@ void TestC3D::testReWriteSample08(const char* formatID, const char* processor, b
 	// open and re-write to specified format
 	try
 	{
-		std::auto_ptr<TreeValue> trialcontents( handler.Read("Open3DMotionTest/Data/C3D/sample08/EB015PI.c3d") );
+	  o3dm_test_construct_global_filename(filename, "Open3DMotionTest/Data/C3D/sample08/EB015PI.c3d");
+		std::auto_ptr<TreeValue> trialcontents( handler.Read(filename) );
 
 		FileFormatOptionsC3D c3doptions;
 		c3doptions.FormatID = formatID;

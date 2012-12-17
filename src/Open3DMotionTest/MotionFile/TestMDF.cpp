@@ -26,6 +26,8 @@
 #include "testWalk4DescriptorsInFile.h"
 #include <math.h>
 
+#include "MotionFileTest.h"
+
 /* Summary
    Unit test fixture for MDF format files.
    
@@ -72,7 +74,10 @@ public:
 		testADemo1File
 		*/
 	void testADemo1()
-	{ testADemo1File(handler, "Open3DMotionTest/Data/MDF/gait-bilateral-1997-Kistlerx1.mdf", true, 1, true); }
+	{
+    o3dm_test_construct_global_filename(filename, "Open3DMotionTest/Data/MDF/gait-bilateral-1997-Kistlerx1.mdf");
+	  testADemo1File(handler, filename, true, 1, true);
+	}
 
 	/*
 		Summary
@@ -156,7 +161,10 @@ public:
 		testAMTIForceCoPConsistent
 	 */
 	void testCoPConsistent_SingleAMTI_MA64()
-	{ testAMTIForceCoPConsistent("Open3DMotionTest/Data/MDF/forceonly-2007-AMTIx1.mdf", 1, fpcalc_MA64); }
+	{
+	  o3dm_test_construct_global_filename(filename, "Open3DMotionTest/Data/MDF/forceonly-2007-AMTIx1.mdf");
+	  testAMTIForceCoPConsistent(filename, 1, fpcalc_MA64);
+	}
 
 	/*
 		Summary
@@ -167,7 +175,10 @@ public:
 		testAMTIForceCoPConsistent
 		*/
 	void testCoPConsistent_DualAMTIGait_MA64()
-	{ testAMTIForceCoPConsistent("Open3DMotionTest/Data/MDF/gait-bilateral-2005-AMTIx2.mdf", 2, fpcalc_MA64); }
+	{
+	  o3dm_test_construct_global_filename(filename, "Open3DMotionTest/Data/MDF/gait-bilateral-2005-AMTIx2.mdf");
+	  testAMTIForceCoPConsistent(filename, 2, fpcalc_MA64);
+	}
 
 	/*
 		Summary
@@ -178,7 +189,10 @@ public:
 		testAMTIForceCoPConsistent
 		*/
 	void testCoPConsistent_DualAMTIGait_MA63()
-	{	testAMTIForceCoPConsistent("Open3DMotionTest/Data/MDF/gait-bilateral-2004-AMTIx2-MA63.mdf", 2, fpcalc_MA63); }
+	{
+	  o3dm_test_construct_global_filename(filename, "Open3DMotionTest/Data/MDF/gait-bilateral-2004-AMTIx2-MA63.mdf");
+	  testAMTIForceCoPConsistent(filename, 2, fpcalc_MA63);
+	}
 
 	/*
 		Summary
@@ -190,7 +204,10 @@ public:
 		testWalk4DescriptorsInFile
 		*/
 	void testWalk4Descriptors()
-	{ testWalk4DescriptorsInFile(handler, "Open3DMotionTest/Data/MDF/gait-clusters-multicoda-Kistlerx2.mdf", true); }
+	{
+	  o3dm_test_construct_global_filename(filename, "Open3DMotionTest/Data/MDF/gait-clusters-multicoda-Kistlerx2.mdf");
+	  testWalk4DescriptorsInFile(handler, filename, true);
+	}
 
 	/*
 		Summary
@@ -446,6 +463,7 @@ void TestMDF::testReWriteADemo1(const Open3DMotion::FileFormatOptions& options, 
 {
 	// make save name
 	std::string savename = 
+	  std::string(o3dm_test_root) + 
 		std::string("Open3DMotionTest/Data/Temp/ADemo1_rewrite_") + 
 		std::string(suffix);
 
@@ -453,8 +471,10 @@ void TestMDF::testReWriteADemo1(const Open3DMotion::FileFormatOptions& options, 
 	
 	try
 	{
+	  o3dm_test_construct_global_filename(filename, "Open3DMotionTest/Data/MDF/gait-bilateral-1997-Kistlerx1.mdf");
+	  
 		// read in
-		std::auto_ptr<Open3DMotion::TreeValue> trial_tree( handler.Read("Open3DMotionTest/Data/MDF/gait-bilateral-1997-Kistlerx1.mdf") );
+		std::auto_ptr<Open3DMotion::TreeValue> trial_tree( handler.Read(filename) );
 				
 		// make writing options
 		std::auto_ptr<Open3DMotion::TreeValue> format_value( options.ToTree() );
@@ -475,14 +495,17 @@ void TestMDF::testReWriteWalk4Descriptors(const Open3DMotion::FileFormatOptions&
 {
 	// make save name
 	std::string savename = 
+	  std::string(o3dm_test_root) + 
 		std::string("Open3DMotionTest/Data/Temp/Walk4_rewrite_") + 
 		std::string(suffix);
 
 	// open and re-write to specified format
 	try
 	{
+	  o3dm_test_construct_global_filename(filename, "Open3DMotionTest/Data/MDF/gait-clusters-multicoda-Kistlerx2.mdf");
+	  
 		// read in
-		std::auto_ptr<Open3DMotion::TreeValue> trial_tree( handler.Read("Open3DMotionTest/Data/MDF/gait-clusters-multicoda-Kistlerx2.mdf") );
+		std::auto_ptr<Open3DMotion::TreeValue> trial_tree( handler.Read(filename) );
 
 		// make writing options
 		std::auto_ptr<Open3DMotion::TreeValue> format_value( options.ToTree() );

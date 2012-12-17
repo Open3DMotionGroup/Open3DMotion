@@ -3,6 +3,8 @@
 #include <cppunit/extensions/HelperMacros.h>
 #include <sstream>
 
+#include "MotionFileTest.h"
+
 using namespace Open3DMotion;
 using namespace std;
 
@@ -43,7 +45,8 @@ void TestMATextReader::testGraphData()
 	MATextReader reader;
 	
 	// make path to test data & open
-	ifstream input("Open3DMotionTest/Data/CODAText/GraphData.txt", ios::binary);
+	o3dm_test_construct_global_filename(filename, "Open3DMotionTest/Data/CODAText/GraphData.txt");
+	ifstream input(filename, ios::binary);
 	CPPUNIT_ASSERT( reader.Read(input) );
 
 	CPPUNIT_ASSERT_EQUAL(std::string("Graph data: \"L.Knee Rotation\""), reader.Comment());

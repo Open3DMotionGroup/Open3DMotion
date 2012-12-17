@@ -12,6 +12,7 @@
 #include "Open3DMotion/OpenOrm/Mappings/RichBinary/BinMemFactoryDefault.h"
 #include <cppunit/extensions/HelperMacros.h>
 
+#include "MotionFileTest.h"
 
 /* Summary
    Unit test fixture for XMove (XML) conversion to/from tree.
@@ -47,11 +48,13 @@ public:
 
 		try
 		{
+		  o3dm_test_construct_global_filename(filename, "Open3DMotionTest/Data/Temp/testReadWriteEmptyXMove.xmove");
+		  
 			// write
-			handler.Write("Open3DMotionTest/Data/Temp/testReadWriteEmptyXMove.xmove", empty_trial_tree, options_tree);
+			handler.Write(filename, empty_trial_tree, options_tree);
 
 			// read
-			read_empty_tree = Open3DMotion::TreeValueCast<Open3DMotion::TreeCompound>( handler.Read("Open3DMotionTest/Data/Temp/testReadWriteEmptyXMove.xmove") );
+			read_empty_tree = Open3DMotion::TreeValueCast<Open3DMotion::TreeCompound>( handler.Read(filename) );
 		}
 		catch(const Open3DMotion::MotionFileException& error)
 		{
@@ -94,11 +97,13 @@ public:
 
 		try
 		{
+		  o3dm_test_construct_global_filename(filename, "Open3DMotionTest/Data/Temp/testReadWriteSimpleXMove.xml");
+		  
 			// write
-			handler.Write("Open3DMotionTest/Data/Temp/testReadWriteSimpleXMove.xml", simple_trial_tree, options_tree);
+			handler.Write(filename, simple_trial_tree, options_tree);
 
 			// read
-			read_simple_tree = handler.Read("Open3DMotionTest/Data/Temp/testReadWriteSimpleXMove.xml");
+			read_simple_tree = handler.Read(filename);
 		}
 		catch(const Open3DMotion::MotionFileException& error)
 		{
