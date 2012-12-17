@@ -12,6 +12,8 @@
 #include "Open3DMotion/Biomechanics/Algorithms/ForceCalculatorFactory.h"
 #include "Open3DMotion/Biomechanics/Algorithms/ForceCalculator.h"
 
+#include "MotionFileTest.h"
+
 using namespace std;
 using namespace Open3DMotion;
 
@@ -78,7 +80,8 @@ namespace Open3DMotion
 
 void TestMoXie::testLoad()
 { 
-	testNWalk02File( "Open3DMotionTest/Data/MoXie/nwalk02.mox" ); 
+  o3dm_test_construct_global_filename(filename, "Open3DMotionTest/Data/MoXie/nwalk02.mox");
+	testNWalk02File( filename ); 
 }
 
 void TestMoXie::testExtractFileName()
@@ -100,14 +103,16 @@ void TestMoXie::testReWriteMoXie()
 { 
 	// load
 	
+	o3dm_test_construct_global_filename(src, "Open3DMotionTest/Data/MoXie/nwalk02.mox");
+	o3dm_test_construct_global_filename(dst, "Open3DMotionTest/Data/Temp/nwalk02_rewrite.mox");
 	try
 	{
 		// read
-		auto_ptr<TreeValue> file( handler.Read("Open3DMotionTest/Data/MoXie/nwalk02.mox") );
+		auto_ptr<TreeValue> file( handler.Read(src) );
 		
 		// write MoXie
 		auto_ptr<TreeValue> options( FileFormatOptionsMoXie().ToTree() );
-		handler.Write("Open3DMotionTest/Data/Temp/nwalk02_rewrite.mox", file.get(), options.get());
+		handler.Write(dst, file.get(), options.get());
 	}
 	catch(const MotionFileException& error)
 	{
@@ -115,7 +120,7 @@ void TestMoXie::testReWriteMoXie()
 	}
 
 	// test re-read
-	testNWalk02File("Open3DMotionTest/Data/Temp/nwalk02_rewrite.mox");
+	testNWalk02File(dst);
 }
 
 void TestMoXie::testTrialAttributes()
@@ -135,7 +140,8 @@ void TestMoXie::testTrialAttributes()
 		// save
 		auto_ptr<TreeValue> trial_tree( trial.ToTree() );
 		auto_ptr<TreeValue> moxie_options( FileFormatOptionsMoXie().ToTree() );
-		handler.Write("Open3DMotionTest/Data/Temp/trialattributes.mox", trial_tree.get(), moxie_options.get());
+		o3dm_test_construct_global_filename(filename, "Open3DMotionTest/Data/Temp/trialattributes.mox");
+		handler.Write(filename, trial_tree.get(), moxie_options.get());
 
 		// ... test data will now go out of scope & be destroyed
 	}
@@ -147,7 +153,8 @@ void TestMoXie::testTrialAttributes()
 	try
 	{
 		// load results
-		auto_ptr<TreeValue> result_tree (handler.Read("Open3DMotionTest/Data/Temp/trialattributes.mox"));
+		o3dm_test_construct_global_filename(filename, "Open3DMotionTest/Data/Temp/trialattributes.mox");
+		auto_ptr<TreeValue> result_tree (handler.Read(filename));
 
 		// retrieve fields
 		Trial result;
@@ -174,17 +181,19 @@ void TestMoXie::testTrialAttributes()
 void TestMoXie::testForceConversion()
 {
 	Trial trialC3D;
+	o3dm_test_construct_global_filename(src, "Open3DMotionTest/Data/C3D/sample10/TYPE-4.C3D");
+	o3dm_test_construct_global_filename(dst, "Open3DMotionTest/Data/Temp/rewrite_sample10_TYPE-4.mox");
 	try
 	{
 		// load AMTI force data
-		auto_ptr<TreeValue> fileC3D( handler.Read("Open3DMotionTest/Data/C3D/sample10/TYPE-4.C3D") );
+		auto_ptr<TreeValue> fileC3D( handler.Read(src) );
 
 		// parse
 		trialC3D.FromTree( fileC3D.get() );
 
 		// re-write as MoXie
 		auto_ptr<TreeValue> moxie_options( FileFormatOptionsMoXie().ToTree() );
-		handler.Write("Open3DMotionTest/Data/Temp/rewrite_sample10_TYPE-4.mox", fileC3D.get(), moxie_options.get());
+		handler.Write(dst, fileC3D.get(), moxie_options.get());
 	}
 	catch(const MotionFileException& error)
 	{
@@ -195,7 +204,7 @@ void TestMoXie::testForceConversion()
 	Trial trialMox;
 	try
 	{
-		auto_ptr<TreeValue> treeMox( handler.Read("Open3DMotionTest/Data/Temp/rewrite_sample10_TYPE-4.mox") );
+		auto_ptr<TreeValue> treeMox( handler.Read(dst) );
 		trialMox.FromTree( treeMox.get() );
 	}
 	catch(const MotionFileException& error)
