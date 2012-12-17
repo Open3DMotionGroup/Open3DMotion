@@ -3,7 +3,9 @@
 #include <math.h>
 #include <vector>
 
-using namespace Open3DMotion;
+// Must place test within namespace to make use of 'friend' privileges to access protected members
+namespace Open3DMotion
+{
 
 class TestForceCalculator : public CppUnit::TestCase
 {
@@ -81,5 +83,7 @@ public:
 	}
 
 };
+  
+}
 
-CPPUNIT_TEST_SUITE_REGISTRATION( TestForceCalculator );
+CPPUNIT_TEST_SUITE_REGISTRATION( Open3DMotion::TestForceCalculator );
