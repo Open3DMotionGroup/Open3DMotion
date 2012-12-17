@@ -25,6 +25,9 @@ const double moxie_force_to_tree[6] =
 -1000.0
 };
 
+// Must place test within namespace to make use of 'friend' privileges to access protected members
+namespace Open3DMotion
+{
 
 class TestMoXie : public CppUnit::TestFixture
 {
@@ -65,8 +68,13 @@ protected:
 	MotionFileHandler handler;
 
 };
+  
+}
 
 CPPUNIT_TEST_SUITE_REGISTRATION( TestMoXie );
+
+namespace Open3DMotion
+{
 
 void TestMoXie::testLoad()
 { 
@@ -353,4 +361,6 @@ void TestMoXie::ComputeForce(TimeSequence*& force, TimeSequence*& point, const T
 	// ignore height of plate - not supported in MoXie
 	for (TSVector3Iter iter_point(*point); iter_point.HasFrame(); iter_point.Next())
 		iter_point.Value()[2] = 0.0;
+}
+
 }

@@ -1,6 +1,7 @@
 #include "Open3DMotion/MotionFile/Formats/CODAText/MATextReader.h"
 #include "Open3DMotion/OpenORM/Mappings/RichBinary/BinMemFactoryDefault.h"
 #include <cppunit/extensions/HelperMacros.h>
+#include <sstream>
 
 #include "MotionFileTest.h"
 
@@ -11,15 +12,33 @@ class TestMATextReader : public CppUnit::TestFixture
 {
 public:
 	CPPUNIT_TEST_SUITE( TestMATextReader );
+	CPPUNIT_TEST(testNonExistentFile);
+  CPPUNIT_TEST(testEmptyStream);
 	CPPUNIT_TEST(testGraphData);
 	CPPUNIT_TEST_SUITE_END();
 
 public:
 
+  void testNonExistentFile();
+  void testEmptyStream();
 	void testGraphData();
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION( TestMATextReader );
+
+void TestMATextReader::testNonExistentFile()
+{
+  MATextReader reader;
+	ifstream input("Open3DMotionTest/Data/CODAText/NoFile.txt", ios::binary);
+	CPPUNIT_ASSERT( reader.Read(input) == false);
+}
+
+void TestMATextReader::testEmptyStream()
+{
+  MATextReader reader;
+  istringstream empty_stream("");
+  CPPUNIT_ASSERT(reader.Read(empty_stream) == false);
+}
 
 void TestMATextReader::testGraphData()
 {

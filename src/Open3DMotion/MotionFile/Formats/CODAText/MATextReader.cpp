@@ -16,6 +16,9 @@ namespace Open3DMotion
 
 	bool MATextReader::Read(std::istream& is)
 	{
+	  if (is.fail())
+      return false;
+	  
 		MATextInputStream tf(is);
 
 		// file format descriptor line
@@ -41,9 +44,9 @@ namespace Open3DMotion
 			return false;
 
 		// time headings must be first
-		if (group[0].compare("Time") != 0)
+		if (group.empty() || (group[0].compare("Time") != 0))
 			return false;
-		if (channel[0].compare("Time") != 0)
+		if (channel.empty() || (channel[0].compare("Time") != 0))
 			return false;
 
 		// copy to array
@@ -68,14 +71,17 @@ namespace Open3DMotion
 			heading.push_back(MATextColHeading(groupname, channelname, unitsname));
 		}
 
-		// read data
-		while (tf.ReadDataRow(data, numcolumns))
-			;
+    if (numcolumns != 0)
+    {
+    	// read data
+    	while (tf.ReadDataRow(data, numcolumns))
+    		;
 
-		// must have complete rows
-		if (data.size() % numcolumns != 0)
-			return false;
-
+    	// must have complete rows
+    	if (data.size() % numcolumns != 0)
+    		return false;
+    }
+    
 		return true;
 	}
 
