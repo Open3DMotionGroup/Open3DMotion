@@ -10,6 +10,11 @@
 #include "Open3DMotion/MotionFile/FileFormatOptions.h"
 #include "Open3DMotion/OpenORM/Mappings/RichBinary/BinMemFactoryDefault.h"
 
+#if defined(_MSC_VER)
+  // Disable unsafe warning (use of the function 'fopen' instead of 'fopen_s' for portability reasons;
+  #pragma warning( disable : 4996 )
+#endif
+
 namespace Open3DMotion
 {
 	using namespace std;
