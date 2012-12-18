@@ -14,6 +14,10 @@ namespace Open3DMotion
 	{
 	}
 
+	XMLReadingMachine::~XMLReadingMachine()
+	{
+	}
+
 	TreeValue* XMLReadingMachine::ReadValue(const pugi::xml_node& xml_element) throw(XMLReadException)
 	{
 		for (std::vector<ReadWriteXML*>::const_iterator iter_element( element.begin() ); iter_element != element.end(); iter_element++)

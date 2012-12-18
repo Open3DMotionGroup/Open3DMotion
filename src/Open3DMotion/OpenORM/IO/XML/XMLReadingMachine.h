@@ -24,8 +24,10 @@ namespace Open3DMotion
 	public:
 		XMLReadingMachine();
 
+		virtual ~XMLReadingMachine();
+
 	public:
-		TreeValue* ReadValue(const pugi::xml_node& element) throw(XMLReadException);
+		virtual TreeValue* ReadValue(const pugi::xml_node& element) throw(XMLReadException);
 	};
 
 }

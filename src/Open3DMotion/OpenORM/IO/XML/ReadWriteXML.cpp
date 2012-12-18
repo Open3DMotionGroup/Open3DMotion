@@ -26,13 +26,6 @@ namespace Open3DMotion
 		}
 		else
 		{
-			// special case for legacy formats where binary data has empty type string
-			if (type_string.size() == 0)
-			{
-				if (std::string("Data").compare(element.name()) == 0)
-					type_string = "base64";
-			}
-
 			// must match
 			if (type_string.compare(TypeAttribute()) != 0)
 					return NULL;

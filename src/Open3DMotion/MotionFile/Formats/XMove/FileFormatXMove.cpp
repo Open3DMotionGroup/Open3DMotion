@@ -9,6 +9,7 @@
 #include <set>
 #include "Open3DMotion/OpenORM/IO/XML/XMLReadingMachine.h"
 #include "Open3DMotion/OpenORM/IO/XML/XMLWritingMachine.h"
+#include "Open3DMotion/MotionFile/Formats/XMove/XMLReadingMachineLegacy.h"
 #include <pugixml.hpp>
 
 namespace Open3DMotion
@@ -46,7 +47,7 @@ namespace Open3DMotion
 		}
 
 		// read info
-		XMLReadingMachine reader;
+		XMLReadingMachineLegacy reader;
 		TreeValue* trial_object = reader.ReadValue(xmove_node);
 
 		return trial_object;
