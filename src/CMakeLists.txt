@@ -11,6 +11,7 @@ cmake_minimum_required(VERSION 2.6)
 
 project (Open3DMotion)
 
+option(OPEN3DMOTION_BIND_PYTHON "Python bindings" OFF)
 option(OPEN3DMOTION_OWNBUILD_CPPUNIT "Link to our own build of CPPUNIT" ON)
 option(OPEN3DMOTION_OWNBUILD_LIBB64 "Link to our own build of libb64" ON)
 option(OPEN3DMOTION_OWNBUILD_PUGIXML "Link to our own build of pugixml" ON)
@@ -58,9 +59,27 @@ if (OPEN3DMOTION_LINEAR_ALGEBRA_EIGEN)
 endif(OPEN3DMOTION_LINEAR_ALGEBRA_EIGEN)
 
 # Build the library
-file(GLOB_RECURSE Open3DMotion_CPP Open3DMotion/*.cpp)
-file(GLOB_RECURSE Open3DMotion_H Open3DMotion/*.h)
-add_library(Open3DMotion ${Open3DMotion_CPP} ${Open3DMotion_H})
+
+file(GLOB_RECURSE Open3DMotion_CPP 
+  Open3DMotion/OpenORM/*.cpp
+  Open3DMotion/Maths/*.cpp
+  Open3DMotion/Biomechanics/*.cpp
+  Open3DMotion/MotionBundle/*.cpp
+  Open3DMotion/MotionFile/*.cpp)
+
+file(GLOB_RECURSE Open3DMotion_H 
+  Open3DMotion/OpenORM/*.h
+  Open3DMotion/Maths/*.h
+  Open3DMotion/Biomechanics/*.h
+  Open3DMotion/MotionFile/*.h
+  Open3DMotion/MotionBundle/*.h)
+
+if(OPEN3DMOTION_BIND_PYTHON)
+  file(GLOB_RECURSE Open3DMotion_Python_CPP Open3DMotion/Bindings/Python/*.cpp)
+  file(GLOB_RECURSE Open3DMotion_Python_H Open3DMotion/Bindings/Python/*.h)
+endif(OPEN3DMOTION_BIND_PYTHON)
+
+add_library(Open3DMotion ${Open3DMotion_CPP} ${Open3DMotion_H} ${Open3DMotion_Python_CPP} ${Open3DMotion_Python_H})
 
 # Build test program
 file(GLOB_RECURSE Open3DMotionTest_CPP Open3DMotionTest/*.cpp)
