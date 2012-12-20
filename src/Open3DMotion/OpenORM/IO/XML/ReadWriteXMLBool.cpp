@@ -10,6 +10,11 @@
 #include "XMLWritingMachine.h"
 #include <iomanip>
 
+#if defined(_MSC_VER)
+  // Disable unsafe warning (use of the function 'sscanf' instead of 'sscanf_s' for portability reasons;
+  #pragma warning( disable : 4996 )
+#endif
+
 namespace Open3DMotion
 {
 	void ReadWriteXMLBool::WriteValue(XMLWritingMachine& writer, const TreeValue* value) const
