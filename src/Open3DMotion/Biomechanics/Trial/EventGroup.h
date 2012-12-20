@@ -38,6 +38,12 @@ namespace Open3DMotion
 		/** name of the time field ("time") */
 		static const char TimeFieldName[];
 
+		/** name of event map element ("EventMap") */
+		static const char EventMapName[];
+
+		/** name of the elements of event map ("Event") */
+		static const char EventMapElementName[];
+
 	public:		
 
 		MapString Name;

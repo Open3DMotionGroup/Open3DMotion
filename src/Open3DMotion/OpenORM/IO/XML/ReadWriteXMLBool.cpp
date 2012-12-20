@@ -15,10 +15,10 @@ namespace Open3DMotion
 	void ReadWriteXMLBool::WriteValue(XMLWritingMachine& writer, const TreeValue* value) const
 	{  writer.OS() << (static_cast<const TreeBool*>( value )->Value() ? "1" : "0");	}
 
-	TreeValue* ReadWriteXMLBool::ReadValue(XMLReadingMachine& /*reader*/, const pugi::xml_node& element) const
+	TreeValue* ReadWriteXMLBool::ReadValue(XMLReadingMachine& reader, const pugi::xml_node& element) const
 	{
 		std::string text;
-		ReadText(text, element);
+		reader.ReadTextNode(text, element);
 		int number;
 		sscanf(text.c_str(), " %d", &number);
 		return new TreeBool(number ? true : false);

@@ -15,12 +15,16 @@ namespace Open3DMotion
 
 	const char EventGroup::TimeFieldName[] = "time";
 
+	const char EventGroup::EventMapName[] = "EventMap";
+
+	const char EventGroup::EventMapElementName[] = "Event";
+
 	EventGroup::EventGroup() :
 		RichBinary(StructureName),
-		EventMap("Flag")
+		EventMap(EventMapElementName)
 	{
 		REGISTER_MEMBER(Name);
-		REGISTER_MEMBER(EventMap);
+		Register(EventMapName, &EventMap);
 	}
 
 	void EventGroup::SetEvents(const EventArray& events, BinMemFactory& memfactory)

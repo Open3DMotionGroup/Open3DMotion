@@ -12,9 +12,15 @@ namespace Open3DMotion
 	FileFormatOptionsXMove::FileFormatOptionsXMove()
 	{
 		REGISTER_MEMBER(Extended);
+		REGISTER_MEMBER(LegacyCompoundNames);
+		REGISTER_MEMBER(ConvertBinaryFloat32);
+		REGISTER_MEMBER(ExcludeCalc);
 
 		FormatID = "XMove";
 		Extended = false;
+		LegacyCompoundNames = false;
+		ConvertBinaryFloat32 = true;
+		ExcludeCalc = false;
 	}
 
 }

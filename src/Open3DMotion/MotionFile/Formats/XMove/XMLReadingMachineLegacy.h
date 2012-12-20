@@ -12,6 +12,8 @@
 
 namespace Open3DMotion
 {
+	class TreeList;
+
 	class XMLReadingMachineLegacy : public XMLReadingMachine
 	{
 	public:

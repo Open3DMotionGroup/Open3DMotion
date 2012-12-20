@@ -27,7 +27,14 @@ namespace Open3DMotion
 		virtual ~XMLReadingMachine();
 
 	public:
+		/** Convert from XML element.
+		    @param element The element to read. It's assumed this is is correctly formatted - will produce a default or empty value if not.
+	   */
+		virtual TreeValue* Read(const ReadWriteXML* xml_reader, const pugi::xml_node& element);
+
 		virtual TreeValue* ReadValue(const pugi::xml_node& element) throw(XMLReadException);
+
+		virtual void ReadTextNode(std::string& node_text, const pugi::xml_node& element);
 	};
 
 }

@@ -47,7 +47,7 @@ public:
 		// Check that parameter constructor fills all members
 		BinaryFieldSpec s1(BinaryFieldSpec::FromType<Int32>( "Bob", 7L ));
 		CPPUNIT_ASSERT_EQUAL(string("Bob"), s1.Name.Value());
-		CPPUNIT_ASSERT_EQUAL(string("Int32"), s1.Type.Value());
+		CPPUNIT_ASSERT_EQUAL(string("long"), s1.Type.Value());
 		CPPUNIT_ASSERT_EQUAL(Int32(28), s1.Bytes.Value());
 		CPPUNIT_ASSERT_EQUAL(Int32(7), s1.Dimension.Value());
 
@@ -56,14 +56,14 @@ public:
 		BinaryFieldSpec s2;
 		s2.FromTree(t1);
 		CPPUNIT_ASSERT_EQUAL(string("Bob"), s2.Name.Value());
-		CPPUNIT_ASSERT_EQUAL(string("Int32"), s2.Type.Value());
+		CPPUNIT_ASSERT_EQUAL(string("long"), s2.Type.Value());
 		CPPUNIT_ASSERT_EQUAL(Int32(28), s2.Bytes.Value());
 		CPPUNIT_ASSERT_EQUAL(Int32(7), s2.Dimension.Value());
 
 		// Check copy constructor
 		BinaryFieldSpec s3(s1);
 		CPPUNIT_ASSERT_EQUAL(string("Bob"), s3.Name.Value());
-		CPPUNIT_ASSERT_EQUAL(string("Int32"), s3.Type.Value());
+		CPPUNIT_ASSERT_EQUAL(string("long"), s3.Type.Value());
 		CPPUNIT_ASSERT_EQUAL(Int32(28), s3.Bytes.Value());
 		CPPUNIT_ASSERT_EQUAL(Int32(7), s3.Dimension.Value());
 
@@ -72,7 +72,7 @@ public:
 		BinaryFieldSpec s4;
 		s4.FromTree(t2);
 		CPPUNIT_ASSERT_EQUAL(string("Bob"), s4.Name.Value());
-		CPPUNIT_ASSERT_EQUAL(string("Int32"), s4.Type.Value());
+		CPPUNIT_ASSERT_EQUAL(string("long"), s4.Type.Value());
 		CPPUNIT_ASSERT_EQUAL(Int32(28), s4.Bytes.Value());
 		CPPUNIT_ASSERT_EQUAL(Int32(7), s4.Dimension.Value());
 	}

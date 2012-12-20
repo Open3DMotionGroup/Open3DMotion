@@ -34,6 +34,10 @@ namespace Open3DMotion
     // Write MDF
     virtual void Write(const MotionFileHandler& context, const TreeValue* contents, std::ostream& os, const TreeValue* writeoptions) const throw(MotionFileException);
 		
+	protected:
+		static void ConvertListFloat32To64(TreeCompound* section, const char* listname, const char* structurename, BinMemFactory& memfactory);
+		static void ConvertListFloat64To32(TreeCompound* section, const char* listname, const char* structurename, BinMemFactory& memfactory);
+
 	};
 }
 

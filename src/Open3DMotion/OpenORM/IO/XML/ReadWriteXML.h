@@ -34,17 +34,6 @@ namespace Open3DMotion
 
 	public:
 
-		/** Convert from XML element.
-				@param reader Associated XML reader class.
-		    @param element The element to read. It's assumed this is is correctly formatted - will produce a default or empty value if not.
-	   */
-		virtual TreeValue* Read(XMLReadingMachine& reader, const pugi::xml_node& element) const;
-
-		/** Write a value to XML.
-		    @param writer Associated XML writer class.
-				@param element The element to write.  It's assumed this has already been checked and matches the supported value class */
-		virtual void Write(XMLWritingMachine& writer, const std::string& name, const TreeValue* value) const;
-
 		/** Get attribute to insert on XML node to indicate that this class should be used 
 		    @return Attribute name. */
 		virtual const char* TypeAttribute() const
@@ -53,11 +42,6 @@ namespace Open3DMotion
 		/** The value class which the derived class supports.
 		    @return Supported class name as used by TreeValue::ClassNameMatches . */
 		virtual const char* SupportedValueClass() const = 0;
-
-	protected:
-
-		/** Helper for reading text data from XML */
-		static void ReadText(std::string& node_text, const pugi::xml_node& element);
 
 		/** Derived reader from XML to OpenORM value */
 		virtual TreeValue* ReadValue(XMLReadingMachine& reader, const pugi::xml_node& element) const = 0;

@@ -8,6 +8,7 @@
 #include "testADemo1File.h"
 
 #include "Open3DMotion/Biomechanics/Trial/TSFactory.h"
+#include "Open3DMotion/Biomechanics/Trial/Gait/GaitEvents.h"
 #include <cppunit/extensions/HelperMacros.h>
 #include "Open3DMotion/MotionFile/Formats/C3D/FileFormatC3D.h"
 #include <cppunit/extensions/HelperMacros.h>
@@ -16,7 +17,7 @@
 
 #include <math.h>
 
-void testADemo1File(Open3DMotion::MotionFileHandler& handler, const char* filename, bool strict, Open3DMotion::UInt32 forcedecimation, bool checkmarkerid)
+void testADemo1File(Open3DMotion::MotionFileHandler& handler, const char* filename, bool strict, Open3DMotion::UInt32 forcedecimation, bool checkmarkerid, bool checkgaitcycle)
 {
 	// tolerances
 	double markertol = strict ? 1E-4 : 0.001;
@@ -199,6 +200,27 @@ void testADemo1File(Open3DMotion::MotionFileHandler& handler, const char* filena
 			{
 				CPPUNIT_FAIL("force data missing field");
 			}
+		}
+
+		if (checkgaitcycle)
+		{
+			const Open3DMotion::EventGroup* eg = trial->UserInput.GetEventGroup(Open3DMotion::GaitEvents::GroupName);
+			CPPUNIT_ASSERT(eg != NULL);
+			Open3DMotion::EventArray ea;
+			eg->GetEvents(ea);
+			CPPUNIT_ASSERT_EQUAL(size_t(6), ea.NumEvents());
+			CPPUNIT_ASSERT_EQUAL(std::string(Open3DMotion::GaitEvents::LStart), ea.EventName(0));
+			CPPUNIT_ASSERT_EQUAL(std::string(Open3DMotion::GaitEvents::RStart), ea.EventName(1));
+			CPPUNIT_ASSERT_EQUAL(std::string(Open3DMotion::GaitEvents::LToeOff), ea.EventName(2));
+			CPPUNIT_ASSERT_EQUAL(std::string(Open3DMotion::GaitEvents::LEnd), ea.EventName(3));
+			CPPUNIT_ASSERT_EQUAL(std::string(Open3DMotion::GaitEvents::RToeOff), ea.EventName(4));
+			CPPUNIT_ASSERT_EQUAL(std::string(Open3DMotion::GaitEvents::REnd), ea.EventName(5));
+			CPPUNIT_ASSERT_DOUBLES_EQUAL(TestData::ADemo1_gaitcycle_left [0], ea.EventTime(0), 0.0001);
+			CPPUNIT_ASSERT_DOUBLES_EQUAL(TestData::ADemo1_gaitcycle_right[0], ea.EventTime(1), 0.0001);
+			CPPUNIT_ASSERT_DOUBLES_EQUAL(TestData::ADemo1_gaitcycle_left [1], ea.EventTime(2), 0.0001);
+			CPPUNIT_ASSERT_DOUBLES_EQUAL(TestData::ADemo1_gaitcycle_left [2], ea.EventTime(3), 0.0001);
+			CPPUNIT_ASSERT_DOUBLES_EQUAL(TestData::ADemo1_gaitcycle_right[1], ea.EventTime(4), 0.0001);
+			CPPUNIT_ASSERT_DOUBLES_EQUAL(TestData::ADemo1_gaitcycle_right[2], ea.EventTime(5), 0.0001);
 		}
 	}
 }

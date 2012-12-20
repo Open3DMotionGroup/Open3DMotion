@@ -10,7 +10,7 @@
 namespace Open3DMotion
 {
 	const char field_type_name_uint8[] = "byte";
-	const char field_type_name_int32[] = "Int32";
+	const char field_type_name_int32[] = "long";
 	const char field_type_name_float32[] = "float";
 	const char field_type_name_float64[] = "double";
 

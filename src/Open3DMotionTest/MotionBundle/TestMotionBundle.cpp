@@ -96,13 +96,15 @@ public:
 			
 			// store as XMove
 			const char* tempfilename = "Open3DMotionTest/Data/Temp/TestMotionBundle.ADemo1.ODIN.xml";
-			Open3DMotion::MotionFileHandler filehandler("TestMotionBundle", "UNVESIONED");
+			Open3DMotion::MotionFileHandler filehandler("TestMotionBundle", "UNVERSIONED");
 			FileFormatOptionsXMove xmove_options;
+			xmove_options.ConvertBinaryFloat32 = false;
+			xmove_options.LegacyCompoundNames = false;
 			std::auto_ptr<TreeValue> xmove_options_tree( xmove_options.ToTree() );
 			filehandler.Write(tempfilename, tree.get(), xmove_options_tree.get());
 
 			// reload from XMove and check results
-			testADemo1File(filehandler, tempfilename, true, 1, true);
+			testADemo1File(filehandler, tempfilename, true, 1, true, true);
 		}
 		catch (const Open3DMotion::MotionFileException& e)
 		{

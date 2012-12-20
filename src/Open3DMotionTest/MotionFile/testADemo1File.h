@@ -16,5 +16,5 @@
 												and must be decimated by factor 2 to get back to original
 @param checkmarkerid Verify that marker hardware ID's are as expected (disable for C3D's which don't store marker ID)
 	*/
-void testADemo1File(Open3DMotion::MotionFileHandler& handler, const char* filename, bool strict, Open3DMotion::UInt32 forcedecimation, bool checkmarkerid);
+void testADemo1File(Open3DMotion::MotionFileHandler& handler, const char* filename, bool strict, Open3DMotion::UInt32 forcedecimation, bool checkmarkerid, bool checkgaitcycle);
 

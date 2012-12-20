@@ -18,7 +18,7 @@ namespace Open3DMotion
 	const char MotionFileHandler::LibraryName[] = "Open3DMotion";
 
 	// library version: update this each time changes are made
-	const char MotionFileHandler::LibraryVersion[] =  "2.00 Build 1 Revision 0";
+	const char MotionFileHandler::LibraryVersion[] =  "2.00 Build 2 Revision 0";
 
 	MotionFileHandler::MotionFileHandler(const char* _programname, const char* _programversion) :
 		programname(_programname),

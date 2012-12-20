@@ -47,6 +47,8 @@ namespace TestData
 	extern const double ADemo1_EMG[ADemo1_numframes_EMG*ADemo1_numEMG];
 	extern const char* ADemo1_markername[ADemo1_nummarkers];
 	extern const char* ADemo1_EMGname[ADemo1_nummarkers];
+	extern const double ADemo1_gaitcycle_left[3];
+	extern const double ADemo1_gaitcycle_right[3];
 }
 
 #endif

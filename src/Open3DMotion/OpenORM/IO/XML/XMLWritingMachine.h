@@ -18,13 +18,19 @@ namespace Open3DMotion
 	public:
 		XMLWritingMachine(std::ostream& _os);
 
+		virtual ~XMLWritingMachine();
+
 	public:
 		std::ostream& OS()
 		{ return os; }
 
-		void WriteTextNode(const std::string& value);
+		/** Write a value to XML.
+				@param element The element to write.  It's assumed this has already been checked and matches the supported value class */
+		virtual void Write(const ReadWriteXML* xml_writer, const std::string& name, const TreeValue* value);
 
-		void WriteValue(const std::string& name, const TreeValue* value);
+		virtual void WriteTextNode(const std::string& value);
+
+		virtual void WriteValue(const std::string& name, const TreeValue* value);
 
 	protected:
 		std::ostream& os;

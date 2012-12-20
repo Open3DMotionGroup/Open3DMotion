@@ -21,6 +21,9 @@ namespace Open3DMotion
 
 	public:
 		MapBool Extended;
+		MapBool LegacyCompoundNames;
+		MapBool ConvertBinaryFloat32;
+		MapBool ExcludeCalc;
 	};
 }
 

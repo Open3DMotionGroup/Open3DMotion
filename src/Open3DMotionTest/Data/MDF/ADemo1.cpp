@@ -49,6 +49,10 @@ namespace TestData
 		"L.Gastroc",
 	};
 
+	const double ADemo1_gaitcycle_left [3] = { 0.4525, 1.0700, 1.4200 };
+
+	const double ADemo1_gaitcycle_right[3] = { 0.9550, 1.5300, 1.9025 };
+
 	const double ADemo1_marker[ADemo1_numframes_marker*ADemo1_nummarkers*4] =
 	{
 

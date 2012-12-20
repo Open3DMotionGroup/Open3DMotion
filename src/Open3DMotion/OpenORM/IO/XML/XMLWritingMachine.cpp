@@ -13,9 +13,24 @@ namespace Open3DMotion
 {
 	XMLWritingMachine::XMLWritingMachine(std::ostream& _os) :
 		os(_os)
-			// ,
-		// writer(_os)
 	{
+	}
+
+	XMLWritingMachine::~XMLWritingMachine()
+	{
+	}
+
+	void XMLWritingMachine::Write(const ReadWriteXML* xml_class, const std::string& name, const TreeValue* value)
+	{
+		os << "<" << name;
+		const char* type_attribute = xml_class->TypeAttribute();
+		if (type_attribute != NULL)
+		{
+			os << " type=\"" << type_attribute << "\"";
+		}
+		os << ">";
+		xml_class->WriteValue(*this, value);
+		os << "</" << name << ">";
 	}
 
 	void XMLWritingMachine::WriteTextNode(const std::string& value)
@@ -32,7 +47,7 @@ namespace Open3DMotion
 		{
 			if (value->ClassNameMatches((*iter_element)->SupportedValueClass()))
 			{
-				(*iter_element)->Write(*this, name, value);
+				Write(*iter_element, name, value);
 				break;
 			}
 		}

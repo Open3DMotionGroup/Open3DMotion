@@ -33,7 +33,7 @@ namespace Open3DMotion
 		{ return programname; }
 
 		const std::string& ProgramVersion() const
-		{ return programname; }
+		{ return programversion; }
 
 		/** Read from file */
 		TreeValue* Read(const char* filename, const MotionFileFormatList& formatlist = MotionFileFormatListAll()) throw(MotionFileException);
