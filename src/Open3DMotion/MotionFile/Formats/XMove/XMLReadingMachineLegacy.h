@@ -1,6 +1,6 @@
 /*--
   Open3DMotion 
-  Copyright (c) 2004-2012.
+  Copyright (c) 2004-2013.
   All rights reserved.
   See LICENSE.txt for more information.
 --*/
@@ -17,7 +17,7 @@ namespace Open3DMotion
 	class XMLReadingMachineLegacy : public XMLReadingMachine
 	{
 	public:
-		XMLReadingMachineLegacy();
+		XMLReadingMachineLegacy(BinMemFactory& _memfactory);
 
 	public:
 		virtual TreeValue* ReadValue(const pugi::xml_node& element) throw(XMLReadException);

@@ -1,6 +1,6 @@
 /*--
   Open3DMotion 
-  Copyright (c) 2004-2012.
+  Copyright (c) 2004-2013.
   All rights reserved.
   See LICENSE.txt for more information.
 --*/
@@ -101,7 +101,7 @@ void testADemo1File(Open3DMotion::MotionFileHandler& handler, const char* filena
 				}
 			}
 		}
-		catch (const Open3DMotion::NoSuchFieldException& field_exception)
+		catch (const Open3DMotion::NoSuchFieldException& /*field_exception*/)
 		{
 			CPPUNIT_FAIL("marker data missing field");
 		}
@@ -146,7 +146,7 @@ void testADemo1File(Open3DMotion::MotionFileHandler& handler, const char* filena
 				}
 			}
 		}
-		catch (const Open3DMotion::NoSuchFieldException& field_exception)
+		catch (const Open3DMotion::NoSuchFieldException& /*field_exception*/)
 		{
 			CPPUNIT_FAIL("EMG data missing field");
 		}
@@ -196,7 +196,7 @@ void testADemo1File(Open3DMotion::MotionFileHandler& handler, const char* filena
 					}
 				}
 			}
-			catch (const Open3DMotion::NoSuchFieldException& field_exception)
+			catch (const Open3DMotion::NoSuchFieldException& /*field_exception*/)
 			{
 				CPPUNIT_FAIL("force data missing field");
 			}

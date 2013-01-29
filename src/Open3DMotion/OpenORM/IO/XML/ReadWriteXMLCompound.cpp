@@ -1,6 +1,6 @@
 /*--
   Open3DMotion 
-  Copyright (c) 2004-2012.
+  Copyright (c) 2004-2013.
   All rights reserved.
   See LICENSE.txt for more information.
 --*/
@@ -10,6 +10,7 @@
 #include "XMLWritingMachine.h"
 #include <set>
 #include <pugixml.hpp>
+#include <memory>
 
 namespace Open3DMotion
 {

@@ -1,6 +1,6 @@
 /*--
   Open3DMotion 
-  Copyright (c) 2004-2012.
+  Copyright (c) 2004-2013.
   All rights reserved.
   See LICENSE.txt for more information.
 --*/
@@ -16,7 +16,7 @@ namespace Open3DMotion
 	class BinMemFactoryDefault : public BinMemFactory
 	{
 	public:
-		virtual MemoryHandlerBasic* Allocate(size_t numframes, const BinaryStructure& framestruct);
+		virtual MemoryHandlerBasic* Allocate(size_t numbytes);
 	};
 
 }

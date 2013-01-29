@@ -1,6 +1,6 @@
 /*--
   Open3DMotion 
-  Copyright (c) 2004-2012.
+  Copyright (c) 2004-2013.
   All rights reserved.
   See LICENSE.txt for more information.
 --*/
@@ -9,6 +9,7 @@
 #define _OPEN3DMOTION_MEMORY_HANDLER_H_
 
 #include "Open3DMotion/OpenORM/Types.h"
+#include "Open3DMotion/OpenORM/ClassName.h"
 
 namespace Open3DMotion
 {
@@ -26,6 +27,8 @@ namespace Open3DMotion
 		virtual UInt8* Data() const = 0;
 
 		virtual MemoryHandler* Clone() const = 0;
+
+		DECLARE_CLASS_NAME_ABSTRACT_BASE();
 
 	};
 

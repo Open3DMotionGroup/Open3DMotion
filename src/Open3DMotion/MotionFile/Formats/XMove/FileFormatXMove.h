@@ -23,6 +23,8 @@ namespace Open3DMotion
 
 		virtual ~FileFormatXMove();
 
+		static const char XMLFormatDescriptorSection[] /*="FileFormat"*/;
+
   public:
 
 		// check id and number type

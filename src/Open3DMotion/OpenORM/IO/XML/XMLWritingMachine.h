@@ -1,6 +1,6 @@
 /*--
   Open3DMotion 
-  Copyright (c) 2004-2012.
+  Copyright (c) 2004-2013.
   All rights reserved.
   See LICENSE.txt for more information.
 --*/
@@ -10,6 +10,7 @@
 
 #include "XMLReadWriteMachine.h"
 #include "Open3DMotion/OpenORM/TreeValue.h"
+#include <ostream>
 
 namespace Open3DMotion
 {

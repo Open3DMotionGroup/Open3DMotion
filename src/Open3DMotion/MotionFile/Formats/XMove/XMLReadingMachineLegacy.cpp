@@ -1,6 +1,6 @@
 /*--
   Open3DMotion 
-  Copyright (c) 2004-2012.
+  Copyright (c) 2004-2013.
   All rights reserved.
   See LICENSE.txt for more information.
 --*/
@@ -16,7 +16,8 @@
 
 namespace Open3DMotion
 {
-	XMLReadingMachineLegacy::XMLReadingMachineLegacy() :
+	XMLReadingMachineLegacy::XMLReadingMachineLegacy(BinMemFactory& _memfactory) :
+		XMLReadingMachine(_memfactory),
 		legacy(legacy_none)
 	{
 	}

@@ -1,6 +1,6 @@
 /*--
   Open3DMotion 
-  Copyright (c) 2004-2012.
+  Copyright (c) 2004-2013.
   All rights reserved.
   See LICENSE.txt for more information.
 --*/
@@ -56,10 +56,7 @@ namespace Open3DMotion
 			const TreeValue* t = Get(name);
 			if (t != NULL)
 			{
-				if (ValueType::ClassNameMatches(t))
-				{
-					return static_cast<const ValueType*>( t );
-				}
+				return TreeValueCast<ValueType> (t);
 			}
 			return NULL;
 		}

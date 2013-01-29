@@ -1,6 +1,6 @@
 /*--
   Open3DMotion 
-  Copyright (c) 2004-2012.
+  Copyright (c) 2004-2013.
   All rights reserved.
   See LICENSE.txt for more information.
 --*/
@@ -19,10 +19,12 @@ namespace pugi
 
 namespace Open3DMotion
 {
+	class BinMemFactory;
+
 	class XMLReadingMachine : public XMLReadWriteMachine
 	{
 	public:
-		XMLReadingMachine();
+		XMLReadingMachine(BinMemFactory& _memfactory);
 
 		virtual ~XMLReadingMachine();
 
@@ -35,6 +37,12 @@ namespace Open3DMotion
 		virtual TreeValue* ReadValue(const pugi::xml_node& element) throw(XMLReadException);
 
 		virtual void ReadTextNode(std::string& node_text, const pugi::xml_node& element);
+
+		BinMemFactory& MemFactory() const
+		{ return memfactory; }
+
+	private:
+		BinMemFactory& memfactory;
 	};
 
 }

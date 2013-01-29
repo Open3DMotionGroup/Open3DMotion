@@ -1,6 +1,6 @@
 /*--
   Open3DMotion 
-  Copyright (c) 2004-2012.
+  Copyright (c) 2004-2013.
   All rights reserved.
   See LICENSE.txt for more information.
 --*/
@@ -20,7 +20,8 @@ namespace Open3DMotion
 	void RichBinary::Allocate(const std::vector<BinaryFieldSpec>& layout, size_t numframes, BinMemFactory& memfactory)
 	{
 		Structure.SetLayout(layout);
-		Binary.SetData( memfactory.Allocate(numframes, Structure) );
+		size_t datasize = Structure.TotalBytes() * numframes;
+		Binary.SetData( memfactory.Allocate(datasize) );
 	}
 
 }

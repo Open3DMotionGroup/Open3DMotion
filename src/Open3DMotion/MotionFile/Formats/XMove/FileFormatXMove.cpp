@@ -1,6 +1,6 @@
 /*--
   Open3DMotion 
-  Copyright (c) 2004-2012.
+  Copyright (c) 2004-2013.
   All rights reserved.
   See LICENSE.txt for more information.
 --*/
@@ -19,6 +19,8 @@
 
 namespace Open3DMotion
 {	
+	const char FileFormatXMove::XMLFormatDescriptorSection[] = "FileFormat";
+
 	FileFormatXMove::FileFormatXMove() :
 			MotionFileFormat("XMove", "XMove", "xmove,xml")
 	{
@@ -69,12 +71,12 @@ namespace Open3DMotion
 			// Support legacy version of format in which 
 			// elements of time sequence and event groups structures have assumed types
 			// and some naming conventions are different
-			reader = std::auto_ptr<XMLReadingMachine>( new XMLReadingMachineLegacy );
+			reader = std::auto_ptr<XMLReadingMachine>( new XMLReadingMachineLegacy(memfactory) );
 		}
 		else
 		{
 			// Standard XML reader
-			reader = std::auto_ptr<XMLReadingMachine>( new XMLReadingMachine );
+			reader = std::auto_ptr<XMLReadingMachine>( new XMLReadingMachine(memfactory) );
 		}
 
 		// find xmove node
@@ -87,7 +89,8 @@ namespace Open3DMotion
 		}
 
 		// parse XML tree
-		TreeCompound* trial_object = TreeValueCast<TreeCompound>( reader->ReadValue(xmove_node) );
+		TreeValue* trial_tree = reader->ReadValue(xmove_node);
+		TreeCompound* trial_object = TreeValueCast<TreeCompound>( trial_tree );
 
 		// optionally replace any float32 info with float64
 		if (xmove_options.ConvertBinaryFloat32)
@@ -132,30 +135,28 @@ namespace Open3DMotion
 			writer = std::auto_ptr<XMLWritingMachine>(new XMLWritingMachine(os));
 		}
 
-		// compound object for trial
-		const TreeCompound* trial_object = TreeValueCast<TreeCompound> ( contents );
+		// make copy of trial so we can adjust its structure according to export options
+		std::auto_ptr<TreeCompound> export_contents( new TreeCompound );
+		const TreeCompound* input_contents = TreeValueCast<TreeCompound> ( contents );
+		if (input_contents)
+		{
+			export_contents->CopyFrom( input_contents );
+		}
+
+		// remove any existing format info - we will write a new one
+		export_contents->Remove(XMLFormatDescriptorSection);
 
 		// optionally convert 64-bit floats to 32-bit
 		std::auto_ptr<TreeCompound> contents_copy;
 		if (xmove_options.ConvertBinaryFloat32)
 		{
-			if (trial_object)
+			// remap binary data
+			BinMemFactoryDefault memfactory;
+			for (size_t calclevel = 0; calclevel < export_contents->NumElements(); calclevel++)
 			{
-				// copy it
-				contents_copy = std::auto_ptr<TreeCompound>( trial_object->NewBlank() );
-				contents_copy->CopyFrom( contents );
-
-				// set pointers to copy
-				contents = trial_object = contents_copy.get();
-
-				// remap binary data
-				BinMemFactoryDefault memfactory;
-				for (size_t calclevel = 0; calclevel < trial_object->NumElements(); calclevel++)
-				{
-					TreeCompound* section = TreeValueCast<TreeCompound> ( contents_copy.get()->Node(calclevel)->Value() );
-					ConvertListFloat64To32(section, "Sequences", TimeSequence::StructureName, memfactory);
-					ConvertListFloat64To32(section, "EventGroups", EventGroup::StructureName, memfactory);
-				}
+				TreeCompound* section = TreeValueCast<TreeCompound> ( export_contents->Node(calclevel)->Value() );
+				ConvertListFloat64To32(section, "Sequences", TimeSequence::StructureName, memfactory);
+				ConvertListFloat64To32(section, "EventGroups", EventGroup::StructureName, memfactory);
 			}
 		}
 
@@ -167,22 +168,19 @@ namespace Open3DMotion
 
 		// format descriptor
 		std::auto_ptr<TreeValue> descriptor_tree( descriptor.ToTree() );
-		writer->WriteValue("FileFormat", descriptor_tree.get() );
+		writer->WriteValue(XMLFormatDescriptorSection, descriptor_tree.get() );
 
 		// all elements of trial, optionally excluding Calc section
-		if (trial_object)
+		for (size_t element_index = 0; element_index < export_contents->NumElements(); element_index++)
 		{
-			for (size_t element_index = 0; element_index < trial_object->NumElements(); element_index++)
-			{
-				const TreeCompoundNode* node = trial_object->Node(element_index);
+			const TreeCompoundNode* node = export_contents->Node(element_index);
 				
-				// optionally exclude calc
-				if (xmove_options.ExcludeCalc && node->Name().compare(MEMBER_NAME(Trial::Calc)) == 0)
-					continue;
+			// optionally exclude calc
+			if (xmove_options.ExcludeCalc && node->Name().compare(MEMBER_NAME(Trial::Calc)) == 0)
+				continue;
 				
-				// otherwise write the node
-				writer->WriteValue(node->Name(), node->Value());
-			}
+			// otherwise write the node
+			writer->WriteValue(node->Name(), node->Value());
 		}
 
 		os << "</" << xmove_tag << ">\n";

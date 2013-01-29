@@ -1,6 +1,6 @@
 /*--
   Open3DMotion 
-  Copyright (c) 2004-2012.
+  Copyright (c) 2004-2013.
   All rights reserved.
   See LICENSE.txt for more information.
 --*/
@@ -9,7 +9,9 @@
 #include "XMLReadingMachine.h"
 #include "XMLWritingMachine.h"
 #include "Open3DMotion/OpenORM/Leaves/MemoryHandlerBasic.h"
+#include "Open3DMotion/OpenORM/Mappings/RichBinary/BinMemFactory.h"
 #include <pugixml.hpp>
+#include <string.h>
 
 extern "C"
 {
@@ -48,7 +50,7 @@ namespace Open3DMotion
 		}
 	}
 		
-	TreeValue* ReadWriteXMLBinary::ReadValue(XMLReadingMachine& /*reader*/, const pugi::xml_node& element) const
+	TreeValue* ReadWriteXMLBinary::ReadValue(XMLReadingMachine& reader, const pugi::xml_node& element) const
 	{
 		// find text element with base64 encoding in it
 		const char* text = "";
@@ -72,11 +74,15 @@ namespace Open3DMotion
 		base64_init_decodestate(&state);
 		int decoded_length = base64_decode_block(text, textlength, (char*) &decoded_binary[0], &state);
 		
-		// copy to memory object
-		MemoryHandlerBasic binary_handler((size_t)decoded_length);
-		memcpy(binary_handler.Data(), &decoded_binary[0], (size_t)decoded_length);
+		// Allocate memory object with wrapper
+		// Use of auto pointer means that wrapper will be deleted, but note that inner object is 
+		// unaffected
+		std::auto_ptr<MemoryHandler> binary_handler( reader.MemFactory().Allocate((size_t)decoded_length) );
+
+		// copy
+		memcpy(binary_handler->Data(), &decoded_binary[0], (size_t)decoded_length);
 		
 		// done
-		return new TreeBinary(&binary_handler);
+		return new TreeBinary(binary_handler.get());
 	}
 }

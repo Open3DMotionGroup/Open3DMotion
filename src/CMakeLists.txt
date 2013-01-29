@@ -1,6 +1,6 @@
 #
 # Open3DMotion
-# Copyright (c) 2004-2012.
+# Copyright (c) 2004-2013.
 # All rights reserved.
 # See LICENSE.txt for details.
 #
@@ -11,6 +11,7 @@ cmake_minimum_required(VERSION 2.6)
 
 project (Open3DMotion)
 
+# Configuration
 option(OPEN3DMOTION_BIND_PYTHON "Python bindings" OFF)
 option(OPEN3DMOTION_OWNBUILD_CPPUNIT "Link to our own build of CPPUNIT" ON)
 option(OPEN3DMOTION_OWNBUILD_LIBB64 "Link to our own build of libb64" ON)
@@ -21,7 +22,13 @@ if (MSVC)
   option(OPEN3DMOTION_MSVC_RUNTIME_STATIC "Use static (non-DLL) version of C runtime libraries" ON)
 endif(MSVC)
 set(OPEN3DMOTION_LINEAR_ALGEBRA_EIGEN_INCLUDEPATH "/usr/include" CACHE PATH "Path to Eigen library")
+if (OPEN3DMOTION_BIND_PYTHON)
+  set(OPEN3DMOTION_BIND_PYTHON_VERSION_MAJOR "2" CACHE STRING "Python major version")
+  set(OPEN3DMOTION_BIND_PYTHON_VERSION_MINOR "6" CACHE STRING "Python minor version")
+  set(OPEN3DMOTION_BIND_PYTHON_INSTALLPATH "C:/Python${OPEN3DMOTION_BIND_PYTHON_VERSION_MAJOR}${OPEN3DMOTION_BIND_PYTHON_VERSION_MINOR}" CACHE PATH "Path to Python library")
+endif (OPEN3DMOTION_BIND_PYTHON)
 
+# Append 'd' to end of library name for the debug version of the libraries we build
 SET(CMAKE_DEBUG_POSTFIX d)
 
 # Additional warning flags on GNU C on Apple
@@ -42,6 +49,11 @@ if (OPEN3DMOTION_MSVC_RUNTIME_STATIC)
   endforeach(flag_var)
 endif(OPEN3DMOTION_MSVC_RUNTIME_STATIC)
 
+# Disable warnings for sprintf and sscanf on MSC
+if (MSVC)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_CRT_SECURE_NO_WARNINGS")
+endif(MSVC)
+
 # Inlclude path
 include_directories (${PROJECT_SOURCE_DIR})
 
@@ -51,6 +63,13 @@ include_directories (${PROJECT_SOURCE_DIR}/ThirdParty/libb64/include)
 include_directories (${PROJECT_SOURCE_DIR}/ThirdParty/pugixml/src)
 include_directories (${PROJECT_SOURCE_DIR}/ThirdParty/zlib)
 include_directories (${PROJECT_SOURCE_DIR}/ThirdParty/cppunit/include)
+
+# Python includes
+if (OPEN3DMOTION_BIND_PYTHON)
+  include_directories (${OPEN3DMOTION_BIND_PYTHON_INSTALLPATH}/include)
+  set(CMAKE_CXX_FLAGS_DEBUG  "${CMAKE_CXX_FLAGS_DEBUG} -DPy_DEBUG")
+  set(CMAKE_C_FLAGS_DEBUG  "${CMAKE_C_FLAGS_DEBUG} -DPy_DEBUG")
+endif(OPEN3DMOTION_BIND_PYTHON)
 
 # Option to use Eigen library instead of CLAPACK
 if (OPEN3DMOTION_LINEAR_ALGEBRA_EIGEN)
@@ -84,7 +103,30 @@ add_library(Open3DMotion ${Open3DMotion_CPP} ${Open3DMotion_H} ${Open3DMotion_Py
 # Build test program
 file(GLOB_RECURSE Open3DMotionTest_CPP Open3DMotionTest/*.cpp)
 file(GLOB_RECURSE Open3DMotionTest_H Open3DMotionTest/*.h)
-add_executable(Open3DMotionTest ${Open3DMotionTest_CPP} ${Open3DMotionTest_H})
+
+file(GLOB_RECURSE Open3DMotionTest_CPP 
+  Open3DMotionTest/Open3DMotionTest.cpp
+  Open3DMotionTest/Data/*.cpp
+  Open3DMotionTest/OpenORM/*.cpp
+  Open3DMotionTest/Maths/*.cpp
+  Open3DMotionTest/Biomechanics/*.cpp
+  Open3DMotionTest/MotionBundle/*.cpp
+  Open3DMotionTest/MotionFile/*.cpp)
+
+file(GLOB_RECURSE Open3DMotionTest_H 
+  Open3DMotionTest/Data/*.h
+  Open3DMotionTest/OpenORM/*.h
+  Open3DMotionTest/Maths/*.h
+  Open3DMotionTest/Biomechanics/*.h
+  Open3DMotionTest/MotionFile/*.h
+  Open3DMotionTest/MotionBundle/*.h)
+
+if(OPEN3DMOTION_BIND_PYTHON)
+  file(GLOB_RECURSE Open3DMotionTest_Python_CPP Open3DMotionTest/Bindings/Python/*.cpp)
+  file(GLOB_RECURSE Open3DMotionTest_Python_H Open3DMotionTest/Bindings/Python/*.h)
+endif(OPEN3DMOTION_BIND_PYTHON)
+
+add_executable(Open3DMotionTest ${Open3DMotionTest_CPP} ${Open3DMotionTest_H} ${Open3DMotionTest_Python_CPP} ${Open3DMotionTest_Python_H})
 target_link_libraries (Open3DMotionTest Open3DMotion)
 
 if (OPEN3DMOTION_OWNBUILD_CPPUNIT)
@@ -124,10 +166,22 @@ if (OPEN3DMOTION_LINEAR_ALGEBRA_EIGEN)
   # No library binaries needed here - all relevant things are in header templates
 else(OPEN3DMOTION_LINEAR_ALGEBRA_EIGEN)
   # Add CLAPACK and supporting libraries
-  link_directories(${PROJECT_SOURCE_DIR}/ThirdParty/CLAPACK/lib)
-  target_link_libraries(Open3DMotionTest optimized clapack optimized blas optimized libf2c)
-  target_link_libraries(Open3DMotionTest debug clapackd debug blasd debug libf2cd)
+  find_library(OPEN3DMOTION_LINEAR_ALGEBRA_CLAPACK_LIBRARY NAMES clapack HINTS ${PROJECT_SOURCE_DIR}/ThirdParty/CLAPACK/lib)
+  find_library(OPEN3DMOTION_LINEAR_ALGEBRA_BLAS_LIBRARY NAMES blas HINTS ${PROJECT_SOURCE_DIR}/ThirdParty/CLAPACK/lib)
+  find_library(OPEN3DMOTION_LINEAR_ALGEBRA_LIBF77_LIBRARY NAMES libF77 HINTS ${PROJECT_SOURCE_DIR}/ThirdParty/CLAPACK/lib)
+  target_link_libraries(Open3DMotionTest 
+    ${OPEN3DMOTION_LINEAR_ALGEBRA_CLAPACK_LIBRARY}
+	${OPEN3DMOTION_LINEAR_ALGEBRA_BLAS_LIBRARY} 
+	${OPEN3DMOTION_LINEAR_ALGEBRA_LIBF77_LIBRARY})
 endif(OPEN3DMOTION_LINEAR_ALGEBRA_EIGEN)
+
+# Python bindings for tests
+if (OPEN3DMOTION_BIND_PYTHON)
+  find_library(OPEN3DMOTION_BIND_PYTHON_LIBRARY NAMES python${OPEN3DMOTION_BIND_PYTHON_VERSION_MAJOR}${OPEN3DMOTION_BIND_PYTHON_VERSION_MINOR} HINTS ${OPEN3DMOTION_BIND_PYTHON_INSTALLPATH}/libs)
+  find_library(OPEN3DMOTION_BIND_PYTHON_LIBRARY_DEBUG NAMES python${OPEN3DMOTION_BIND_PYTHON_VERSION_MAJOR}${OPEN3DMOTION_BIND_PYTHON_VERSION_MINOR}_d HINTS ${OPEN3DMOTION_BIND_PYTHON_INSTALLPATH}/libs)
+  target_link_libraries (Open3DMotionTest optimized ${OPEN3DMOTION_BIND_PYTHON_LIBRARY})
+  target_link_libraries (Open3DMotionTest debug ${OPEN3DMOTION_BIND_PYTHON_LIBRARY_DEBUG})
+endif (OPEN3DMOTION_BIND_PYTHON)
 
 install(TARGETS Open3DMotion Open3DMotionTest
   RUNTIME DESTINATION bin

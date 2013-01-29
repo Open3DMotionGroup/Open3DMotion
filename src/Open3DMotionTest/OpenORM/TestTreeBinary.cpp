@@ -1,6 +1,6 @@
 /*--
   Open3DMotion 
-  Copyright (c) 2004-2012.
+  Copyright (c) 2004-2013.
   All rights reserved.
   See LICENSE.txt for more information.
 --*/
@@ -36,6 +36,7 @@ public:
 		CPPUNIT_ASSERT_EQUAL(size_t(5), b.SizeBytes());
 		CPPUNIT_ASSERT_EQUAL(string("Bob!"), string((const char*)b.Data()));
 		CPPUNIT_ASSERT_EQUAL(size_t(2), mb.RefCount());
+		CPPUNIT_ASSERT(b.BinMemory()->Data() == mb.Data());
 	}
 
 	void testSetData()

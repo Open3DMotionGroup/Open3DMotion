@@ -1,6 +1,6 @@
 /*--
   Open3DMotion 
-  Copyright (c) 2004-2012.
+  Copyright (c) 2004-201.
   All rights reserved.
   See LICENSE.txt for more information.
 --*/
@@ -14,6 +14,8 @@
 #include "Open3DMotion/MotionFile/Formats/MDF/ForcePlateMDF.h"
 
 #include <sstream>
+#include <memory>
+#include <string.h>
 
 namespace Open3DMotion
 {

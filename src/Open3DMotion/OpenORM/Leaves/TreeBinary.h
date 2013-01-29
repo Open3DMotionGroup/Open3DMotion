@@ -1,6 +1,6 @@
 /*--
   Open3DMotion 
-  Copyright (c) 2004-2012.
+  Copyright (c) 2004-2013.
   All rights reserved.
   See LICENSE.txt for more information.
 --*/
@@ -41,6 +41,9 @@ namespace Open3DMotion
 
 		size_t SizeBytes() const
 		{ return binmemory->SizeBytes(); }
+
+		const MemoryHandler* BinMemory() const
+		{ return binmemory; }
 
 	private:
 		MemoryHandler* binmemory;
