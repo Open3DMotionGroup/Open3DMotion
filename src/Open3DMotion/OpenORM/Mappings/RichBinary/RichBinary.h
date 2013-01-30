@@ -31,6 +31,9 @@ namespace Open3DMotion
 		/** Allocate with known parameters */
 		void Allocate(const std::vector<BinaryFieldSpec>& layout, size_t numframes, BinMemFactory& memfactory);
 
+		/** Perform a deep copy (copy all meta-data and allocate new memory) */
+		virtual void DeepCopyFrom(const RichBinary& src, BinMemFactory& memfactory);
+
 	public:
 
 		/** Name of binary data item as stored on tree (currently always "Data") */

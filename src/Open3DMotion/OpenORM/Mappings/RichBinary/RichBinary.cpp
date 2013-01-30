@@ -24,4 +24,19 @@ namespace Open3DMotion
 		Binary.SetData( memfactory.Allocate(datasize) );
 	}
 
+	void RichBinary::DeepCopyFrom(const RichBinary& src, BinMemFactory& memfactory)
+	{
+		// make a shallow copy of binary data and deep copy of all meta-data
+		std::auto_ptr<TreeValue> tree_copy( src.ToTree() );
+		FromTree(tree_copy.get());
+
+		// replace data with a copy
+		if (src.DataSizeBytes())
+		{
+			Binary.SetData( memfactory.Allocate(src.DataSizeBytes()) );
+			memcpy(Data(), src.Data(), src.DataSizeBytes());
+		}
+	}
+
+
 }

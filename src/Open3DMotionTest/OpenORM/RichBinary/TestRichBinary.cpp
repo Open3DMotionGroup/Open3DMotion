@@ -6,7 +6,7 @@
 --*/
 
 #include "Open3DMotion/OpenORM/Mappings/RichBinary/BinMemFactoryDefault.h"
-
+#include "Open3DMotion/OpenORM/Mappings/RichBinary/RichBinary.h"
 #include <cppunit/extensions/HelperMacros.h>
 
 using namespace Open3DMotion;
@@ -27,6 +27,7 @@ public:
 	CPPUNIT_TEST_SUITE( TestRichBinary );
 	CPPUNIT_TEST( testBinaryFieldSpec );
 	CPPUNIT_TEST( testBinaryStructure );
+	CPPUNIT_TEST( testDeepCopy );
 	CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -139,6 +140,70 @@ public:
 		}
 
 		CPPUNIT_FAIL("Expected NoSuchFieldException(\"WhoAreYou?\", missing)");
+	}
+
+	class DerivedRichBinary : public RichBinary
+	{
+	public:
+		DerivedRichBinary() :
+				RichBinary("MyStructure")
+		{
+			REGISTER_MEMBER(MyInfo);
+		}
+
+	public:
+		MapString MyInfo;
+	};
+
+	void testDeepCopy()
+	{
+		BinMemFactoryDefault memfactory;
+		std::vector<BinaryFieldSpec> layout;
+		layout.push_back(BinaryFieldSpec::FromType<UInt8>("Flags", 3L));
+		
+		DerivedRichBinary drb;
+		drb.Allocate(layout, 23, memfactory);
+		drb.MyInfo = "Hello";
+		memset(drb.Data(), 0, 23*3);
+		drb.Data()[7] = 121;
+
+		DerivedRichBinary copy_shallow;
+		std::auto_ptr<TreeValue> tree_copy(drb.ToTree());
+		copy_shallow.FromTree(tree_copy.get());
+
+		DerivedRichBinary copy_deep;
+		copy_deep.DeepCopyFrom(drb, memfactory);
+
+		// check that deep, shallow, and initial input all match
+		CPPUNIT_ASSERT_EQUAL(size_t(23*3), drb.DataSizeBytes());
+		CPPUNIT_ASSERT_EQUAL(UInt8(0), drb.Data()[0]);
+		CPPUNIT_ASSERT_EQUAL(UInt8(121), drb.Data()[7]);
+		CPPUNIT_ASSERT_EQUAL(std::string("Hello"), drb.MyInfo.Value());
+		CPPUNIT_ASSERT_EQUAL(size_t(23*3), copy_shallow.DataSizeBytes());
+		CPPUNIT_ASSERT_EQUAL(UInt8(0), copy_shallow.Data()[0]);
+		CPPUNIT_ASSERT_EQUAL(UInt8(121), copy_shallow.Data()[7]);
+		CPPUNIT_ASSERT_EQUAL(std::string("Hello"), copy_shallow.MyInfo.Value());
+		CPPUNIT_ASSERT_EQUAL(size_t(23*3), copy_deep.DataSizeBytes());
+		CPPUNIT_ASSERT_EQUAL(UInt8(0), copy_deep.Data()[0]);
+		CPPUNIT_ASSERT_EQUAL(UInt8(121), copy_deep.Data()[7]);
+		CPPUNIT_ASSERT_EQUAL(std::string("Hello"), copy_deep.MyInfo.Value());
+
+		// modify the base data
+		drb.Data()[0] = 2;
+		drb.Data()[7] = 13;
+		drb.MyInfo = "What?";
+
+		// shallow should have changed data but not meta-data
+		CPPUNIT_ASSERT_EQUAL(size_t(23*3), copy_shallow.DataSizeBytes());
+		CPPUNIT_ASSERT_EQUAL(UInt8(2), copy_shallow.Data()[0]);
+		CPPUNIT_ASSERT_EQUAL(UInt8(13), copy_shallow.Data()[7]);
+		CPPUNIT_ASSERT_EQUAL(std::string("Hello"), copy_shallow.MyInfo.Value());
+
+		// deep should not have changed anything
+		CPPUNIT_ASSERT_EQUAL(size_t(23*3), copy_deep.DataSizeBytes());
+		CPPUNIT_ASSERT_EQUAL(UInt8(0), copy_deep.Data()[0]);
+		CPPUNIT_ASSERT_EQUAL(UInt8(121), copy_deep.Data()[7]);
+		CPPUNIT_ASSERT_EQUAL(std::string("Hello"), copy_deep.MyInfo.Value());
 	}
 
 };
