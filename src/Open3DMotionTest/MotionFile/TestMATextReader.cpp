@@ -59,33 +59,33 @@ void TestMATextReader::testGraphData()
 	CPPUNIT_ASSERT(tsLToe != NULL);
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(200.0, tsLToe->Rate, 1E-6);
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, tsLToe->Start, 1E-6);
-	CPPUNIT_ASSERT_EQUAL(Int32(801), tsLToe->NumFrames());
+	CPPUNIT_ASSERT_EQUAL(size_t(801), tsLToe->NumFrames());
 	CPPUNIT_ASSERT_EQUAL(std::string("mm"), tsLToe->Units.Value());
 
 	TimeSequence* tsLHeel = reader.GetTSOccVector3("Marker Position", "L.Heel", memfactory);
 	CPPUNIT_ASSERT( tsLHeel != NULL );
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(200.0, tsLHeel->Rate, 1E-6);
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, tsLHeel->Start, 1E-6);
-	CPPUNIT_ASSERT_EQUAL( Int32(801), tsLHeel->NumFrames());
+	CPPUNIT_ASSERT_EQUAL( size_t(801), tsLHeel->NumFrames());
 	CPPUNIT_ASSERT_EQUAL(std::string("mm"), tsLHeel->Units.Value());
 
 	TimeSequence* tsAnalog = reader.GetTSScalar("Force Analogue Channel", "Analogue1.4", memfactory);
 	CPPUNIT_ASSERT(tsAnalog != NULL);
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(200.0, tsAnalog->Rate, 1E-6);
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, tsAnalog->Start, 1E-6);
-	CPPUNIT_ASSERT_EQUAL( Int32(801), tsAnalog->NumFrames());
+	CPPUNIT_ASSERT_EQUAL( size_t(801), tsAnalog->NumFrames());
 
 	TimeSequence* tsPelvisEVBx = reader.GetTSOccVector3("Segment EVB.x", "Pelvis", memfactory);
 	CPPUNIT_ASSERT(tsPelvisEVBx != NULL);
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(200.0, tsPelvisEVBx->Rate, 1E-6);
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, tsPelvisEVBx->Start, 1E-6);
-	CPPUNIT_ASSERT_EQUAL(Int32(801), tsPelvisEVBx->NumFrames());
+	CPPUNIT_ASSERT_EQUAL(size_t(801), tsPelvisEVBx->NumFrames());
 
 	TimeSequence* tsLKneeAngle = reader.GetTSOccVector3("Segment Rotation", "L.Knee", memfactory);
 	CPPUNIT_ASSERT(tsLKneeAngle != NULL);
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(200.0, tsLKneeAngle->Rate, 1E-6);
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, tsLKneeAngle->Start, 1E-6);
-	CPPUNIT_ASSERT_EQUAL(Int32(801), tsLKneeAngle->NumFrames());
+	CPPUNIT_ASSERT_EQUAL(size_t(801), tsLKneeAngle->NumFrames());
 
 	// test some occlusion flags
 	TSOccVector3ConstIter iterLHeel( *tsLHeel );

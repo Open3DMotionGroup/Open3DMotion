@@ -55,7 +55,14 @@ public:
 			CPPUNIT_ASSERT_EQUAL(size_t(12*100), ts0.DataSizeBytes());
 			CPPUNIT_ASSERT_DOUBLES_EQUAL(0.777, ts0.Start.Value(), 1E-12);
 			CPPUNIT_ASSERT_DOUBLES_EQUAL(103.5, ts0.Rate.Value(), 1E-12);
-			CPPUNIT_ASSERT_EQUAL(Int32(100), ts0.NumFrames());
+			CPPUNIT_ASSERT_EQUAL(size_t(100), ts0.NumFrames());
+
+			// verify time range
+			TimeRange check_tr;
+			ts0.GetTimeRange(check_tr);
+			CPPUNIT_ASSERT_EQUAL(103.5, check_tr.Rate.Value());
+			CPPUNIT_ASSERT_EQUAL(Int32(100), check_tr.Frames.Value());
+			CPPUNIT_ASSERT_EQUAL(0.777, check_tr.Start.Value());
 
 			// set some dummy data
 			memcpy(ts0.Data(), "Hello", 6);
@@ -84,7 +91,7 @@ public:
 			CPPUNIT_ASSERT_EQUAL(size_t(12*100), ts1.DataSizeBytes());
 			CPPUNIT_ASSERT_DOUBLES_EQUAL(0.777, ts1.Start.Value(), 1E-12);
 			CPPUNIT_ASSERT_DOUBLES_EQUAL(103.5, ts1.Rate.Value(), 1E-12);
-			CPPUNIT_ASSERT_EQUAL(Int32(100), ts1.NumFrames());
+			CPPUNIT_ASSERT_EQUAL(size_t(100), ts1.NumFrames());
 
 			// verify dummy data
 			CPPUNIT_ASSERT_EQUAL(string("Hello"), string((const char*)ts1.Data()));

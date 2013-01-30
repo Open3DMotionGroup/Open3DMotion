@@ -6,6 +6,7 @@
 --*/
 
 #include "Open3DMotion/Bindings/Python/MemoryHandlerPython.h"
+#include "Open3DMotion/Bindings/Python/BinMemFactoryPython.h"
 #include <cppunit/extensions/HelperMacros.h>
 #include "PythonTotalRefCount.h"
 
@@ -18,6 +19,7 @@ public:
 	CPPUNIT_TEST( testCreate );
 	CPPUNIT_TEST( testClone );
 	CPPUNIT_TEST( testReference );
+	CPPUNIT_TEST( testBinMemFactory );
 	CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -140,6 +142,16 @@ public:
 		// all should now be back to start
 		size_t refcount1 = PythonTotalRefCount();
 		CPPUNIT_ASSERT(refcount1 == refcount0);
+	}
+
+	void testBinMemFactory()
+	{
+		BinMemFactoryPython factory;
+		MemoryHandler* mem = factory.Allocate(37);
+		CPPUNIT_ASSERT(mem != NULL);
+		CPPUNIT_ASSERT_EQUAL(size_t(37), mem->SizeBytes());
+		MemoryHandlerPython* mem_python = NamedClassCast<MemoryHandler, MemoryHandlerPython> (mem);
+		CPPUNIT_ASSERT(mem_python != NULL);
 	}
 
 };

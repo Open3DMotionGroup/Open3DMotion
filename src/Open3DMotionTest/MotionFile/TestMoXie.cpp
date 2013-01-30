@@ -222,7 +222,7 @@ void TestMoXie::testForceConversion()
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(forceC3D->Rate, pointMox->Rate, 1E-6);
 	
 	// all frame counts should match
-	Int32 numframes = forceC3D->NumFrames();
+	size_t numframes = forceC3D->NumFrames();
 	CPPUNIT_ASSERT_EQUAL(numframes, pointC3D->NumFrames());
 	CPPUNIT_ASSERT_EQUAL(numframes, forceMox->NumFrames());
 	CPPUNIT_ASSERT_EQUAL(numframes, pointMox->NumFrames());

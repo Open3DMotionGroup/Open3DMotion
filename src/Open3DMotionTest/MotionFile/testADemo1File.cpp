@@ -73,7 +73,7 @@ void testADemo1File(Open3DMotion::MotionFileHandler& handler, const char* filena
 			Open3DMotion::TSOccVector3ConstIter iter_ts(*ts);
 
 			// must have expected length
-			CPPUNIT_ASSERT_EQUAL((Open3DMotion::Int32)TestData::ADemo1_numframes_marker, ts->NumFrames());
+			CPPUNIT_ASSERT_EQUAL(TestData::ADemo1_numframes_marker, ts->NumFrames());
 		
 			// compare data
 			for (size_t j = 0; j < TestData::ADemo1_numframes_marker; j++, iter_ts.Next())

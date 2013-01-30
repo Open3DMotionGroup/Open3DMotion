@@ -56,7 +56,7 @@ void testSample08File(MotionFileHandler& handler, const char* filename, double m
 	for (i = 0; i < TestData::EB01PI_nummarkers; i++)
 	{
 		// must have expected length
-		CPPUNIT_ASSERT_EQUAL_MESSAGE(msg, (Int32)TestData::EB01PI_numframes, marker[i]->NumFrames());
+		CPPUNIT_ASSERT_EQUAL_MESSAGE(msg, (size_t)TestData::EB01PI_numframes, marker[i]->NumFrames());
 		TSOccVector3ConstIter iter_ts(*marker[i]);
 		for (int j = 0; j < TestData::EB01PI_numframes; j++, iter_ts.Next())
 		{
@@ -147,12 +147,12 @@ void testSample08File(MotionFileHandler& handler, const char* filename, double m
 		CPPUNIT_ASSERT(ts != NULL);
 
 		// must have expected length
-		Int32 analogframes = TestData::EB01PI_numframes*TestData::EB01PI_analogpermarker;
+		size_t analogframes = TestData::EB01PI_numframes*TestData::EB01PI_analogpermarker;
 		CPPUNIT_ASSERT_EQUAL_MESSAGE(msg, analogframes, ts->NumFrames());
 
 		// check each frame
 		TSScalarConstIter iter_ts = TSScalarConstIter(*ts);
-		for (Int32 j = 0; j < analogframes; j++, iter_ts.Next())
+		for (size_t j = 0; j < analogframes; j++, iter_ts.Next())
 		{
 			const double& rawactual = iter_ts.Value();
 			

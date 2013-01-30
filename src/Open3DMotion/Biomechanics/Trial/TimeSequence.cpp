@@ -47,4 +47,11 @@ namespace Open3DMotion
 		RichBinary::Allocate(layout, Frames.Value(), memfactory);
 	}
 
+
+	void TimeSequence::GetTimeRange(TimeRange& t) const
+	{
+		t.Start = Start;
+		t.Rate = Rate;
+		t.Frames = Frames;
+	}
 }
