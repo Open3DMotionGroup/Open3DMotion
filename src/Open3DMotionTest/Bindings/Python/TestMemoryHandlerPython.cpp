@@ -146,12 +146,17 @@ public:
 
 	void testBinMemFactory()
 	{
-		BinMemFactoryPython factory;
-		MemoryHandler* mem = factory.Allocate(37);
-		CPPUNIT_ASSERT(mem != NULL);
-		CPPUNIT_ASSERT_EQUAL(size_t(37), mem->SizeBytes());
-		MemoryHandlerPython* mem_python = NamedClassCast<MemoryHandler, MemoryHandlerPython> (mem);
-		CPPUNIT_ASSERT(mem_python != NULL);
+		size_t refcount0 = PythonTotalRefCount();
+		{
+			BinMemFactoryPython factory;
+			std::auto_ptr<MemoryHandler> mem( factory.Allocate(37) );
+			CPPUNIT_ASSERT(mem.get() != NULL);
+			CPPUNIT_ASSERT_EQUAL(size_t(37), mem->SizeBytes());
+			MemoryHandlerPython* mem_python = NamedClassCast<MemoryHandler, MemoryHandlerPython> ( mem.get() );
+			CPPUNIT_ASSERT(mem_python != NULL);
+		}
+		size_t refcount1 = PythonTotalRefCount();
+		CPPUNIT_ASSERT(refcount1 == refcount0);
 	}
 
 };
