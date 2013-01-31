@@ -21,6 +21,11 @@ namespace Open3DMotion
 	{
 	}
 
+	TreeString::TreeString(const std::string& _str) :
+		TreeSimpleValue<std::string> (_str)
+	{
+	}
+
 	TreeString* TreeString::NewBlank() const
 	{	
 		return new TreeString();

@@ -22,6 +22,8 @@ namespace Open3DMotion
 
 		TreeString(const char* _cstr);
 
+		TreeString(const std::string& _str);
+
 	public:
 
 		virtual TreeString* NewBlank() const;

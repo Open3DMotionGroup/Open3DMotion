@@ -1,6 +1,6 @@
 /*--
   Open3DMotion 
-  Copyright (c) 2004-201.
+  Copyright (c) 2004-2013.
   All rights reserved.
   See LICENSE.txt for more information.
 --*/
@@ -244,7 +244,7 @@ namespace Open3DMotion
     is.read((char*)&version,2);
 
 		// store it
-		mdf_options.FormatVersion = version;
+		mdf_options.FormatVersion = (version & 0x00FFUL);
     
 		// convert to tree object
 		readoptions = mdf_options.ToTree();

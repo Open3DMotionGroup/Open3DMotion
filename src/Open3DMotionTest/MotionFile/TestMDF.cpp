@@ -53,6 +53,7 @@ public:
 	CPPUNIT_TEST( testReWriteWalk4Descriptors_c3d_pc_float );
 	CPPUNIT_TEST( testReWriteWalk4Descriptors_c3d_pc_integer );
 #endif
+	CPPUNIT_TEST( testReadWheelMDF2 );
 	CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -277,6 +278,13 @@ public:
 		*/
 	void testReWriteWalk4Descriptors(const Open3DMotion::FileFormatOptions& options, const char* suffix, bool enforcestartoffset);
 
+
+	/*
+		Summary
+		Verify that read of old MDF2 succeeds.
+		*/
+	void testReadWheelMDF2();
+
 protected:
 	Open3DMotion::MotionFileHandler handler;
 };
@@ -497,4 +505,19 @@ void TestMDF::testReWriteWalk4Descriptors(const Open3DMotion::FileFormatOptions&
 
 	// verify data from re-load
 	testWalk4DescriptorsInFile(handler, savename.c_str(), enforcestartoffset);
+}
+
+void TestMDF::testReadWheelMDF2()
+{
+	// Verify that legacy MDF2 format reads without error
+	try
+	{
+		// read in
+		std::auto_ptr<Open3DMotion::TreeValue> trial_tree( handler.Read("Open3DMotionTest/Data/MDF/Wheel.mdf") );
+
+	}
+	catch(const Open3DMotion::MotionFileException& error)
+	{
+		CPPUNIT_FAIL(error.message);
+	}
 }

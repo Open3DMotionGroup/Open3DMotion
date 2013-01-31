@@ -31,7 +31,8 @@ public:
 		TreeString b("Bob");
 		CPPUNIT_ASSERT_EQUAL(string("Bob"), b.Value());
 
-		TreeString c("Bobson");
+		std::string Bobson("Bobson");
+		TreeString c(Bobson);
 		CPPUNIT_ASSERT_EQUAL(string("Bobson"), c.Value());
 	}
 
