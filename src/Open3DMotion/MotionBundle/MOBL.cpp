@@ -156,7 +156,7 @@ namespace Open3DMotion
 		return count;
 	}
 
-	TreeValue* MOBLFormatReader::ReadTrial(UInt32 index) throw(MotionFileException)
+	TreeValue* MOBLFormatReader::ReadTrial(UInt32 index, BinMemFactory& memfactory /*=BinMemFactoryDefault()*/) throw(MotionFileException)
 	{
 		// move to required trial
 		UInt32 doc_index_needed = index + 1;
@@ -169,7 +169,7 @@ namespace Open3DMotion
 		// read
 		try
 		{
-			BSONReaderMOBL reader(*stream);
+			BSONReaderMOBL reader(*stream, memfactory);
 			reader.ReadDocument(*MOBLresult);
 		}
 		catch (const BSONReadException& e)

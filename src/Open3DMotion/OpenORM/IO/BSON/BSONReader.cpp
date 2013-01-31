@@ -13,14 +13,16 @@
 #include "Open3DMotion/OpenORM/Leaves/TreeBinary.h"
 #include "Open3DMotion/OpenORM/Leaves/TreeBool.h"
 #include "Open3DMotion/OpenORM/Leaves/MemoryHandlerBasic.h"
+#include "Open3DMotion/OpenORM/Mappings/RichBinary/BinMemFactory.h"
 
 #include "BSONObjectIdHolder.h"
 #include "BSONTimestampHolder.h"
 
 namespace Open3DMotion
 {
-	BSONReader::BSONReader(BSONInputStream& _input) :
-		input(_input)
+	BSONReader::BSONReader(BSONInputStream& _input, BinMemFactory& _memfactory) :
+		input(_input),
+		memfactory(_memfactory)
 	{
 	}
 
@@ -161,9 +163,9 @@ namespace Open3DMotion
 				UInt8 subtype(0);
 				ReadBinary(&numbytes, 4);
 				ReadBinary(&subtype, 1);
-				MemoryHandlerBasic memory(numbytes);
-				ReadBinary(memory.Data(), numbytes);
-				return new TreeBinary(&memory);
+				std::auto_ptr<MemoryHandler> memory( memfactory.Allocate(numbytes) );
+				ReadBinary(memory->Data(), numbytes);
+				return new TreeBinary(memory.get());
 			}
 
 			case 0x08:	// boolean

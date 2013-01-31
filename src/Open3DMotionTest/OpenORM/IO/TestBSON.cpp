@@ -12,7 +12,7 @@
 #include "Open3DMotion/OpenORM/Leaves/TreeBinary.h"
 #include "Open3DMotion/OpenORM/Leaves/TreeBool.h"
 #include "Open3DMotion/OpenORM/Branches/TreeList.h"
-#include "Open3DMotion/OpenORM/Leaves/MemoryHandlerBasic.h"
+#include "Open3DMotion/OpenORM/Mappings/RichBinary/BinMemFactoryDefault.h"
 
 #include "Open3DMotion/OpenORM/IO/BSON/BSONInputStreamSTL.h"
 #include "Open3DMotion/OpenORM/IO/BSON/BSONInputStreamGZ.h"
@@ -83,7 +83,8 @@ public:
 		BinaryStream input(data, sizeof(data));
 		
 		BSONInputStreamSTL stream(input);
-		BSONReader reader(stream);
+		BinMemFactoryDefault memfactory;
+		BSONReader reader(stream, memfactory);
 
 		UInt8 result1[2];
 		reader.ReadBinary(result1, 2);
@@ -116,7 +117,8 @@ public:
 		input.seekg(0);
 		
 		BSONInputStreamSTL stream(input);
-		BSONReader reader(stream);
+		BinMemFactoryDefault memfactory;
+		BSONReader reader(stream, memfactory);
 
 		UInt8 result1[2];
 		reader.ReadBinary(result1, 2);
@@ -148,7 +150,8 @@ public:
 
 		// try to read it, use tiny buffer to make sure we deal with wrap-around ok
 		BSONInputStreamGZ stream(input, 8);
-		BSONReader reader(stream);
+		BinMemFactoryDefault memfactory;
+		BSONReader reader(stream, memfactory);
 		char result1[36];
 		reader.ReadBinary(result1, 36);
 
@@ -164,7 +167,8 @@ public:
 
 		// try to read it, use tiny buffer to make sure we deal with wrap-around ok
 		BSONInputStreamGZ stream(input, 8);
-		BSONReader reader(stream);
+		BinMemFactoryDefault memfactory;
+		BSONReader reader(stream, memfactory);
 		char result1[36];
 		reader.ReadBinary(result1, 7);
 		reader.SkipBytes(25);
@@ -180,7 +184,8 @@ public:
 		char data[] = "Bob";
 		BinaryStream input(data, sizeof(data));
 		BSONInputStreamSTL stream(input);
-		BSONReader reader(stream);
+		BinMemFactoryDefault memfactory;
+		BSONReader reader(stream, memfactory);
 		std::string result;
 		reader.ReadCString(result);
 		CPPUNIT_ASSERT_EQUAL(size_t(3), result.size());
@@ -193,7 +198,8 @@ public:
 		char data[] = { 0x05, 0x00, 0x00, 0x00,  'B', 'o', 'b', '2', '\0' };
 		BinaryStream input(data, sizeof(data));
 		BSONInputStreamSTL stream(input);
-		BSONReader reader(stream);
+		BinMemFactoryDefault memfactory;
+		BSONReader reader(stream, memfactory);
 		std::string result;
 		reader.ReadString(result);
 		CPPUNIT_ASSERT_EQUAL(size_t(4), result.size());
@@ -205,7 +211,8 @@ public:
 		char data[] = { 0x08, 'T', 'e', 'd', '\0', 0x01, 0x08, 'B', 'i', 'l', 'l', '\0', 0x00 };
 		BinaryStream input(data, sizeof(data));
 		BSONInputStreamSTL stream(input);
-		BSONReader reader(stream);
+		BinMemFactoryDefault memfactory;
+		BSONReader reader(stream, memfactory);
 
 		std::string name;
 		TreeValue* value(NULL);
@@ -229,7 +236,8 @@ public:
 		UInt8 data[] = { 0x10, 'T', 'e', 'd', '\0',    0xB8, 0xBD, 0xF0, 0xFF  };
 		BinaryStream input(data, sizeof(data));
 		BSONInputStreamSTL stream(input);
-		BSONReader reader(stream);
+		BinMemFactoryDefault memfactory;
+		BSONReader reader(stream, memfactory);
 
 		std::string name;
 		TreeValue* value(NULL);
@@ -251,7 +259,8 @@ public:
 		                 0x12, 'B', 'i', 'l', 'l', '\0',  0x0D, 0x00, 0x00, 0x00, 0xA1, 0xB2, 0xC3, 0xD4};
 		BinaryStream input(data, sizeof(data));
 		BSONInputStreamSTL stream(input);
-		BSONReader reader(stream);
+		BinMemFactoryDefault memfactory;
+		BSONReader reader(stream, memfactory);
 
 		std::string name;
 		TreeValue* value(NULL);
@@ -280,7 +289,8 @@ public:
 
 		BinaryStream input(data, sizeof(data));
 		BSONInputStreamSTL stream(input);
-		BSONReader reader(stream);
+		BinMemFactoryDefault memfactory;
+		BSONReader reader(stream, memfactory);
 
 		TreeValue* value(NULL);
 		std::string name;
@@ -302,7 +312,8 @@ public:
 			0x03, 0x04, 0x05, 0xA1, 0xB1, 0xAA, 0x11 };
 		BinaryStream input(data, sizeof(data));
 		BSONInputStreamSTL stream(input);
-		BSONReader reader(stream);
+		BinMemFactoryDefault memfactory;
+		BSONReader reader(stream, memfactory);
 		TreeValue* value(NULL);
 		std::string name;
 		CPPUNIT_ASSERT( reader.ReadElement(name, value) );
@@ -331,7 +342,8 @@ public:
 			0x03, 0x04, 0x05, 0xA1, 0xB1, 0xAA, 0x11 };
 		BinaryStream input(data, sizeof(data));
 		BSONInputStreamSTL stream(input);
-		BSONReaderMOBL reader(stream);
+		BinMemFactoryDefault memfactory;
+		BSONReaderMOBL reader(stream, memfactory);
 		TreeValue* value(NULL);
 		std::string name;
 		CPPUNIT_ASSERT( reader.ReadElement(name, value) );
@@ -359,7 +371,8 @@ public:
 		};
 		BinaryStream input(data, sizeof(data));
 		BSONInputStreamSTL stream(input);
-		BSONReader reader(stream);
+		BinMemFactoryDefault memfactory;
+		BSONReader reader(stream, memfactory);
 		TreeValue* value(NULL);
 		std::string name;
 		CPPUNIT_ASSERT( reader.ReadElement(name, value) );
@@ -380,7 +393,8 @@ public:
 		};
 		BinaryStream input(data, sizeof(data));
 		BSONInputStreamSTL stream(input);
-		BSONReader reader(stream);
+		BinMemFactoryDefault memfactory;
+		BSONReader reader(stream, memfactory);
 		TreeValue* value(NULL);
 		std::string name;
 		CPPUNIT_ASSERT( reader.ReadElement(name, value) );
@@ -432,7 +446,8 @@ public:
 		};
 		BinaryStream input(data, sizeof(data));
 		BSONInputStreamSTL stream(input);
-		BSONReader reader(stream);
+		BinMemFactoryDefault memfactory;
+		BSONReader reader(stream, memfactory);
 		TreeValue* value(NULL);
 		std::string name;
 		CPPUNIT_ASSERT( reader.ReadElement(name, value) );
@@ -465,7 +480,8 @@ public:
 
 		BinaryStream input(data, sizeof(data));
 		BSONInputStreamSTL stream(input);
-		BSONReader reader(stream);
+		BinMemFactoryDefault memfactory;
+		BSONReader reader(stream, memfactory);
 
 		TreeCompound c;
 		reader.ReadDocument(c);
@@ -502,7 +518,8 @@ public:
 
 		BinaryStream input(data, sizeof(data));
 		BSONInputStreamSTL stream(input);
-		BSONReader reader(stream);
+		BinMemFactoryDefault memfactory;
+		BSONReader reader(stream, memfactory);
 
 		TreeValue* value(NULL);
 		std::string name;
@@ -544,7 +561,8 @@ public:
 
 		BinaryStream input(data, sizeof(data));
 		BSONInputStreamSTL stream(input);
-		BSONReader reader(stream);
+		BinMemFactoryDefault memfactory;
+		BSONReader reader(stream, memfactory);
 
 		std::auto_ptr<TreeList> lst( reader.ReadList() );
 		CPPUNIT_ASSERT( lst.get() != NULL );
@@ -582,7 +600,8 @@ public:
 
 		BinaryStream input(data, sizeof(data));
 		BSONInputStreamSTL stream(input);
-		BSONReader reader(stream);
+		BinMemFactoryDefault memfactory;
+		BSONReader reader(stream, memfactory);
 
 		TreeValue* value(NULL);
 		std::string name;

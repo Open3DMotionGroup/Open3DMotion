@@ -17,8 +17,8 @@ namespace Open3DMotion
 	class BSONReaderMOBL : public BSONReader
 	{
 	public:
-		BSONReaderMOBL(BSONInputStream& _input) :
-			BSONReader(_input)
+		BSONReaderMOBL(BSONInputStream& _input, BinMemFactory& _memfactory) :
+			BSONReader(_input, _memfactory)
 		{
 		}
 

@@ -16,13 +16,15 @@
 
 namespace Open3DMotion
 {
+	class BinMemFactory;
+
 	/** Read from a stream of BSON-encoded data and translate into OpenORM++ objects */
 	class BSONReader
 	{
 	public:
 
 		/** Construct for given stream */
-		BSONReader(BSONInputStream& _input);
+		BSONReader(BSONInputStream& _input, BinMemFactory& _memfactory);
 
 		/** Virtual destructor */
 		virtual ~BSONReader();
@@ -75,8 +77,13 @@ namespace Open3DMotion
 		bool HaveMore()
 		{ return input.HaveMore(); }
 
+	protected:
+		BinMemFactory& MemFactory()
+		{ return memfactory; }
+
 	private:
 		BSONInputStream& input;
+		BinMemFactory& memfactory;
 	};
 
 }
