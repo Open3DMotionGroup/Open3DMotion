@@ -12,6 +12,7 @@
 #include "Open3DMotion/MotionFile/MotionFileException.h"
 #include "Open3DMotion/MotionFile/MotionFileFormatList.h"
 #include "Open3DMotion/MotionFile/MotionFileFormatListAll.h"
+#include "Open3DMotion/OpenORM/Mappings/RichBinary/BinMemFactoryDefault.h"
 
 namespace Open3DMotion
 {
@@ -36,10 +37,10 @@ namespace Open3DMotion
 		{ return programversion; }
 
 		/** Read from file */
-		TreeValue* Read(const char* filename, const MotionFileFormatList& formatlist = MotionFileFormatListAll()) throw(MotionFileException);
+		TreeValue* Read(const char* filename, const MotionFileFormatList& formatlist = MotionFileFormatListAll(), BinMemFactory& memfactory = BinMemFactoryDefault()) throw(MotionFileException);
 
 		/** Read from STL stream */
-		TreeValue* Read(std::istream& is, const MotionFileFormatList& formatlist = MotionFileFormatListAll()) throw(MotionFileException);
+		TreeValue* Read(std::istream& is, const MotionFileFormatList& formatlist = MotionFileFormatListAll(), BinMemFactory& memfactory = BinMemFactoryDefault()) throw(MotionFileException);
 
 		/** Write to file */
 		void Write(const char* filename, const TreeValue* contents, const TreeValue* writeoptions, const MotionFileFormatList& formatlist = MotionFileFormatListAll()) throw(MotionFileException);
