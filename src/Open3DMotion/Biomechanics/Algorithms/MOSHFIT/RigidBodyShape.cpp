@@ -106,7 +106,7 @@ namespace Open3DMotion
 
 	void RigidBodyShape::EvaluateNonsingularity3D(std::vector<double>& s, std::vector<double>& coords)
 	{
-		size_t num_points(coords.size() / 3);
+		long num_points(coords.size() / 3);
     s.resize(3);
     
 #ifndef OPEN3DMOTION_LINEAR_ALGEBRA_EIGEN
@@ -135,7 +135,6 @@ namespace Open3DMotion
 			work,   // workspace
 			&lwork, // size of workspace
 			&info);   // returned error codes
-
 #else    
 		Eigen::Map< Eigen::Matrix<double, Eigen::Dynamic, 3, Eigen::RowMajor> >
       _coords(&coords[0], (int)num_points, 3);
