@@ -254,7 +254,7 @@ namespace Open3DMotion
 	}
 
   // Read MDF
-  TreeValue* FileFormatMDF::Read(const MotionFileHandler& /*context*/, std::istream& is, BinMemFactory& memfactory, const TreeValue* readoptions) const throw(MotionFileException) 
+  TreeValue* FileFormatMDF::Read(const MotionFileHandler& /*context*/, std::istream& is, const BinMemFactory& memfactory, const TreeValue* readoptions) const throw(MotionFileException) 
 	{
 		// get options
 		FileFormatOptionsMDF mdf_options;

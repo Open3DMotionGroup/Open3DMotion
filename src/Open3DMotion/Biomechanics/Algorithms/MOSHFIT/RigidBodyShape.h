@@ -12,7 +12,7 @@
 #include "Open3DMotion/Maths/RigidTransform3.h"
 #include <vector>
 
-class RigidBodyShapeTest;
+class TestRigidBodyShape;
 
 namespace Open3DMotion
 {
@@ -22,19 +22,19 @@ namespace Open3DMotion
 	public:
 
 		/** Computation successful. */
-		static const UInt32 success = 0;
+		static const UInt32 success /*=0*/;
 
 		/** Problem with input time sequences. */
-		static const UInt32 timesequence_mismatch = 1;
+		static const UInt32 timesequence_mismatch /*=1*/;
 
 		/** Visiblity graph was not fully connected. */
-		static const UInt32 visibility_disconnected = 2;
+		static const UInt32 visibility_disconnected /*=2*/;
 
 		/** Not enough points were used as input. */
-		static const UInt32 insufficient_points = 3;
+		static const UInt32 insufficient_points /*=3*/;
 		
 		/** Convergence failure. */
-		static const UInt32 did_not_converge = 4;
+		static const UInt32 did_not_converge /*=4*/;
 	};
 
 	/** 3D point with associated visibility information. */
@@ -51,7 +51,7 @@ namespace Open3DMotion
 	/** Shape defined by 3D points, each with associated visibility information. */
 	class RigidBodyShape
 	{
-		friend class RigidBodyShapeTest;
+		friend class TestRigidBodyShape;
 
 	public:
 		

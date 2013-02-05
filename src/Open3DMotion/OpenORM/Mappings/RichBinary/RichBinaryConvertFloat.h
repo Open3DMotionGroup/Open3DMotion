@@ -11,8 +11,8 @@ namespace Open3DMotion
 	class BinMemFactory;
 
 	/** Convert 32-bit float fields of rich binary object to 64-bit. */
-	TreeValue* RichBinaryConvertFloat32To64(const TreeValue* input, const char* structure_name, BinMemFactory& memfactory);
+	TreeValue* RichBinaryConvertFloat32To64(const TreeValue* input, const char* structure_name, const BinMemFactory& memfactory);
 
 	/** Convert 64-bit float fields of rich binary object to 32-bit */
-	TreeValue* RichBinaryConvertFloat64To32(const TreeValue* input, const char* structure_name, BinMemFactory& memfactory);
+	TreeValue* RichBinaryConvertFloat64To32(const TreeValue* input, const char* structure_name, const BinMemFactory& memfactory);
 }

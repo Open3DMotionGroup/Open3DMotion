@@ -7,14 +7,26 @@
 
 #include "Open3DMotion/Biomechanics/Algorithms/MOSHFIT/RigidBodyShape.h"
 
+#ifndef OPEN3DMOTION_LINEAR_ALGEBRA_EIGEN
 extern "C"
 {
 #include <f2clibs/f2c.h>
 #include <clapack.h>
 }
+#else
+#include <Eigen/Dense>
+#include <Eigen/SVD>
+#endif
 
 namespace Open3DMotion
 {
+  
+  const UInt32 RigidBodyResult::success = 0;
+  const UInt32 RigidBodyResult::timesequence_mismatch = 1;
+  const UInt32 RigidBodyResult::visibility_disconnected = 2;
+  const UInt32 RigidBodyResult::insufficient_points = 3;
+  const UInt32 RigidBodyResult::did_not_converge = 4;
+  
 	RigidBodyShape::RigidBodyShape()
 	{
 	}
@@ -94,14 +106,16 @@ namespace Open3DMotion
 
 	void RigidBodyShape::EvaluateNonsingularity3D(std::vector<double>& s, std::vector<double>& coords)
 	{
-		long three(3);
-		long num_points(coords.size() / 3);
+		size_t num_points(coords.size() / 3);
+    s.resize(3);
+    
+#ifndef OPEN3DMOTION_LINEAR_ALGEBRA_EIGEN
+    long three(3);
 		long lwork(256);
 		double work[256];
 		long info(0);
 				
 		std::vector<double> U(9);
-		s.resize(3);
 		std::vector<double> VT(num_points*num_points);
 
 		// use lapack routine
@@ -120,9 +134,18 @@ namespace Open3DMotion
 			&num_points, // leading dimension of right 
 			work,   // workspace
 			&lwork, // size of workspace
-			&info);   // returned error codes			
+			&info);   // returned error codes
+
+#else    
+		Eigen::Map< Eigen::Matrix<double, Eigen::Dynamic, 3, Eigen::RowMajor> >
+      _coords(&coords[0], (int)num_points, 3);
+    Eigen::Map< Eigen::Matrix<double, 3, 1, Eigen::RowMajor> > _s(&s[0], 3, 1);
+    Eigen::SVD< Eigen::Matrix<double, Eigen::Dynamic, 3, Eigen::RowMajor> > svd(_coords);
+    _s = svd.singularValues();
+#endif // OPEN3DMOTION_LINEAR_ALGEBRA_EIGEN
 	}
 
+  
 	bool RigidBodyShape::HasUniqueFitWith(const RigidBodyShape& other, double tolerance) const
 	{
 		if (marker.size() == other.marker.size())

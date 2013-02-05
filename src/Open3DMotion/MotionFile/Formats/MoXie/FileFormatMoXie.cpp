@@ -58,7 +58,7 @@ namespace Open3DMotion
     return ProbeTextString(is, moxie_xml_doc, 1024);
   }
 
-  TreeValue* FileFormatMoXie::Read(const MotionFileHandler& /*context*/, std::istream& is, BinMemFactory& memfactory, const TreeValue* /*readoptions*/) const throw(MotionFileException)
+  TreeValue* FileFormatMoXie::Read(const MotionFileHandler& /*context*/, std::istream& is, const BinMemFactory& memfactory, const TreeValue* /*readoptions*/) const throw(MotionFileException)
   {
 		// trial to fill
 		std::auto_ptr<Trial> trial(new Trial);

@@ -23,7 +23,7 @@ namespace Open3DMotion
 
 	public:
 
-		void SetEvents(const EventArray& events, BinMemFactory& memfactory);
+		void SetEvents(const EventArray& events, const BinMemFactory& memfactory);
 
 		void GetEvents(EventArray& events) const;
 

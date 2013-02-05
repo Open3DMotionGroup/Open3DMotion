@@ -27,7 +27,7 @@ namespace Open3DMotion
 		Register(EventMapName, &EventMap);
 	}
 
-	void EventGroup::SetEvents(const EventArray& events, BinMemFactory& memfactory)
+	void EventGroup::SetEvents(const EventArray& events, const BinMemFactory& memfactory)
 	{
 		// put all names in list
 		// size_t num_names = events.NameMap().size();

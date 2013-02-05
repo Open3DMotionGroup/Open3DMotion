@@ -17,7 +17,6 @@
 namespace Open3DMotion
 {
 	class BSONInputStream;
-	class BinMemFactory;
 
 	/** Used internally by MOBLReader to hold format information during a read */
 	class MOBLReadOptions : public MapCompound
@@ -45,7 +44,7 @@ namespace Open3DMotion
 		/** Read the specified trial.
 		    @param index Zero-based index of trial to read
 			*/
-		TreeValue* ReadTrial(UInt32 index, BinMemFactory& memfactory = BinMemFactoryDefault()) throw(MotionFileException);
+		TreeValue* ReadTrial(UInt32 index, const BinMemFactory& memfactory = BinMemFactoryDefault()) throw(MotionFileException);
 
 		/** Find total trials in the bundle.
 				@return The number of trials

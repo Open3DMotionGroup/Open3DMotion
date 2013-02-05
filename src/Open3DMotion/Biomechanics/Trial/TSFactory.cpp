@@ -14,7 +14,7 @@ namespace Open3DMotion
 	const char TSFactoryValue::fieldname_value[] = "value";
 	const char TSFactoryOccValue::fieldname_occluded[] = "occluded";
 
-	TimeSequence* TSFactory::New(const TimeRange& tr, BinMemFactory& memfactory) const
+	TimeSequence* TSFactory::New(const TimeRange& tr, const BinMemFactory& memfactory) const
 	{
 		TimeSequence* ts = new TimeSequence;
 		ts->Allocate(layout, tr, memfactory);

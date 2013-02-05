@@ -25,9 +25,9 @@ namespace Open3DMotion
 
 		bool Read(std::istream& is);
 
-		TimeSequence* GetTSScalar(const char* groupname, const char* channelname, BinMemFactory& memfactory) const;
+		TimeSequence* GetTSScalar(const char* groupname, const char* channelname, const BinMemFactory& memfactory) const;
 
-		TimeSequence* GetTSOccVector3(const char* groupname, const char* channelname, BinMemFactory& memfactory) const;
+		TimeSequence* GetTSOccVector3(const char* groupname, const char* channelname, const BinMemFactory& memfactory) const;
 
 		void GetChannelList3(std::vector<std::string>& channels, const char* groupname) const;
 

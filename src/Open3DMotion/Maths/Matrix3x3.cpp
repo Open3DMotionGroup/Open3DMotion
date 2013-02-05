@@ -13,13 +13,16 @@ extern "C"
 #include <f2clibs/f2c.h>
 #include <clapack.h>
 }
+#else
+#include <Eigen/Dense>
+#include <Eigen/SVD>
 #endif
 
 namespace Open3DMotion
 {
-#ifndef OPEN3DMOTION_LINEAR_ALGEBRA_EIGEN
 	void Matrix3x3::SVD(double* U, double* s, double* VT, const double* A)
   {
+#ifndef OPEN3DMOTION_LINEAR_ALGEBRA_EIGEN
     long three(3);
     Matrix3x3 Acpy(A);
     long lwork(256);
@@ -47,7 +50,18 @@ namespace Open3DMotion
       work,   // workspace
       &lwork, // size of workspace
       &info);   // returned error codes
-  }
+    
+#else
+		Eigen::Map< Eigen::Matrix<double, 3, 3, Eigen::RowMajor> > _A(A, 3, 3);
+    Eigen::Map< Eigen::Matrix<double, 3, 3, Eigen::RowMajor> > _U(U, 3, 3);
+    Eigen::Map< Eigen::Matrix<double, 3, 3, Eigen::RowMajor> > _VT(VT, 3, 3);
+    Eigen::Map< Eigen::Matrix<double, 3, 1, Eigen::RowMajor> > _s(s, 3, 1);
+    Eigen::SVD< Eigen::Matrix<double, 3, 3, Eigen::RowMajor> > svd(_A);
+    _U = svd.matrixU();
+    _VT = svd.matrixV().transpose();
+    _s = svd.singularValues();
 #endif
+
+  }
 }
 

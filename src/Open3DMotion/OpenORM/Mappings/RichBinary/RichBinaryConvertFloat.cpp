@@ -11,9 +11,9 @@
 
 namespace Open3DMotion
 {
-	template<typename OutputType, typename InputType> TreeValue* RichBinaryConvertFields(const TreeValue* input, const char* structure_name, BinMemFactory& memfactory);
+	template<typename OutputType, typename InputType> TreeValue* RichBinaryConvertFields(const TreeValue* input, const char* structure_name, const BinMemFactory& memfactory);
 
-	template<typename OutputType, typename InputType> TreeValue* RichBinaryConvertFields(const TreeValue* input, const char* structure_name, BinMemFactory& memfactory)
+	template<typename OutputType, typename InputType> TreeValue* RichBinaryConvertFields(const TreeValue* input, const char* structure_name, const BinMemFactory& memfactory)
 	{
 		// read input
 		RichBinary rb_input(structure_name);
@@ -108,12 +108,12 @@ namespace Open3DMotion
 		return compound_output;
 	}
 
-	TreeValue* RichBinaryConvertFloat32To64(const TreeValue* input, const char* structure_name, BinMemFactory& memfactory)
+	TreeValue* RichBinaryConvertFloat32To64(const TreeValue* input, const char* structure_name, const BinMemFactory& memfactory)
 	{
 		return RichBinaryConvertFields<double, float> (input, structure_name, memfactory);
 	}
 
-	TreeValue* RichBinaryConvertFloat64To32(const TreeValue* input, const char* structure_name, BinMemFactory& memfactory)
+	TreeValue* RichBinaryConvertFloat64To32(const TreeValue* input, const char* structure_name, const BinMemFactory& memfactory)
 	{
 		return RichBinaryConvertFields<float, double> (input, structure_name, memfactory);
 	}

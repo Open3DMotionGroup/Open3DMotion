@@ -224,6 +224,8 @@ namespace Open3DMotion
 		return RigidBodyResult::did_not_converge;
 	}
 
+  const size_t RigidBodyVisibilityCanon::invalid_index = SIZE_MAX;
+  
 	RigidBodyVisibilityCanon::RigidBodyVisibilityCanon()
 	{
 	}
@@ -333,7 +335,7 @@ namespace Open3DMotion
 		}
 	}
 
-	UInt32 RigidBodyShapeCollection::MOSHFIT(std::vector<TimeSequence*>& output, double rateHz, double distribution_tolerance, double convergence_accuracy, BinMemFactory& memfactory /*=BinMemFactoryDefault()*/) const
+	UInt32 RigidBodyShapeCollection::MOSHFIT(std::vector<TimeSequence*>& output, double rateHz, double distribution_tolerance, double convergence_accuracy, const BinMemFactory& memfactory /*=BinMemFactoryDefault()*/) const
 	{
 		// compute mean shape
 		RigidBodyShape mean;

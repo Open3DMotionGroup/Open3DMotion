@@ -9,10 +9,10 @@
 using namespace Open3DMotion;
 using namespace std;
 
-class RigidBodyShapeTest : public CppUnit::TestCase
+class TestRigidBodyShape : public CppUnit::TestCase
 {
 public:
-	CPPUNIT_TEST_SUITE( RigidBodyShapeTest );
+	CPPUNIT_TEST_SUITE( TestRigidBodyShape );
 	CPPUNIT_TEST( testAddMarker );
 	CPPUNIT_TEST( testCopyConstructor );
 	CPPUNIT_TEST( testAssign );
@@ -319,4 +319,4 @@ public:
 
 };
 
-CPPUNIT_TEST_SUITE_REGISTRATION( RigidBodyShapeTest );
+CPPUNIT_TEST_SUITE_REGISTRATION( TestRigidBodyShape );

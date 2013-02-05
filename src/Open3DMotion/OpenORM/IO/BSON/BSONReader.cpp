@@ -20,7 +20,7 @@
 
 namespace Open3DMotion
 {
-	BSONReader::BSONReader(BSONInputStream& _input, BinMemFactory& _memfactory) :
+	BSONReader::BSONReader(BSONInputStream& _input, const BinMemFactory& _memfactory) :
 		input(_input),
 		memfactory(_memfactory)
 	{

@@ -113,7 +113,7 @@ namespace Open3DMotion
 		return true;
 	}
 
-	bool ForceCalculator::Compute(TimeSequence*& force, TimeSequence*& point, TimeSequence*& freemoment, ForceMeasurementTimeSequence& mts, BinMemFactory& memfactory) const
+	bool ForceCalculator::Compute(TimeSequence*& force, TimeSequence*& point, TimeSequence*& freemoment, ForceMeasurementTimeSequence& mts, const BinMemFactory& memfactory) const
 	{
 		// initialise to NULL
 		force = NULL;

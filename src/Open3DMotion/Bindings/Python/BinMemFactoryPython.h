@@ -16,7 +16,7 @@ namespace Open3DMotion
 	class BinMemFactoryPython : public BinMemFactory
 	{
 	public:
-		virtual MemoryHandlerPython* Allocate(size_t numbytes);
+		virtual MemoryHandlerPython* Allocate(size_t numbytes) const;
 	};
 
 }

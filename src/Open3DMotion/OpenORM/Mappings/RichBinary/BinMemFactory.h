@@ -17,7 +17,7 @@ namespace Open3DMotion
 	{
 	public:
 		virtual ~BinMemFactory() {};
-		virtual MemoryHandler* Allocate(size_t numbytes) = 0;
+		virtual MemoryHandler* Allocate(size_t numbytes) const = 0;
 	};
 
 }

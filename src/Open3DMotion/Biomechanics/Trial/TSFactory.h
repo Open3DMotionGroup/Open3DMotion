@@ -21,7 +21,7 @@ namespace Open3DMotion
 		}
 
 	public:
-		TimeSequence* New(const TimeRange& tr, BinMemFactory& memfactory) const;
+		TimeSequence* New(const TimeRange& tr, const BinMemFactory& memfactory) const;
 
 	protected:
 		void AddField(const BinaryFieldSpec& field);

@@ -31,14 +31,14 @@ namespace Open3DMotion
     virtual bool Probe(const MotionFileHandler& context, TreeValue*& readoptions, std::istream& is) const throw(MotionFileException);
 
     // Read MDF
-    virtual TreeValue* Read(const MotionFileHandler& context, std::istream& is, BinMemFactory& memfactory, const TreeValue* readoptions) const throw(MotionFileException) ;
+    virtual TreeValue* Read(const MotionFileHandler& context, std::istream& is, const BinMemFactory& memfactory, const TreeValue* readoptions) const throw(MotionFileException) ;
 
     // Write MDF
     virtual void Write(const MotionFileHandler& context, const TreeValue* contents, std::ostream& os, const TreeValue* writeoptions) const throw(MotionFileException);
 		
 	protected:
-		static void ConvertListFloat32To64(TreeCompound* section, const char* listname, const char* structurename, BinMemFactory& memfactory);
-		static void ConvertListFloat64To32(TreeCompound* section, const char* listname, const char* structurename, BinMemFactory& memfactory);
+		static void ConvertListFloat32To64(TreeCompound* section, const char* listname, const char* structurename, const BinMemFactory& memfactory);
+		static void ConvertListFloat64To32(TreeCompound* section, const char* listname, const char* structurename, const BinMemFactory& memfactory);
 
 	};
 }

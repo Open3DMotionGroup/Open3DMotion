@@ -21,7 +21,7 @@ namespace Open3DMotion
 
 	public:
 
-		void Allocate(const std::vector<BinaryFieldSpec>& layout, const TimeRange& t, BinMemFactory& memfactory);
+		void Allocate(const std::vector<BinaryFieldSpec>& layout, const TimeRange& t, const BinMemFactory& memfactory);
 
 		void GetTimeRange(TimeRange& t) const;
 

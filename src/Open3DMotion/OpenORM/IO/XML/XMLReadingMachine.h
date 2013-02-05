@@ -24,7 +24,7 @@ namespace Open3DMotion
 	class XMLReadingMachine : public XMLReadWriteMachine
 	{
 	public:
-		XMLReadingMachine(BinMemFactory& _memfactory);
+		XMLReadingMachine(const BinMemFactory& _memfactory);
 
 		virtual ~XMLReadingMachine();
 
@@ -38,11 +38,11 @@ namespace Open3DMotion
 
 		virtual void ReadTextNode(std::string& node_text, const pugi::xml_node& element);
 
-		BinMemFactory& MemFactory() const
+		const BinMemFactory& MemFactory() const
 		{ return memfactory; }
 
 	private:
-		BinMemFactory& memfactory;
+		const BinMemFactory& memfactory;
 	};
 
 }

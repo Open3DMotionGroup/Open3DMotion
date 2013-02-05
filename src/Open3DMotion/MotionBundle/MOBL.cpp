@@ -156,7 +156,7 @@ namespace Open3DMotion
 		return count;
 	}
 
-	TreeValue* MOBLFormatReader::ReadTrial(UInt32 index, BinMemFactory& memfactory /*=BinMemFactoryDefault()*/) throw(MotionFileException)
+	TreeValue* MOBLFormatReader::ReadTrial(UInt32 index, const BinMemFactory& memfactory /*=BinMemFactoryDefault()*/) throw(MotionFileException)
 	{
 		// move to required trial
 		UInt32 doc_index_needed = index + 1;

@@ -68,7 +68,7 @@ namespace Open3DMotion
 				@param memfactory Optional selection of alternative memory allocation factory for output.
 				@return RigidBodyResult::success if successful, error code otherwise.
 			*/
-		UInt32 MOSHFIT(std::vector<TimeSequence*>& output, double rateHz, double distribution_tolerance, double convergence_accuracy, BinMemFactory& memfactory = BinMemFactoryDefault()) const;
+		UInt32 MOSHFIT(std::vector<TimeSequence*>& output, double rateHz, double distribution_tolerance, double convergence_accuracy, const BinMemFactory& memfactory = BinMemFactoryDefault()) const;
 
 		/** Utility method to increase duration of occluded regions 
 		    @param dilation The number of frames to expand occluded region. */
@@ -100,7 +100,7 @@ namespace Open3DMotion
 		const RigidBodyVisibilityCanon& operator=(const RigidBodyVisibilityCanon& src);
 	
 	private:
-		static const size_t invalid_index = SIZE_MAX;
+		static const size_t invalid_index /*=SIZE_MAX*/;
 	};
 
 	/** Ordered collection of shape-connected 3D shapes as required by the MOSHFIT algorithm. */

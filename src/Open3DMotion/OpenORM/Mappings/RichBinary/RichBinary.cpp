@@ -17,14 +17,14 @@ namespace Open3DMotion
 		Register(BinaryName, &Binary);
 	}
 
-	void RichBinary::Allocate(const std::vector<BinaryFieldSpec>& layout, size_t numframes, BinMemFactory& memfactory)
+	void RichBinary::Allocate(const std::vector<BinaryFieldSpec>& layout, size_t numframes, const BinMemFactory& memfactory)
 	{
 		Structure.SetLayout(layout);
 		size_t datasize = Structure.TotalBytes() * numframes;
 		Binary.SetData( memfactory.Allocate(datasize) );
 	}
 
-	void RichBinary::DeepCopyFrom(const RichBinary& src, BinMemFactory& memfactory)
+	void RichBinary::DeepCopyFrom(const RichBinary& src, const BinMemFactory& memfactory)
 	{
 		// make a shallow copy of binary data and deep copy of all meta-data
 		std::auto_ptr<TreeValue> tree_copy( src.ToTree() );

@@ -34,7 +34,7 @@ bool FileFormatCODAText::Probe(const MotionFileHandler& /*context*/, TreeValue*&
 	return (strncmp(buffID, str_id, 26) == 0);
 }
 
-TreeValue* FileFormatCODAText::Read(const MotionFileHandler& /*context*/, std::istream& is, BinMemFactory& memfactory, const TreeValue* /*readoptions*/) const throw(MotionFileException)
+TreeValue* FileFormatCODAText::Read(const MotionFileHandler& /*context*/, std::istream& is, const BinMemFactory& memfactory, const TreeValue* /*readoptions*/) const throw(MotionFileException)
 {
 	// read it in
 	MATextReader reader;

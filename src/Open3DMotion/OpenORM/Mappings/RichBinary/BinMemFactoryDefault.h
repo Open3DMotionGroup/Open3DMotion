@@ -16,7 +16,7 @@ namespace Open3DMotion
 	class BinMemFactoryDefault : public BinMemFactory
 	{
 	public:
-		virtual MemoryHandlerBasic* Allocate(size_t numbytes);
+		virtual MemoryHandlerBasic* Allocate(size_t numbytes) const;
 	};
 
 }

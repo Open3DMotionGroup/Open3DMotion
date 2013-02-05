@@ -9,7 +9,7 @@
 
 namespace Open3DMotion
 {
-	MemoryHandlerPython* BinMemFactoryPython::Allocate(size_t numbytes)
+	MemoryHandlerPython* BinMemFactoryPython::Allocate(size_t numbytes) const
 	{
 		return new MemoryHandlerPython(numbytes);
 	}

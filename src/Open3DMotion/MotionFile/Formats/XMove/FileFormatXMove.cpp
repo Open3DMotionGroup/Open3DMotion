@@ -48,7 +48,7 @@ namespace Open3DMotion
 		return true;
 	}
 
-  TreeValue* FileFormatXMove::Read(const MotionFileHandler& /*context*/, std::istream& is, BinMemFactory& memfactory, const TreeValue* readoptions) const throw(MotionFileException) 
+  TreeValue* FileFormatXMove::Read(const MotionFileHandler& /*context*/, std::istream& is, const BinMemFactory& memfactory, const TreeValue* readoptions) const throw(MotionFileException) 
 	{
 		// options
 		FileFormatOptionsXMove xmove_options;
@@ -187,7 +187,7 @@ namespace Open3DMotion
 
 	}
 	
-	void FileFormatXMove::ConvertListFloat32To64(TreeCompound* section, const char* listname, const char* structurename, BinMemFactory& memfactory)
+	void FileFormatXMove::ConvertListFloat32To64(TreeCompound* section, const char* listname, const char* structurename, const BinMemFactory& memfactory)
 	{
 		if (section)
 		{
@@ -214,7 +214,7 @@ namespace Open3DMotion
 		}
 	}
 
-	void FileFormatXMove::ConvertListFloat64To32(TreeCompound* section, const char* listname, const char* structurename, BinMemFactory& memfactory)
+	void FileFormatXMove::ConvertListFloat64To32(TreeCompound* section, const char* listname, const char* structurename, const BinMemFactory& memfactory)
 	{
 		if (section)
 		{

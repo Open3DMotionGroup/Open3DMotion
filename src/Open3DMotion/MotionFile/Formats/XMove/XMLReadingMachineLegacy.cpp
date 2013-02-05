@@ -16,7 +16,7 @@
 
 namespace Open3DMotion
 {
-	XMLReadingMachineLegacy::XMLReadingMachineLegacy(BinMemFactory& _memfactory) :
+	XMLReadingMachineLegacy::XMLReadingMachineLegacy(const BinMemFactory& _memfactory) :
 		XMLReadingMachine(_memfactory),
 		legacy(legacy_none)
 	{

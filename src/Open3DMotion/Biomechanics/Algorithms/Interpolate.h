@@ -9,11 +9,10 @@
 #define _OPEN3DMOTION_INTERPOLATE_H_
 
 #include "Open3DMotion/OpenORM/Types.h"
+#include "Open3DMotion/Biomechanics/Trial/TimeSequence.h"
 
 namespace Open3DMotion
 {
-	class TimeSequence;
-	class NoSuchFieldException;
 
 	// Perform linear interpolation
   class Interpolate

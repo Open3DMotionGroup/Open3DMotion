@@ -10,7 +10,7 @@
 
 namespace Open3DMotion
 {
-	MemoryHandlerBasic* BinMemFactoryDefault::Allocate(size_t numbytes)
+	MemoryHandlerBasic* BinMemFactoryDefault::Allocate(size_t numbytes) const
 	{
 		return new MemoryHandlerBasic(numbytes);
 	}

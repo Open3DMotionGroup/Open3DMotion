@@ -11,7 +11,7 @@
 
 namespace Open3DMotion
 {
-	XMLReadingMachine::XMLReadingMachine(BinMemFactory& _memfactory) :
+	XMLReadingMachine::XMLReadingMachine(const BinMemFactory& _memfactory) :
 		memfactory(_memfactory)
 	{
 	}

@@ -41,7 +41,7 @@ public:
     virtual bool Probe(const MotionFileHandler&, TreeValue*&, std::istream&) const throw(MotionFileException)
 		{ return false; }
 
-    virtual TreeValue* Read(const MotionFileHandler&, std::istream&, BinMemFactory&, const TreeValue*) const throw(MotionFileException)
+    virtual TreeValue* Read(const MotionFileHandler&, std::istream&, const BinMemFactory&, const TreeValue*) const throw(MotionFileException)
 		{ throw MotionFileException(MotionFileException::libraryerror, "not implemented"); }
 
     virtual void Write(const MotionFileHandler&, const TreeValue*, std::ostream&, const TreeValue*) const throw(MotionFileException)
@@ -71,7 +71,7 @@ public:
     virtual bool Probe(const MotionFileHandler&, TreeValue*&, std::istream&) const throw(MotionFileException)
 		{ return false; }
 
-    virtual TreeValue* Read(const MotionFileHandler&, std::istream&, BinMemFactory&, const TreeValue*) const throw(MotionFileException)
+    virtual TreeValue* Read(const MotionFileHandler&, std::istream&, const BinMemFactory&, const TreeValue*) const throw(MotionFileException)
 		{ throw MotionFileException(MotionFileException::libraryerror, "not implemented"); }
 
     virtual void Write(const MotionFileHandler&, const TreeValue*, std::ostream&, const TreeValue*) const throw(MotionFileException)

@@ -24,7 +24,7 @@ namespace Open3DMotion
 	public:
 
 		/** Construct for given stream */
-		BSONReader(BSONInputStream& _input, BinMemFactory& _memfactory);
+		BSONReader(BSONInputStream& _input, const BinMemFactory& _memfactory);
 
 		/** Virtual destructor */
 		virtual ~BSONReader();
@@ -78,12 +78,12 @@ namespace Open3DMotion
 		{ return input.HaveMore(); }
 
 	protected:
-		BinMemFactory& MemFactory()
+		const BinMemFactory& MemFactory()
 		{ return memfactory; }
 
 	private:
 		BSONInputStream& input;
-		BinMemFactory& memfactory;
+		const BinMemFactory& memfactory;
 	};
 
 }

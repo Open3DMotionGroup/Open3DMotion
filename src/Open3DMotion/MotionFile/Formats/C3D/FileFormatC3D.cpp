@@ -111,7 +111,7 @@ namespace Open3DMotion
   //----------------------------------------------------------
   // Read C3D
 
-  TreeValue* FileFormatC3D::Read(const MotionFileHandler& context, istream& is, BinMemFactory& memfactory, const TreeValue* readoptions) const throw(MotionFileException) 
+  TreeValue* FileFormatC3D::Read(const MotionFileHandler& context, istream& is, const BinMemFactory& memfactory, const TreeValue* readoptions) const throw(MotionFileException) 
   {
 		// parse options
 		FileFormatOptionsC3D c3doptions;

@@ -34,7 +34,7 @@ namespace Open3DMotion
 	TreeValue* MotionFileHandler::Read(
 		const char* filename, 
 		const MotionFileFormatList& formatlist /*=MotionFileFormatListAll()*/, 
-		BinMemFactory& memfactory /*=BinMemFactoryDefault()*/ ) throw(MotionFileException)
+		const BinMemFactory& memfactory /*=BinMemFactoryDefault()*/ ) throw(MotionFileException)
 	{
 #ifdef _MSC_VER
 		// creating a C-style file object may work better with UTF-8
@@ -59,7 +59,7 @@ namespace Open3DMotion
 	TreeValue* MotionFileHandler::Read(
 		std::istream& is, 
 		const MotionFileFormatList& formatlist /*=MotionFileFormatListAll()*/, 
-		BinMemFactory& memfactory /*=BinMemFactoryDefault()*/ ) throw(MotionFileException)
+		const BinMemFactory& memfactory /*=BinMemFactoryDefault()*/ ) throw(MotionFileException)
 	{
 		// establish the format
 		TreeValue* readoptions(NULL);

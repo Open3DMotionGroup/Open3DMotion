@@ -284,7 +284,6 @@ public:
 
 	void testSVD()
 	{
-#ifndef OPEN3DMOTION_LINEAR_ALGEBRA_EIGEN
 		// test that decomposition recomposes to get original matrix
 		double m1[9] = {1,2,3,4,5,6,7,8,9};
 		Open3DMotion::Matrix3x3 U1;
@@ -322,9 +321,6 @@ public:
 		CPPUNIT_ASSERT(fabs(s2[0]) > 0.1);
 		CPPUNIT_ASSERT(fabs(s2[1]) > 0.1);
 		CPPUNIT_ASSERT(fabs(s2[2]) < 1E-12);
-#else
-		fprintf(stderr, "TextMatrix3x3::testSVD WARNING: SVD not currently implemented when using Eigen library\n");
-#endif
 	}
 
 	void testRatio()
