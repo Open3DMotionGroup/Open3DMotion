@@ -158,6 +158,37 @@ namespace Open3DMotion
 		{ return *ValuePtr0(); }
 	};
 
+	class TSOccMatrix3x3ConstIter : public Open3DMotion::BinConstIter2<double, Open3DMotion::UInt8>
+	{
+	public:
+			TSOccMatrix3x3ConstIter(const Open3DMotion::TimeSequence& ts) throw(Open3DMotion::NoSuchFieldException) :
+				BinConstIter2<double, Open3DMotion::UInt8>(ts, Open3DMotion::TSFactoryValue::fieldname_value, 9, Open3DMotion::TSFactoryOccValue::fieldname_occluded, 1)
+		{
+		}
+
+	public:
+		const double* Value() const
+		{ return ValuePtr0(); }
+
+		const Open3DMotion::UInt8& Occluded() const
+		{ return *ValuePtr1(); }
+	};
+
+	class TSOccMatrix3x3Iter : public Open3DMotion::BinIter2<double, Open3DMotion::UInt8>
+	{
+	public:
+			TSOccMatrix3x3Iter(Open3DMotion::TimeSequence& ts) throw(Open3DMotion::NoSuchFieldException) :
+				BinIter2<double, Open3DMotion::UInt8>(ts, Open3DMotion::TSFactoryValue::fieldname_value, 9, Open3DMotion::TSFactoryOccValue::fieldname_occluded, 1)
+		{
+		}
+
+	public:
+		double* Value() const
+		{ return ValuePtr0(); }
+
+		Open3DMotion::UInt8& Occluded() const
+		{ return *ValuePtr1(); }
+	};
 };
 
 #endif
