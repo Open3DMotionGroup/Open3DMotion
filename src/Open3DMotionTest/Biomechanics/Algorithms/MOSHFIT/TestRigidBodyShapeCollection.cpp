@@ -889,7 +889,7 @@ public:
 			// do the sums
 			clock_t time0 = clock();
 			std::vector<TimeSequence*> tsfit;
-			UInt32 status = collection.MOSHFIT(tsfit, 200.0, 12.0, 0.001);
+			UInt32 status = collection.MOSHFIT(tsfit, 200.0, 6.0, 0.001);
 			clock_t time_taken = clock() - time0;
 			double time_taken_seconds = (double)time_taken / (double)CLK_TCK;
 			sum_clock += time_taken_seconds;

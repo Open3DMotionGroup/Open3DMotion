@@ -19,8 +19,7 @@ extern "C"
 #endif
 
 namespace Open3DMotion
-{
-  
+{  
   const UInt32 RigidBodyResult::success = 0;
   const UInt32 RigidBodyResult::timesequence_mismatch = 1;
   const UInt32 RigidBodyResult::visibility_disconnected = 2;
@@ -167,47 +166,9 @@ namespace Open3DMotion
 				std::vector<double> s;
 				RigidBodyShape::EvaluateNonsingularity3D(s, common_coords);
 
-				// compute worst-case curvature
-				double nonlinearity_worst = s[1] - tolerance;
-				if (nonlinearity_worst < 0.0)
-					nonlinearity_worst = 0.0;
-				double sqrt_recip_curvature_worst = sqrt(0.286 * (nonlinearity_worst*nonlinearity_worst));
-
-#if 0
-				size_t i, j;
-
-				// make worst case by reducing as far as possible within tolerance
-				for (i = 0; i < 3; i++)
-				{
-					s[i] = fabs(s[i]) - tolerance;
-					if (s[i] < 0.0)
-						s[i] = 0.0;
-				}
-
-				// evaluate riemanian curvature at worst case location
-				double curvature_fullcomp = 0.0;
-				for (i = 0; i < 2; i++)
-				{
-					for (j = i + 1; j < 3; j++)
-					{
-						curvature_fullcomp += 1.0 / (s[i]*s[i] + s[j]*s[j]);
-						for (size_t k = 0; k < 3; k++)
-						{
-							curvature_fullcomp += s[k]*s[k] / ((s[i]*s[i] + s[k]*s[k]) * (s[k]*s[k] + s[j]*s[j]));
-						}
-					}
-				}
-
-				double sqrt_recip_curvature_fullcomp = sqrt(1.0 / curvature_fullcomp);
-
-#endif
-
-				// compute tolerance as a curvature
-				double sqrt_recip_curvature_tolerance = 2.0 * tolerance / 3.1415926;
-
-				// verify that even worst-case is within tolerance
-				// (it's a greater-than sign because we're using reciprocals)
-				if (sqrt_recip_curvature_worst > sqrt_recip_curvature_tolerance)
+				// Simplified expression to test points sufficiently non-colinear
+				// (condition is sufficient but not always necessary)
+				if (s[1] > (2.0 + sqrt(1.194*(common_coords.size()/3.0)))*tolerance)
 					return true;
 			}
 		}
