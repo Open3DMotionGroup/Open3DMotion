@@ -718,22 +718,37 @@ public:
 		// const UInt32 num_reps = 1000;
 
 		// Shape of gaussian noise
-		const Vector3 noise(2.0, 2.0, 2.0); // spherical 2mm
+		const Vector3 noise(2.0 / sqrt(3.0)); // spherical 2mm
 		// const Vector3 noise(1.0, 8.0, 1.0); // non-spherical (1mm, 8mm, 1mm)
 
 		// template shape
 		double nine_point_shape[3*9] =
 		{
-			-80.0,  25.0,  50.0,
-			-75.0,   0.0,   0.0,
-			-25.0,  50.0,   0.0,
-				0.0,  50.0, -25.0,
-				0.0, -25.0,  50.0,
-			 25.0,   0.0,   0.0,
-			 75.0,   0.0,   0.0,
-			 80.0, -50.0,  25.0,
-			 85.0,   0.0, -50.0
+			100.0,	 0.0,	 50.0,
+			 62.3,	78.2,	-50.0,
+      -22.3,	97.5,	 50.0,
+      -90.1,	43.4,	-50.0,
+      -90.1, -43.4,	 50.0,
+      -22.3, -97.5,	-50.0,
+       62.4, -78.2,	 50.0,
+        0.0,	 0.0,	 50.0,
+        0.0,	 0.0,	-50.0,
 		};
+
+		// Print distances between points		
+		/*
+		for (size_t p = 0; p < 8; p++)
+		{
+			for (size_t q = p+1; q < 9; q++)
+			{
+				Vector3 px(nine_point_shape+3*p);
+				Vector3 qx(nine_point_shape+3*q);
+				Vector3 dx;
+				Vector3::Sub(dx, px, qx);
+				fprintf(stderr, "Interpoint distance: %lf\n", dx.Modulus());
+			}
+		}
+		*/
 
 		// ground truth shape - used to set coordinate system for angle comparison
 		RigidBodyShape shape_truth;
@@ -864,9 +879,10 @@ public:
 						iter_truth.Occluded() = 0;
 
 						// add noise
-						Tx[0] +=  noise[0]*RandomGauss();
-						Tx[1] +=  noise[1]*RandomGauss();
-						Tx[2] +=  noise[2]*RandomGauss();
+						Vector3 rand3(noise[0]*RandomGauss(), noise[1]*RandomGauss(), noise[2]*RandomGauss());
+						// if (rand3.Modulus() > 6.0)
+						// 	fprintf(stderr, "|n|: %lf\n", rand3.Modulus());
+						Tx += rand3;
 
 						// use as input
 						iter_input.Value()[0] = Tx[0];
@@ -1061,15 +1077,15 @@ public:
 
 		double mean_time = sum_clock / num_reps;
 		fprintf(stderr, "RigidBodyShapeCollection::testMoshFit repetitions %u\n" \
-										 "  mean processing time: %lf\n" \
-			               "  RMS min: %lf\n" \
-										 "  RMS max: %lf\n" \
-										 "  angle RMS min: %lf\n" \
-										 "  angle RMS max: %lf\n" \
-			               "  procrustes RMS min: %lf\n" \
-										 "  procrustes RMS max: %lf\n" \
-										 "  procrustes angle RMS min: %lf\n" \
-										 "  procrustes angle RMS max: %lf\n",
+										 "  mean processing time: %.3lf\n" \
+			               "  RMS min: %.3lf\n" \
+										 "  RMS max: %.3lf\n" \
+										 "  angle RMS min: %.3lf\n" \
+										 "  angle RMS max: %.3lf\n" \
+			               "  procrustes RMS min: %.3lf\n" \
+										 "  procrustes RMS max: %.3lf\n" \
+										 "  procrustes angle RMS min: %.3lf\n" \
+										 "  procrustes angle RMS max: %.3lf\n",
 			num_reps, mean_time, 
 			rms_min, rms_max, 
 			angle_rms_min, angle_rms_max,

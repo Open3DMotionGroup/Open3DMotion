@@ -148,6 +148,8 @@ namespace Open3DMotion
 	{
 		if (marker.size() == other.marker.size())
 		{
+			size_t num_in_common(0);
+			Vector3 common_centroid(0.0);
 			std::vector<double> common_coords;
 			common_coords.reserve(3*NumMarkers());
 			for (std::vector<RigidBodyMarker>::const_iterator iter_this( marker.begin() ), iter_other( other.marker.begin() );
@@ -155,20 +157,32 @@ namespace Open3DMotion
 			{
 				if (iter_this->visible && iter_other->visible)
 				{
+					const Vector3& x = iter_this->position;
 					for (size_t j = 0; j < 3; j++)
-						common_coords.push_back(iter_this->position[j]);
+						common_coords.push_back(x[j]);
+					num_in_common++;
+					common_centroid += x;
 				}
 			}
 
-			if (common_coords.size() >= 9)
+			if (num_in_common >= 3)
 			{
+				// subract centroid
+				common_centroid /= num_in_common;
+				double* x = &common_coords[0];
+				for (size_t j = 0; j < num_in_common; j++, x+=3)
+				{
+					Vector3::Sub(x, x, common_centroid);
+				}
+
 				// find singular values to estimate how non-colinear these points are
 				std::vector<double> s;
 				RigidBodyShape::EvaluateNonsingularity3D(s, common_coords);
 
 				// Simplified expression to test points sufficiently non-colinear
 				// (condition is sufficient but not always necessary)
-				if (s[1] > (2.0 + sqrt(1.194*(common_coords.size()/3.0)))*tolerance)
+				double min_colinearity_allowed = 3.56*sqrt((double)num_in_common)*tolerance;
+				if (s[1] > min_colinearity_allowed)
 					return true;
 			}
 		}
