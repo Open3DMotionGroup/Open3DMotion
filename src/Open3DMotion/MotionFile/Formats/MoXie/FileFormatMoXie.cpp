@@ -16,7 +16,7 @@
 #include <float.h>
 #include <sstream>
 #include <iomanip>
-
+#include <memory>
 namespace Open3DMotion
 {
 	const char* moxie_xml_doc = "moxie_viewer_datafile";

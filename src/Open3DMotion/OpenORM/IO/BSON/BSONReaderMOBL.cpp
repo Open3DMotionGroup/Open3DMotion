@@ -10,6 +10,8 @@
 #include "Open3DMotion/OpenORM/Leaves/TreeBinary.h"
 #include "Open3DMotion/OpenORM/Mappings/RichBinary/BinMemFactory.h"
 
+#include <memory>
+
 namespace Open3DMotion
 {
 	TreeValue* BSONReaderMOBL::ReadElementValue(UInt8 elementcode)  throw (BSONReadException)

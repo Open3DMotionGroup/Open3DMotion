@@ -19,6 +19,8 @@ extern "C"
 #include <b64/cdecode.h>
 }
 
+#include <memory>
+
 namespace Open3DMotion
 {
 	void ReadWriteXMLBinary::WriteValue(XMLWritingMachine& writer, const TreeValue* value) const
