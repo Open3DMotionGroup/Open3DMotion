@@ -14,6 +14,8 @@
 #include "Open3DMotion/MotionFile/MotionFileException.h"
 #include "Open3DMotion/OpenORM/Mappings/RichBinary/BinMemFactoryDefault.h"
 
+#include <memory>
+
 namespace Open3DMotion
 {
 	class BSONInputStream;

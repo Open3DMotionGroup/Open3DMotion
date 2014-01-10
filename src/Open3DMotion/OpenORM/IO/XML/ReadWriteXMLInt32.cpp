@@ -9,6 +9,7 @@
 #include "XMLReadingMachine.h"
 #include "XMLWritingMachine.h"
 #include <iomanip>
+#include <stdio.h>
 
 #if defined(_MSC_VER)
   // Disable unsafe warning (use of the function 'sscanf' instead of 'sscanf_s' for portability reasons;

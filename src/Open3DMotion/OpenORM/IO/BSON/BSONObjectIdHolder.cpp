@@ -8,6 +8,7 @@
 #include "BSONObjectIdHolder.h"
 #include <sstream>
 #include <iomanip>
+#include <stdio.h>
 
 namespace Open3DMotion
 {

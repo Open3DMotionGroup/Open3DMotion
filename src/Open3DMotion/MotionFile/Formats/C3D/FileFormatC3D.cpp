@@ -14,6 +14,7 @@
 #include <map>
 #include <limits>
 #include <sstream>
+#include <memory>
 #include <stdio.h>
 #include <math.h>
 
