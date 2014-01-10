@@ -55,8 +55,8 @@ namespace Open3DMotion
 		Eigen::Map< const Eigen::Matrix<double, 3, 3, Eigen::RowMajor> > _A(A, 3, 3);
     Eigen::Map< Eigen::Matrix<double, 3, 3, Eigen::RowMajor> > _U(U, 3, 3);
     Eigen::Map< Eigen::Matrix<double, 3, 3, Eigen::RowMajor> > _VT(VT, 3, 3);
-    Eigen::SVD< Eigen::Matrix<double, 3, 3, Eigen::RowMajor> > svd(_A);
     Eigen::Map< Eigen::Matrix<double, 3, 1> > _s(s, 3, 1);
+    Eigen::JacobiSVD< Eigen::Matrix<double, 3, 3, Eigen::RowMajor> > svd(_A, Eigen::ComputeFullU | Eigen::ComputeFullV);
     _U = svd.matrixU();
     _VT = svd.matrixV().transpose();
     _s = svd.singularValues();

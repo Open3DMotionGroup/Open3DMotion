@@ -137,8 +137,8 @@ namespace Open3DMotion
 #else    
 		Eigen::Map< Eigen::Matrix<double, Eigen::Dynamic, 3, Eigen::RowMajor> >
       _coords(&coords[0], (int)num_points, 3);
-    Eigen::SVD< Eigen::Matrix<double, Eigen::Dynamic, 3, Eigen::RowMajor> > svd(_coords);
     Eigen::Map< Eigen::Matrix<double, 3, 1> > _s(&s[0], 3, 1);
+    Eigen::JacobiSVD< Eigen::Matrix<double, Eigen::Dynamic, 3, Eigen::RowMajor> > svd(_coords);
     _s = svd.singularValues();
 #endif // OPEN3DMOTION_LINEAR_ALGEBRA_EIGEN
 	}
