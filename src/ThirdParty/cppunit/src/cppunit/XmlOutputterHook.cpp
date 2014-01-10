@@ -5,37 +5,37 @@ CPPUNIT_NS_BEGIN
 
 
 void 
-XmlOutputterHook::beginDocument( XmlDocument *document )
+XmlOutputterHook::beginDocument( XmlDocument * /*document*/ )
 {
 }
 
 
 void 
-XmlOutputterHook::endDocument( XmlDocument *document )
+XmlOutputterHook::endDocument( XmlDocument * /*document*/ )
 {
 }
 
 
 void 
-XmlOutputterHook::failTestAdded( XmlDocument *document,
-                                 XmlElement *testElement,
-                                 Test *test,
-                                 TestFailure *failure )
+XmlOutputterHook::failTestAdded( XmlDocument * /*document*/,
+                                 XmlElement * /*testElement*/,
+                                 Test * /*test*/,
+                                 TestFailure * /*failure*/ )
 {
 }
 
 
 void 
-XmlOutputterHook::successfulTestAdded( XmlDocument *document,
-                                       XmlElement *testElement,
-                                       Test *test )
+XmlOutputterHook::successfulTestAdded( XmlDocument * /*document*/,
+                                       XmlElement * /*testElement*/,
+                                       Test * /*test*/ )
 {
 }
 
 
 void 
-XmlOutputterHook::statisticsAdded( XmlDocument *document,
-                                   XmlElement *statisticsElement )
+XmlOutputterHook::statisticsAdded( XmlDocument * /*document*/,
+                                   XmlElement * /*statisticsElement*/ )
 {
 }
 

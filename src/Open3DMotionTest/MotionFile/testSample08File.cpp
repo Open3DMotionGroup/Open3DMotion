@@ -180,7 +180,7 @@ void testSample08File(MotionFileHandler& handler, const char* filename, double m
 			{
 				sprintf(detail, "%s: [analog=%s][analog sample=%u]\n"
 					              "Expected %lf Actual %lf",
-					msg, TestData::EB01PI_analogname[i], j,
+					msg, TestData::EB01PI_analogname[i], static_cast<unsigned int>(j),
 					expected, actual);
 				CPPUNIT_FAIL(detail);
 			}
