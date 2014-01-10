@@ -18,6 +18,8 @@
 #include "BSONObjectIdHolder.h"
 #include "BSONTimestampHolder.h"
 
+#include <memory>
+
 namespace Open3DMotion
 {
 	BSONReader::BSONReader(BSONInputStream& _input, const BinMemFactory& _memfactory) :

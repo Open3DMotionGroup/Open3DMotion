@@ -7,6 +7,10 @@
 #include <time.h>
 #include <list>
 
+#ifndef CLK_TCK
+  #define CLK_TCK CLOCKS_PER_SEC
+#endif
+
 using namespace Open3DMotion;
 using namespace std;
 

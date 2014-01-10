@@ -7,6 +7,8 @@
 
 #include "BSONInputStreamGZ.h"
 #include <zlib.h>
+#include <memory.h>
+#include <stdlib.h>
 
 namespace Open3DMotion
 {

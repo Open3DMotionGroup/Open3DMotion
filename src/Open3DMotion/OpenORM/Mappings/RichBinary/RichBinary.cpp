@@ -7,6 +7,9 @@
 
 #include "Open3DMotion/OpenORM/Mappings/RichBinary/RichBinary.h"
 
+#include <memory>
+#include <memory.h>
+
 namespace Open3DMotion
 {
 	const char RichBinary::BinaryName[] = "Data";

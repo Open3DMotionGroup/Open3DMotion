@@ -20,8 +20,14 @@
 #endif
 
 #ifdef __GNUC__
+#include <string.h>
 #define _stricmp strcasecmp
 #define _finite isfinite
+#endif
+
+#ifndef SIZE_MAX
+#include <limits>
+#define SIZE_MAX std::numeric_limits<size_t>::max()
 #endif
 
 namespace Open3DMotion

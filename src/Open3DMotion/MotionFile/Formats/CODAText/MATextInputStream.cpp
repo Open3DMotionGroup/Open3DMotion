@@ -6,6 +6,7 @@
 --*/
 
 #include "Open3DMotion/MotionFile/Formats/CODAText/MATextInputStream.h"
+#include <stdio.h>
 
 namespace Open3DMotion
 {
