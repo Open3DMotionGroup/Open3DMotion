@@ -576,7 +576,7 @@ namespace Open3DMotion
 	size_t ForcePlateMDF::MDFChannelToRuntimeChannel(size_t mdfchannel) const
 	{
 		// get orientation
-		Orientation orient = MDFOrientation();
+		int orient = static_cast<int>(MDFOrientation());
 
 		// cannot remap unless orientation 0-3
 		if (orient < 0 || orient >= 4)
@@ -609,7 +609,7 @@ namespace Open3DMotion
 	size_t ForcePlateMDF::RuntimeChannelToMDFChannel(size_t runchannel) const
 	{
 		// get orientation
-		Orientation orient = MDFOrientation();
+		int orient = static_cast<int>(MDFOrientation());
 
 		// cannot remap unless orientation 0-3
 		if (orient < 0 || orient >= 4)
@@ -640,7 +640,7 @@ namespace Open3DMotion
   double ForcePlateMDF::MDFChannelScale(size_t mdfchannel) const
   {
 		// get orientation
-		Orientation orient = MDFOrientation();
+		int orient = static_cast<int>(MDFOrientation());
 
 		// cannot remap unless orientation 0-3
 		if (orient < 0 || orient >= 4)
