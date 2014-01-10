@@ -16,7 +16,7 @@ namespace Open3DMotion
 
 	void Interpolate::Linear(TimeSequence& ts)  throw(NoSuchFieldException)
   {
-    size_t numframes = ts.NumFrames();
+    //size_t numframes = ts.NumFrames(); // Not used
     bool haveseen = false;
 		size_t firstvisible(SIZE_MAX);
 		size_t lastvisible(SIZE_MAX);
@@ -88,7 +88,7 @@ namespace Open3DMotion
 
 	void Interpolate::Cubic(TimeSequence& ts, size_t maxnumslopesamples /*=10*/)  throw(NoSuchFieldException)
   {
-    size_t numframes = ts.NumFrames();
+    // size_t numframes = ts.NumFrames(); // Not used
     bool haveseen = false;
 		size_t firstvisible(SIZE_MAX);
 		size_t lastvisible(SIZE_MAX);
