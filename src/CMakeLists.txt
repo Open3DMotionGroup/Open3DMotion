@@ -31,9 +31,12 @@ endif (OPEN3DMOTION_BIND_PYTHON)
 # Append 'd' to end of library name for the debug version of the libraries we build
 SET(CMAKE_DEBUG_POSTFIX d)
 
-# Additional warning flags on GNU C on Apple
+# Additional warning flags for GCC/Clang on Apple
 if(APPLE)
-  set(CMAKE_CXX_FLAGS_DEBUG  "-g -Wnon-virtual-dtor -Wno-long-long -ansi -Wchar-subscripts -Wall -Wextra -Wpointer-arith -Wformat-security -Woverloaded-virtual -fno-check-new -fno-common")
+  set(CMAKE_CXX_FLAGS_DEBUG  "-g -Wnon-virtual-dtor -Wno-long-long -Wchar-subscripts -Wall -Wextra -Wpointer-arith -Wformat-security -Woverloaded-virtual -fno-common")
+  if(CMAKE_COMPILER_IS_GNUCXX)
+    set(CMAKE_CXX_FLAGS_DEBUG  ${CMAKE_CXX_FLAGS_DEBUG} "-ansi -fno-check-new ")
+  endif(CMAKE_COMPILER_IS_GNUCXX)
 endif(APPLE)
 
 # Optionally use static libraries on windows
