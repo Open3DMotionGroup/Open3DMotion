@@ -52,11 +52,11 @@ namespace Open3DMotion
       &info);   // returned error codes
     
 #else
-		Eigen::Map< Eigen::Matrix<double, 3, 3, Eigen::RowMajor> > _A(A, 3, 3);
+		Eigen::Map< const Eigen::Matrix<double, 3, 3, Eigen::RowMajor> > _A(A, 3, 3);
     Eigen::Map< Eigen::Matrix<double, 3, 3, Eigen::RowMajor> > _U(U, 3, 3);
     Eigen::Map< Eigen::Matrix<double, 3, 3, Eigen::RowMajor> > _VT(VT, 3, 3);
-    Eigen::Map< Eigen::Matrix<double, 3, 1, Eigen::RowMajor> > _s(s, 3, 1);
     Eigen::SVD< Eigen::Matrix<double, 3, 3, Eigen::RowMajor> > svd(_A);
+    Eigen::Map< Eigen::Matrix<double, 3, 1> > _s(s, 3, 1);
     _U = svd.matrixU();
     _VT = svd.matrixV().transpose();
     _s = svd.singularValues();
