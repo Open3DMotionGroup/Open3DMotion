@@ -116,7 +116,7 @@ namespace Open3DMotion
 		Eigen::Vector3f CTd = CT * d;
 
 		// solve
-		CTC.ldlt().solve(CTd, &y);
+		y = CTC.ldlt().solve(CTd);
 
 		// compute rms error if requested
 		if (rms)
