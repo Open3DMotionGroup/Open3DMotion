@@ -388,7 +388,7 @@ void TestMDF::testAMTIForceCoPConsistent(const char* filename, size_t numplates,
 			// use only frames with > 1 N force
 			if (fabs(Fz) > 1.0)
 			{
-				double compPx, compPy;
+				double compPx = 0.0, compPy = 0.0;
 				if (calcoption == fpcalc_AMTI)
 				{
 					// compute precisely according to AMTI formulae
