@@ -9,6 +9,8 @@
 using namespace Open3DMotion;
 using namespace std;
 
+#define PROTECTED_MEMBER_RIGIDBODYSHAPE_EVALUATENONSINGULARITY3D
+
 class TestRigidBodyShape : public CppUnit::TestCase
 {
 public:
@@ -20,7 +22,9 @@ public:
 	CPPUNIT_TEST( testVisibilitySuperset );
 	CPPUNIT_TEST( testNumberOfVisibleMarkersInCommonWith );
 	CPPUNIT_TEST( testHasUniqueFitWith );
+#ifndef PROTECTED_MEMBER_RIGIDBODYSHAPE_EVALUATENONSINGULARITY3D
 	CPPUNIT_TEST( testEvaluateNonSingularity );
+#endif
 	CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -239,6 +243,7 @@ public:
 		CPPUNIT_ASSERT_EQUAL(size_t(2), s2.NumberOfVisibleMarkersInCommonWith(s1));
 	}
 
+#ifndef PROTECTED_MEMBER_RIGIDBODYSHAPE_EVALUATENONSINGULARITY3D
 	void testEvaluateNonSingularity()
 	{
 		const double ID5[3*5] =
@@ -260,7 +265,8 @@ public:
 		CPPUNIT_ASSERT_DOUBLES_EQUAL(2.0, resultID5[1], 0.0001);
 		CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, resultID5[2], 0.0001);
 	}
-
+#endif
+  
 	void testHasUniqueFitWith()
 	{
 		// markers 0, 1, 2 roughly colinear (should cause singularity if only these used)
