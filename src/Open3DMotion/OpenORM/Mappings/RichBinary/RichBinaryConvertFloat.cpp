@@ -65,7 +65,7 @@ namespace Open3DMotion
 				{
 					for (size_t idim = 0; idim < ndim; idim++)
 					{
-						*(OutputType*)(ptr_output) = *(const InputType*)(ptr_input);
+						*reinterpret_cast<OutputType*>(ptr_output) = static_cast<OutputType>(*reinterpret_cast<const InputType*>(ptr_input));
 						ptr_input += sizeof(InputType);
 						ptr_output += sizeof(OutputType);
 					}
