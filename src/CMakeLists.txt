@@ -33,7 +33,7 @@ SET(CMAKE_DEBUG_POSTFIX d)
 
 # Additional warning flags for GCC/Clang on Apple
 if(APPLE)
-  set(CMAKE_CXX_FLAGS_DEBUG  "-g -Wnon-virtual-dtor -Wno-long-long -Wchar-subscripts -Wall -Wextra -Wpointer-arith -Wformat-security -Woverloaded-virtual -fno-common")
+  set(CMAKE_CXX_FLAGS_DEBUG  "-g -Wnon-virtual-dtor -Wno-long-long -Wchar-subscripts -Wall -Wextra -Wpointer-arith -Wformat-security -Woverloaded-virtual -Wcast-align -fno-common")
   if(CMAKE_COMPILER_IS_GNUCXX)
     set(CMAKE_CXX_FLAGS_DEBUG  ${CMAKE_CXX_FLAGS_DEBUG} "-ansi -fno-check-new ")
   endif(CMAKE_COMPILER_IS_GNUCXX)

@@ -88,7 +88,7 @@ namespace Open3DMotion
 		if (iplate < data[VAR_FORCE_PLATE_FLAGS].size() &&
 				data[VAR_FORCE_PLATE_FLAGS][iplate].size() >= 2)
     {
-      UInt16 wType = *(UInt16*)(&(data[VAR_FORCE_PLATE_FLAGS][iplate][0]));
+      UInt16 wType = *reinterpret_cast<UInt16*>(&(data[VAR_FORCE_PLATE_FLAGS][iplate][0]));
       id = wType >> 8;
     }
 
@@ -109,7 +109,7 @@ namespace Open3DMotion
     if (iplate < data[VAR_FORCE_PLATE_CONSTANTS].size() &&
 				data[VAR_FORCE_PLATE_CONSTANTS][iplate].size() >= 6)
     {
-      ParseMDFSensorConstants((const Int16*)&data[VAR_FORCE_PLATE_CONSTANTS][iplate][0]);
+      ParseMDFSensorConstants(reinterpret_cast<const Int16*>(&data[VAR_FORCE_PLATE_CONSTANTS][iplate][0]));
     }
 
     // custom outline
@@ -123,7 +123,7 @@ namespace Open3DMotion
         
 				double corner_vector[3] = { 0, 0, 0 };
 				for (size_t j = 0; j < 3; j++)
-					corner_vector[j] = 0.1 * ((const Int16*)&data[VAR_FORCE_PLATE_POSITION][4*iplate+i][0])[j];
+					corner_vector[j] = 0.1 * (reinterpret_cast<const Int16*>(&data[VAR_FORCE_PLATE_POSITION][4*iplate+i][0]))[j];
 
 				Outline[i].SetVector(corner_vector);
       }
@@ -146,7 +146,7 @@ namespace Open3DMotion
 				}
 				for (size_t c = 0; c < 6; c++)
 				{
-          kistler_params[r][c] = ((float*)&data[VAR_FORCE_PLATE_COP_COEFFS][r][0])[c];
+          kistler_params[r][c] = (reinterpret_cast<float*>(&data[VAR_FORCE_PLATE_COP_COEFFS][r][0]))[c];
         }
 			}
 
@@ -187,33 +187,33 @@ namespace Open3DMotion
 
         // get scaled inputs
         float Fy = -1.0f *
-            ((Int16*)&(data[VAR_ANALOGUE_FORCE][platechan0  ][0]))[index_frame]
-            * *(float*)(&data[VAR_FORCE_RESOLUTION][platechan0  ][0]);
+            (reinterpret_cast<Int16*>(&(data[VAR_ANALOGUE_FORCE][platechan0  ][0])))[index_frame]
+            * *reinterpret_cast<float*>(&data[VAR_FORCE_RESOLUTION][platechan0  ][0]);
         float Fx = -1.0f *
-            ((Int16*)&(data[VAR_ANALOGUE_FORCE][platechan0+1][0]))[index_frame]
-            * *(float*)(&data[VAR_FORCE_RESOLUTION][platechan0+1][0]);
+            (reinterpret_cast<Int16*>(&(data[VAR_ANALOGUE_FORCE][platechan0+1][0])))[index_frame]
+            * *reinterpret_cast<float*>(&data[VAR_FORCE_RESOLUTION][platechan0+1][0]);
         float Fz = 
-            ((Int16*)&(data[VAR_ANALOGUE_FORCE][platechan0+2][0]))[index_frame]
-            * *(float*)(&data[VAR_FORCE_RESOLUTION][platechan0+2][0]);
+            (reinterpret_cast<Int16*>(&(data[VAR_ANALOGUE_FORCE][platechan0+2][0])))[index_frame]
+            * *reinterpret_cast<float*>(&data[VAR_FORCE_RESOLUTION][platechan0+2][0]);
         float My = 1000.0f *
-            ((Int16*)&(data[VAR_ANALOGUE_FORCE][platechan0+3][0]))[index_frame]
-            * *(float*)(&data[VAR_FORCE_RESOLUTION][platechan0+3][0]);
+            (reinterpret_cast<Int16*>(&(data[VAR_ANALOGUE_FORCE][platechan0+3][0])))[index_frame]
+            * *reinterpret_cast<float*>(&data[VAR_FORCE_RESOLUTION][platechan0+3][0]);
         float Mx = 1000.0f *
-            ((Int16*)&(data[VAR_ANALOGUE_FORCE][platechan0+4][0]))[index_frame]
-            * *(float*)(&data[VAR_FORCE_RESOLUTION][platechan0+4][0]);
+            (reinterpret_cast<Int16*>(&(data[VAR_ANALOGUE_FORCE][platechan0+4][0])))[index_frame]
+            * *reinterpret_cast<float*>(&data[VAR_FORCE_RESOLUTION][platechan0+4][0]);
         
 				// Mz would be like this but not needed for these calcs
 				// float Mz = 1000.0f *
-        //    ((Int16*)&(data[FileFormatMDF::VAR_ANALOGUE_FORCE][platechan0+5][0]))[index_frame]
-        //    * *(float*)(&data[FileFormatMDF::VAR_FORCE_RESOLUTION][platechan0+5][0]);
+        //    (reinterpret_cast<Int16*>(&data[FileFormatMDF::VAR_ANALOGUE_FORCE][platechan0+5][0]))[index_frame]
+        //    * *reinterpret_cast<float*>(&data[FileFormatMDF::VAR_FORCE_RESOLUTION][platechan0+5][0]);
 
 				// centre of pressure as originally computed
 				float Py = 
-            ((Int16*)&(data[VAR_ANALOGUE_FORCE][platechan0+6][0]))[index_frame]
-            * *(float*)(&data[VAR_FORCE_RESOLUTION][platechan0+6][0]);
+            (reinterpret_cast<Int16*>(&(data[VAR_ANALOGUE_FORCE][platechan0+6][0])))[index_frame]
+            * *reinterpret_cast<float*>(&data[VAR_FORCE_RESOLUTION][platechan0+6][0]);
         float Px = 
-            ((Int16*)&(data[VAR_ANALOGUE_FORCE][platechan0+7][0]))[index_frame]
-            * *(float*)(&data[VAR_FORCE_RESOLUTION][platechan0+7][0]);
+            (reinterpret_cast<Int16*>(&(data[VAR_ANALOGUE_FORCE][platechan0+7][0])))[index_frame]
+            * *reinterpret_cast<float*>(&data[VAR_FORCE_RESOLUTION][platechan0+7][0]);
 
 				if (fabs(Fz) < 1.0)
 					continue;
