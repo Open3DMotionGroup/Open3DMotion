@@ -49,7 +49,7 @@ namespace Open3DMotion
                                      const UInt8* inview,
                                      float scale)
   {
-    const Int16* pos = (const Int16*)data;
+    const Int16* pos = reinterpret_cast<const Int16*>(data);
 		// Int32 num_frames = ts.NumFrames();
     UInt16 wInView(0);
     *(UInt8*)&wInView = *(inview+1);
@@ -101,7 +101,7 @@ namespace Open3DMotion
                                      const UInt8* inview,
                                      float /*scale*/)
   {
-    const float* pos = (const float*)data;
+    const float* pos = reinterpret_cast<const float*>(data);
     UInt16 wInView;
     *(UInt8*)&wInView = *(inview+1);
     *((UInt8*)&wInView+1) = *inview;

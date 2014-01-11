@@ -387,12 +387,12 @@ namespace Open3DMotion
         throw(MotionFileException(MotionFileException::formaterror, "Unknown frame rate for marker"));
 
       // time resolution
-      UInt16 timeres = *(UInt16*)(&data[VAR_TIME_RESOLUTION_MARKER][i][0]);
+      UInt16 timeres = *reinterpret_cast<UInt16*>(&data[VAR_TIME_RESOLUTION_MARKER][i][0]);
 
       // scale factor
       float scale(1.0);
       if (i < data[VAR_POSITION_RESOLUTION_MARKER].size())
-        scale = (float)1E-3 * *(Int16*)(&data[VAR_POSITION_RESOLUTION_MARKER][i][0]);
+        scale = (float)1E-3 * *reinterpret_cast<Int16*>(&data[VAR_POSITION_RESOLUTION_MARKER][i][0]);
 
       // find name
       std::string name;
@@ -418,7 +418,7 @@ namespace Open3DMotion
       // find hardware number (note it is zero-based in MDF files)
       Int32 hardware(i);
       if (i < data[VAR_MARKER_NUMBER_HARDWARE].size())
-        hardware = *(UInt16*)&(data[VAR_MARKER_NUMBER_HARDWARE][i][0]);
+        hardware = *reinterpret_cast<UInt16*>(&data[VAR_MARKER_NUMBER_HARDWARE][i][0]);
 
 			// HACK: only support 99 unique marker ID's - after that assume multi-coda mode
 			hardware = hardware % 100;
@@ -463,16 +463,16 @@ namespace Open3DMotion
       // time resolution
       UInt16 timeres(0);
       if (i < data[VAR_TIME_RESOLUTION_EMG].size())
-        timeres= *(UInt16*)(&data[VAR_TIME_RESOLUTION_EMG][i][0]);
+        timeres= *reinterpret_cast<UInt16*>(&data[VAR_TIME_RESOLUTION_EMG][i][0]);
       else if (data[VAR_TIME_RESOLUTION_MARKER].size())
-        timeres = *(UInt16*)(&data[VAR_TIME_RESOLUTION_MARKER][0][0]);
+        timeres = *reinterpret_cast<UInt16*>(&data[VAR_TIME_RESOLUTION_MARKER][0][0]);
       else
         throw(MotionFileException(MotionFileException::formaterror, "Unknown frame rate for force"));
 
       // position resolution
       double scale(0.0);
       if (i < data[VAR_EMG_RESOLUTION].size())
-        scale = *(float*)(&data[VAR_EMG_RESOLUTION][i][0]);
+        scale = *reinterpret_cast<float*>(&data[VAR_EMG_RESOLUTION][i][0]);
       else
         scale = MDF_OldEMGScalingConst;
 
@@ -509,7 +509,7 @@ namespace Open3DMotion
       ts->HardwareID = hardwareID;
 			
 			// copy data (unscaled)
-      Int16* a = (Int16*)&(data[VAR_ANALOGUE_EMG][i][0]);
+      Int16* a = reinterpret_cast<Int16*>(&data[VAR_ANALOGUE_EMG][i][0]);
 			for (TSScalarIter iter_ts(*ts); iter_ts.HasFrame(); iter_ts.Next(), a++)
       {
 				iter_ts.Value() = *a;
@@ -550,16 +550,16 @@ namespace Open3DMotion
 					// channel time resolution
           UInt16 timeres(0);
           if (data[VAR_TIME_RESOLUTION_FORCE].size())
-            timeres= *(UInt16*)(&data[VAR_TIME_RESOLUTION_FORCE][0][0]);
+            timeres= *reinterpret_cast<UInt16*>(&data[VAR_TIME_RESOLUTION_FORCE][0][0]);
           else if (data[VAR_TIME_RESOLUTION_MARKER].size())
-            timeres = *(UInt16*)(&data[VAR_TIME_RESOLUTION_MARKER][0][0]);
+            timeres = *reinterpret_cast<UInt16*>(&data[VAR_TIME_RESOLUTION_MARKER][0][0]);
           else
             throw(MotionFileException(MotionFileException::formaterror, "Unknown frame rate for force"));
 
           // channel position resolution
           double scale(0.0);
           if (index_file_force < data[VAR_FORCE_RESOLUTION].size())
-            scale = *(float*)(&data[VAR_FORCE_RESOLUTION][index_file_force][0]);
+            scale = *reinterpret_cast<float*>(&data[VAR_FORCE_RESOLUTION][index_file_force][0]);
           else
             scale = MDF_OldForceScalingConst;
 
@@ -604,7 +604,7 @@ namespace Open3DMotion
 					ts->ScaleUnits = fp_mdf.MDFChannelUnits(mdf_plate_channel);
 					
 					// copy data
-					Int16* a = (Int16*)&(data[VAR_ANALOGUE_FORCE][index_file_force][0]);
+					Int16* a = reinterpret_cast<Int16*>(&data[VAR_ANALOGUE_FORCE][index_file_force][0]);
 					for (TSScalarIter iter_ts(*ts); iter_ts.HasFrame(); iter_ts.Next(), a++)
           {
             iter_ts.Value() = *a;
@@ -636,7 +636,7 @@ namespace Open3DMotion
 		{			
 			if (data[VAR_DATE_CREATE][0].size() == 6)
 			{
-				const Int16* date = (Int16*)&data[VAR_DATE_CREATE][0][0];
+				const Int16* date = reinterpret_cast<Int16*>(&data[VAR_DATE_CREATE][0][0]);
 				trial->Acq.Date.Day = (Int32)date[0];
 				trial->Acq.Date.Month = (Int32)date[1];
 				trial->Acq.Date.Year = (Int32)date[2];
@@ -667,46 +667,46 @@ namespace Open3DMotion
     if (num_subject_data >= 5)
     {
 			// decode gender
-      trial->UserInput.Subject.Gender = *(Int16*)&data[VAR_PATIENT_DATA][0][0] ? "male" : "female";
+      trial->UserInput.Subject.Gender = *reinterpret_cast<Int16*>(&data[VAR_PATIENT_DATA][0][0]) ? "male" : "female";
       
 			// decode date
       // TODO: compute full year from age and acquisition date
-			Int32 dob = *(Int16*)&data[VAR_PATIENT_DATA][1][0];
+			Int32 dob = *reinterpret_cast<Int16*>(&data[VAR_PATIENT_DATA][1][0]);
       Int32 dob_month = dob / 100;
       Int32 dob_year = 1900 + dob - (100*dob_month);
 			trial->UserInput.Subject.DateOfBirth.Month = dob_month;
 			trial->UserInput.Subject.DateOfBirth.Year = dob_year;
       
 			// other params
-			trial->UserInput.Subject.Age = (Int32)*(Int16*)&data[VAR_PATIENT_DATA][2][0];
-			trial->UserInput.Subject.Weight = (double)*(Int16*)&data[VAR_PATIENT_DATA][3][0];
-      trial->UserInput.Subject.Height = (double)*(Int16*)&data[VAR_PATIENT_DATA][4][0];
+			trial->UserInput.Subject.Age = (Int32)*reinterpret_cast<Int16*>(&data[VAR_PATIENT_DATA][2][0]);
+			trial->UserInput.Subject.Weight = (double)*reinterpret_cast<Int16*>(&data[VAR_PATIENT_DATA][3][0]);
+      trial->UserInput.Subject.Height = (double)*reinterpret_cast<Int16*>(&data[VAR_PATIENT_DATA][4][0]);
     }
 
     // segment parameters
     if(num_subject_data >= 11 )
     {
-			trial->UserInput.Subject.PelvicWidth = (double)*(Int16*)&data[VAR_PATIENT_DATA][5][0];
-      trial->UserInput.Subject.PelvicDepth = (double)*(Int16*)&data[VAR_PATIENT_DATA][6][0];
-      trial->UserInput.Subject.LKneeWidth = (double)*(Int16*)&data[VAR_PATIENT_DATA][7][0];
-      trial->UserInput.Subject.RKneeWidth = (double)*(Int16*)&data[VAR_PATIENT_DATA][8][0];
-      trial->UserInput.Subject.LAnkleWidth = (double)*(Int16*)&data[VAR_PATIENT_DATA][9][0];
-      trial->UserInput.Subject.RAnkleWidth = (double)*(Int16*)&data[VAR_PATIENT_DATA][10][0];
+			trial->UserInput.Subject.PelvicWidth = (double)*reinterpret_cast<Int16*>(&data[VAR_PATIENT_DATA][5][0]);
+      trial->UserInput.Subject.PelvicDepth = (double)*reinterpret_cast<Int16*>(&data[VAR_PATIENT_DATA][6][0]);
+      trial->UserInput.Subject.LKneeWidth = (double)*reinterpret_cast<Int16*>(&data[VAR_PATIENT_DATA][7][0]);
+      trial->UserInput.Subject.RKneeWidth = (double)*reinterpret_cast<Int16*>(&data[VAR_PATIENT_DATA][8][0]);
+      trial->UserInput.Subject.LAnkleWidth = (double)*reinterpret_cast<Int16*>(&data[VAR_PATIENT_DATA][9][0]);
+      trial->UserInput.Subject.RAnkleWidth = (double)*reinterpret_cast<Int16*>(&data[VAR_PATIENT_DATA][10][0]);
     }
 
     // Hip model - here for historical purposes - 
     // should not be used for calculation
     if (num_subject_data >= 14)
     {
-			trial->MDF.HipOffsetRatioX = (double)*(Int16*)&data[VAR_PATIENT_DATA][11][0];
-			trial->MDF.HipOffsetRatioY = (double)*(Int16*)&data[VAR_PATIENT_DATA][12][0];
-      trial->MDF.HipOffsetRatioZ = (double)*(Int16*)&data[VAR_PATIENT_DATA][13][0];
+			trial->MDF.HipOffsetRatioX = (double)*reinterpret_cast<Int16*>(&data[VAR_PATIENT_DATA][11][0]);
+			trial->MDF.HipOffsetRatioY = (double)*reinterpret_cast<Int16*>(&data[VAR_PATIENT_DATA][12][0]);
+      trial->MDF.HipOffsetRatioZ = (double)*reinterpret_cast<Int16*>(&data[VAR_PATIENT_DATA][13][0]);
     }
 
     // Sacral offset
     if(num_subject_data >= 17)
     {
-      trial->UserInput.Subject.SacralOffset = (double)*(Int16*)&data[VAR_PATIENT_DATA][14][0];
+      trial->UserInput.Subject.SacralOffset = (double)*reinterpret_cast<Int16*>(&data[VAR_PATIENT_DATA][14][0]);
     }
 
 		// Segment data
@@ -714,9 +714,9 @@ namespace Open3DMotion
 		if (num_segment_data >= 15)
 		{
 			// segment lengths: for some reason these are in m not mm
-			const float* thighLength = (const float*)&data[VAR_PATIENT_SEGMENT_DATA][0][0];
-			const float* shankLength = (const float*)&data[VAR_PATIENT_SEGMENT_DATA][1][0];
-			const float* footLength = (const float*)&data[VAR_PATIENT_SEGMENT_DATA][2][0];
+			const float* thighLength = reinterpret_cast<const float*>(&data[VAR_PATIENT_SEGMENT_DATA][0][0]);
+			const float* shankLength = reinterpret_cast<const float*>(&data[VAR_PATIENT_SEGMENT_DATA][1][0]);
+			const float* footLength = reinterpret_cast<const float*>(&data[VAR_PATIENT_SEGMENT_DATA][2][0]);
 			trial->UserInput.Subject.LThighLength = 1000.0 * (double)thighLength[0];
 			trial->UserInput.Subject.LShankLength = 1000.0 * (double)shankLength[0];
 			trial->UserInput.Subject.LFootLength = 1000.0 * (double)footLength[0];
@@ -728,9 +728,9 @@ namespace Open3DMotion
 			if (subjectWeight > 0.0)
 			{
 				// segment mass ratios (multiple of body mass)
-				const float* thighMassRatio = (const float*)&data[VAR_PATIENT_SEGMENT_DATA][3][0];
-				const float* shankMassRatio = (const float*)&data[VAR_PATIENT_SEGMENT_DATA][4][0];
-				const float* footMassRatio = (const float*)&data[VAR_PATIENT_SEGMENT_DATA][5][0];
+				const float* thighMassRatio = reinterpret_cast<const float*>(&data[VAR_PATIENT_SEGMENT_DATA][3][0]);
+				const float* shankMassRatio = reinterpret_cast<const float*>(&data[VAR_PATIENT_SEGMENT_DATA][4][0]);
+				const float* footMassRatio = reinterpret_cast<const float*>(&data[VAR_PATIENT_SEGMENT_DATA][5][0]);
 				trial->UserInput.Subject.LThighMass = thighMassRatio[0] * subjectWeight;
 				trial->UserInput.Subject.LShankMass = shankMassRatio[0] * subjectWeight;
 				trial->UserInput.Subject.LFootMass = footMassRatio[0] * subjectWeight;
@@ -741,9 +741,9 @@ namespace Open3DMotion
 				// 6, 7, and 8 are offset to centre of mass
 				// TODO: check this is not actually needed for inertial calcs
 				//       i.e. that it cancels out
-				const float* thighCR = (const float*)&data[VAR_PATIENT_SEGMENT_DATA][6][0];
-				const float* shankCR = (const float*)&data[VAR_PATIENT_SEGMENT_DATA][7][0];
-				const float* footCR = (const float*)&data[VAR_PATIENT_SEGMENT_DATA][8][0];
+				const float* thighCR = reinterpret_cast<const float*>(&data[VAR_PATIENT_SEGMENT_DATA][6][0]);
+				const float* shankCR = reinterpret_cast<const float*>(&data[VAR_PATIENT_SEGMENT_DATA][7][0]);
+				const float* footCR = reinterpret_cast<const float*>(&data[VAR_PATIENT_SEGMENT_DATA][8][0]);
 				trial->MDF.COM_LThigh = (double)thighCR[0];
 		    trial->MDF.COM_LShank = (double)shankCR[0];
 				trial->MDF.COM_LFoot = (double)footCR[0];
@@ -752,9 +752,9 @@ namespace Open3DMotion
 			  trial->MDF.COM_RFoot = (double)footCR[1];
 
 				// segment radii of gyration (X = Y), loaded in metres not mm
-				const float* thighRGXY = (const float*)&data[VAR_PATIENT_SEGMENT_DATA][9][0];
-				const float* shankRGXY = (const float*)&data[VAR_PATIENT_SEGMENT_DATA][10][0];
-				const float* footRGXY = (const float*)&data[VAR_PATIENT_SEGMENT_DATA][11][0];
+				const float* thighRGXY = reinterpret_cast<const float*>(&data[VAR_PATIENT_SEGMENT_DATA][9][0]);
+				const float* shankRGXY = reinterpret_cast<const float*>(&data[VAR_PATIENT_SEGMENT_DATA][10][0]);
+				const float* footRGXY = reinterpret_cast<const float*>(&data[VAR_PATIENT_SEGMENT_DATA][11][0]);
 				trial->UserInput.Subject.RadGyr_LThigh_X = 1000.0 * (double)(thighRGXY[0] * thighLength[0]);
 				trial->UserInput.Subject.RadGyr_LThigh_Y = 1000.0 * (double)(thighRGXY[0] * thighLength[0]);
 				trial->UserInput.Subject.RadGyr_LShank_X = 1000.0 * (double)(shankRGXY[0] * shankLength[0]);
@@ -769,9 +769,9 @@ namespace Open3DMotion
 				trial->UserInput.Subject.RadGyr_RFoot_Y = 1000.0 * (double)(footRGXY[1] * footLength[1]);
 
 				// segment radii of gyration (Z), loaded in metres not mm
-				const float* thighRGZ = (const float*)&data[VAR_PATIENT_SEGMENT_DATA][12][0];
-				const float* shankRGZ = (const float*)&data[VAR_PATIENT_SEGMENT_DATA][13][0];
-				const float* footRGZ = (const float*)&data[VAR_PATIENT_SEGMENT_DATA][14][0];
+				const float* thighRGZ = reinterpret_cast<const float*>(&data[VAR_PATIENT_SEGMENT_DATA][12][0]);
+				const float* shankRGZ = reinterpret_cast<const float*>(&data[VAR_PATIENT_SEGMENT_DATA][13][0]);
+				const float* footRGZ = reinterpret_cast<const float*>(&data[VAR_PATIENT_SEGMENT_DATA][14][0]);
 				trial->UserInput.Subject.RadGyr_LThigh_Z = 1000.0 * (double)(thighRGZ[0] * thighRGXY[0] * thighLength[0]);
 				trial->UserInput.Subject.RadGyr_LShank_Z = 1000.0 * (double)(shankRGZ[0] * shankRGXY[0] * shankLength[0]);
 				trial->UserInput.Subject.RadGyr_LFoot_Z = 1000.0 * (double)(footRGZ[0] * footRGXY[0] * footLength[0]);
@@ -790,8 +790,8 @@ namespace Open3DMotion
 				data[VAR_TIME_CURSOR][0].size() == 4)
 		{
 			// curors - get values
-			UInt16 timeres = *(UInt16*)(&data[VAR_TIME_RESOLUTION_CURSOR][0][0]);
-			Int16* ptr_time = (Int16*)&data[VAR_TIME_CURSOR][0][0];
+			UInt16 timeres = *reinterpret_cast<UInt16*>(&data[VAR_TIME_RESOLUTION_CURSOR][0][0]);
+			Int16* ptr_time = reinterpret_cast<Int16*>(&data[VAR_TIME_CURSOR][0][0]);
 			double t0 = (double)ptr_time[0] / (double)timeres;
 			double t1 = (double)ptr_time[1] / (double)timeres;
 
@@ -822,8 +822,8 @@ namespace Open3DMotion
 						continue;
 
 				// get values
-				UInt16 timeres = *(UInt16*)(&data[VAR_TIME_RESOLUTION_CURSOR][ibar][0]);
-				Int16* ptr_time = (Int16*)&data[VAR_TIME_CURSOR][ibar][0];
+				UInt16 timeres = *reinterpret_cast<UInt16*>(&data[VAR_TIME_RESOLUTION_CURSOR][ibar][0]);
+				Int16* ptr_time = reinterpret_cast<Int16*>(&data[VAR_TIME_CURSOR][ibar][0]);
 				double t0 = (double)ptr_time[0] / (double)timeres;
 				double t1 = (double)ptr_time[1] / (double)timeres;
 
@@ -849,7 +849,7 @@ namespace Open3DMotion
 			EventArray representative_events;
 
       // time scale factor
-      double tscale = (double)*(UInt16*)&data[VAR_TIME_RESOLUTION_CURSOR][0][0];
+      double tscale = (double)*reinterpret_cast<UInt16*>(&data[VAR_TIME_RESOLUTION_CURSOR][0][0]);
 
       for (i = 0; i < num_gait_cycles; i++)
       {
@@ -857,9 +857,9 @@ namespace Open3DMotion
           continue;
         
 				// time-order the cycle events
-				double hd0 = *(Int16*)&data[VAR_GAIT_CYCLES][i][0] / tscale;
-        double to  = *(Int16*)&data[VAR_GAIT_CYCLES][i][2] / tscale;
-        double hd1 = *(Int16*)&data[VAR_GAIT_CYCLES][i][4] / tscale;
+				double hd0 = *reinterpret_cast<Int16*>(&data[VAR_GAIT_CYCLES][i][0]) / tscale;
+        double to  = *reinterpret_cast<Int16*>(&data[VAR_GAIT_CYCLES][i][2]) / tscale;
+        double hd1 = *reinterpret_cast<Int16*>(&data[VAR_GAIT_CYCLES][i][4]) / tscale;
         if (to >= 0.0 && hd0 > to)
           std::swap(hd0,to);
         if (hd1 >= 0.0 && to > hd1)
@@ -948,7 +948,7 @@ namespace Open3DMotion
       const std::vector<UInt8>& channelnames = data[DataChannelNames][iCalcDataGroup];
 
       // get scaling
-      float scaling = *(float*)&(data[DataScaling][iCalcDataGroup][0]);
+      float scaling = *reinterpret_cast<float*>(&data[DataScaling][iCalcDataGroup][0]);
 
       // retrieve each channel
 			std::string str_group = std::string("Calculated ") + mdf_group_name;
@@ -1003,7 +1003,7 @@ namespace Open3DMotion
 				ts->HardwareID = j + 1;
 				ts->Units = str_units;
 
-        const Int16* value = (const Int16*)(&data[i][j][0]);
+        const Int16* value = reinterpret_cast<const Int16*>(&data[i][j][0]);
 				if (valuedim == 1)
 				{
 					// scalar data
