@@ -51,7 +51,7 @@ namespace Open3DMotion
 	/** Shape defined by 3D points, each with associated visibility information. */
 	class RigidBodyShape
 	{
-		friend class TestRigidBodyShape;
+		friend class ::TestRigidBodyShape;
 
 	public:
 		
