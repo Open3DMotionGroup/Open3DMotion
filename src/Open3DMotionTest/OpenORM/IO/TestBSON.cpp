@@ -473,10 +473,10 @@ public:
 			0x00
 		};
 
-		*(double*)(&data[29]) = 374231.23916;
+		*reinterpret_cast<double*>(&data[29]) = 374231.23916;
 
 		// internal consistency on doc size
-		CPPUNIT_ASSERT(*(Int32*)&data[0] == (Int32)sizeof(data));
+		CPPUNIT_ASSERT(*reinterpret_cast<Int32*>(&data[0]) == (Int32)sizeof(data));
 
 		BinaryStream input(data, sizeof(data));
 		BSONInputStreamSTL stream(input);
@@ -511,10 +511,10 @@ public:
 			0x00
 		};
 
-		*(double*)(&data[36]) = 374231.23916;
+		*reinterpret_cast<double*>(&data[36]) = 374231.23916;
 
 		// internal consistency on doc size
-		CPPUNIT_ASSERT(*(Int32*)&data[7] == ((Int32)sizeof(data) - 7));
+		CPPUNIT_ASSERT(*reinterpret_cast<Int32*>(&data[7]) == ((Int32)sizeof(data) - 7));
 
 		BinaryStream input(data, sizeof(data));
 		BSONInputStreamSTL stream(input);
@@ -557,7 +557,7 @@ public:
 		};
 
 		// internal consistency on doc size
-		CPPUNIT_ASSERT(*(Int32*)&data[0] == (Int32)sizeof(data));
+		CPPUNIT_ASSERT(*reinterpret_cast<Int32*>(&data[0]) == (Int32)sizeof(data));
 
 		BinaryStream input(data, sizeof(data));
 		BSONInputStreamSTL stream(input);
@@ -596,7 +596,7 @@ public:
 		};
 
 		// internal consistency on doc size
-		CPPUNIT_ASSERT(*(Int32*)&data[7] == ((Int32)sizeof(data)-7));
+		CPPUNIT_ASSERT(*reinterpret_cast<Int32*>(&data[7]) == ((Int32)sizeof(data)-7));
 
 		BinaryStream input(data, sizeof(data));
 		BSONInputStreamSTL stream(input);
