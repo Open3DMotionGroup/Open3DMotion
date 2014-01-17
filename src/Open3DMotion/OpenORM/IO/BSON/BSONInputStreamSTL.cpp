@@ -16,8 +16,9 @@ namespace Open3DMotion
 
 	void BSONInputStreamSTL::SkipBytes(UInt32 count)  throw(BSONReadException)
 	{
+    size_t start_pos = static_cast<size_t>(input.tellg());
 		input.seekg(count, std::ios::cur);
-		if (input.fail())
+		if (input.fail() || (static_cast<size_t>(input.tellg()) != (start_pos+count)))
 			throw BSONReadException("error skipping bytes in BSON stream");
 	}
 
