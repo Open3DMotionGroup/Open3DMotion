@@ -625,18 +625,18 @@ public:
 
 		// verify result
 		CPPUNIT_ASSERT_EQUAL(size_t(4), mean.NumMarkers());
-		CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, mean.Marker(0).position[0], 0.1);
-		CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, mean.Marker(0).position[1], 0.1);
-		CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, mean.Marker(0).position[2], 0.1);
-		CPPUNIT_ASSERT_DOUBLES_EQUAL(4.0, mean.Marker(1).position[0], 0.1);
-		CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, mean.Marker(1).position[1], 0.1);
-		CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, mean.Marker(1).position[2], 0.1);
-		CPPUNIT_ASSERT_DOUBLES_EQUAL(4.0, mean.Marker(2).position[0], 0.1);
-		CPPUNIT_ASSERT_DOUBLES_EQUAL(3.0, mean.Marker(2).position[1], 0.1);
-		CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, mean.Marker(2).position[2], 0.1);
-		CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, mean.Marker(3).position[0], 0.1);
-		CPPUNIT_ASSERT_DOUBLES_EQUAL(3.0, mean.Marker(3).position[1], 0.1);
-		CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, mean.Marker(3).position[2], 0.1);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, mean.Marker(0).position[0], 0.2);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, mean.Marker(0).position[1], 0.2);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, mean.Marker(0).position[2], 0.2);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(4.0, mean.Marker(1).position[0], 0.2);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, mean.Marker(1).position[1], 0.2);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, mean.Marker(1).position[2], 0.2);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(4.0, mean.Marker(2).position[0], 0.2);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(3.0, mean.Marker(2).position[1], 0.2);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, mean.Marker(2).position[2], 0.2);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, mean.Marker(3).position[0], 0.2);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(3.0, mean.Marker(3).position[1], 0.2);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, mean.Marker(3).position[2], 0.2);
 	}
 
 	class NinePointCode
