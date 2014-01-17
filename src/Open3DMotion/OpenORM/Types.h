@@ -27,7 +27,9 @@
 
 #ifndef SIZE_MAX
 #include <limits>
+#ifndef SIZE_MAX
 #define SIZE_MAX std::numeric_limits<size_t>::max()
+#endif
 #endif
 
 namespace Open3DMotion
