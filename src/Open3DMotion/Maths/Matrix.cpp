@@ -7,11 +7,13 @@
 
 #include "Open3DMotion/Maths/Matrix.h"
 
+#ifndef OPEN3DMOTION_LINEAR_ALGEBRA_EIGEN
 extern "C"
 {
 #include <f2clibs/f2c.h>
 #include <clapack.h>
 }
+#endif
 
 namespace Open3DMotion
 {
@@ -37,6 +39,8 @@ namespace Open3DMotion
     }
   }
 
+#ifndef OPEN3DMOTION_LINEAR_ALGEBRA_EIGEN
+  
   void Matrix::SymmSolve(double* A, double* b, int n)
   {
     long ln(n);
@@ -60,7 +64,7 @@ namespace Open3DMotion
     delete ipiv;
   }
 
-#ifndef OPEN3DMOTION_LINEAR_ALGEBRA_EIGEN
+
   void Matrix::SVD(double* U, double* s, double* VT, const double* A, long rows, long cols)
   {
     Matrix Acpy(rows,cols);
