@@ -1,14 +1,28 @@
-//
-//  BSONWriteException.h
-//  Open3DMotion
-//
-//  Created by Joel Mitchelson on 23/01/2014.
-//
-//
+/*--
+ Open3DMotion
+ Copyright (c) 2004-2014.
+ All rights reserved.
+ See LICENSE.txt for more information.
+ --*/
 
-#ifndef Open3DMotion_BSONWriteException_h
-#define Open3DMotion_BSONWriteException_h
+#ifndef _ORMPP_BSON_WRITE_EXCEPTION_H_
+#define _ORMPP_BSON_WRITE_EXCEPTION_H_
 
+#include "Open3DMotion/OpenORM/IO/ORMIOException.h"
 
+namespace Open3DMotion
+{
+  /** Errors produced when writing BSON to stream */
+  class BSONWriteException : public ORMIOException
+  {
+  public:
+    /** construct specified error */
+    BSONWriteException(const char* msg) :
+      ORMIOException(msg)
+    {
+    }
+  };
+  
+}
 
 #endif

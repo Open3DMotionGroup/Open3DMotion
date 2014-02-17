@@ -12,7 +12,7 @@
 
 namespace Open3DMotion
 {
-  /** Errors produced when reading/writing BSON to/from stream */
+  /** Errors produced when reading BSON from stream */
   class BSONReadException : public ORMIOException
   {
   public:

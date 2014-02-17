@@ -63,5 +63,6 @@ namespace Open3DMotion
 	private:
 		BSONOutputStream& output;
 	};
+}
 
 #endif

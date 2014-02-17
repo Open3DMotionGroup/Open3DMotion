@@ -7,3 +7,16 @@
 
 #include "BSONWriter.h"
 
+namespace Open3DMotion
+{
+  /** Construct for given stream */
+  BSONWriter::BSONWriter(BSONOutputStream& _output) :
+    output(_output)
+  {
+  }
+  
+  /** Virtual destructor */
+  BSONWriter::~BSONWriter()
+  {
+  }
+}

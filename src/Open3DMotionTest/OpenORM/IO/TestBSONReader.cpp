@@ -28,13 +28,13 @@
 using namespace Open3DMotion;
 
 /* Summary
-   Unit test fixture for BSON conversion to/from tree.
+   Unit test fixture for BSON conversion to tree.
                                                                  */
-class TestBSON : public CppUnit::TestFixture
+class TestBSONReader : public CppUnit::TestFixture
 {
 
 public:
-	CPPUNIT_TEST_SUITE( TestBSON );
+	CPPUNIT_TEST_SUITE( TestBSONReader );
 	CPPUNIT_TEST( testStreamReadBinary );
 	CPPUNIT_TEST( testStreamSkipBytes );
 	CPPUNIT_TEST( testGZStreamReadBinary );
@@ -49,7 +49,7 @@ public:
 	CPPUNIT_TEST( testReadElementBinary );
 	CPPUNIT_TEST( testReadElementBinaryMOBLCompatible );
 	CPPUNIT_TEST( testReadBSONTimestamp ); 
-	CPPUNIT_TEST( testBSONObjectIdHolder ); 
+	CPPUNIT_TEST( TestBSONReaderObjectIdHolder ); 
 	CPPUNIT_TEST( testReadBSONObjectId ); 
 	CPPUNIT_TEST( testReadDocument );
 	CPPUNIT_TEST( testReadList );
@@ -59,7 +59,7 @@ public:
 
 public:
 
-	TestBSON()
+	TestBSONReader()
 	{
 	}
 
@@ -407,7 +407,7 @@ public:
 		CPPUNIT_ASSERT_EQUAL(Int32(9), holder.BSONTimestamp.Seconds.Value());
 	}
 
-	void testBSONObjectIdHolder()
+	void TestBSONReaderObjectIdHolder()
 	{
 		BSONObjectIdHolder h1;
 		BSONObjectIdBinary a = 
@@ -619,4 +619,4 @@ public:
 	}
 };
 
-CPPUNIT_TEST_SUITE_REGISTRATION( TestBSON );
+CPPUNIT_TEST_SUITE_REGISTRATION( TestBSONReader );
