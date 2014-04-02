@@ -13,7 +13,7 @@
 
 namespace Open3DMotion
 {
-	/** Abstract base class for writing to binary streams */
+	/** Implementation for writing to binary streams using STL stream */
 	class BSONOutputStreamSTL : public BSONOutputStream
 	{
 	public:
