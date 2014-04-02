@@ -18,17 +18,15 @@
 #include "Open3DMotion/OpenORM/IO/BSON/BSONTimestampHolder.h"
 #include "Open3DMotion/OpenORM/IO/BSON/BSONObjectIdHolder.h"
 
-
 #include <cppunit/extensions/HelperMacros.h>
 #include <istream>
-
 
 using namespace Open3DMotion;
 
 namespace Open3DMotion
 {
 	// helper to test functions not dependent on streams
-	// (those functions could be static but that would disallow inheritance)
+	// (those functions could be static but that would prevent inheritance)
 	class BSONOutputStreamNull : public BSONOutputStream
 	{
 	public:
@@ -53,13 +51,11 @@ class TestBSONWriter : public CppUnit::TestFixture
   
 public:
 	CPPUNIT_TEST_SUITE( TestBSONWriter );
-	CPPUNIT_TEST( testStreamWriteBinary );
-  CPPUNIT_TEST( testGZStreamWriteBinary );
 
+	CPPUNIT_TEST( testStreamWriteBinary );
 	CPPUNIT_TEST( testSizeCString );
 	CPPUNIT_TEST( testSizeString );
 	CPPUNIT_TEST( testSizeBSONArrayIndices );
-
 	CPPUNIT_TEST( testSizeElementBool );
 	CPPUNIT_TEST( testSizeElementInt32 );
 	CPPUNIT_TEST( testSizeElementFloat64 );
@@ -69,7 +65,6 @@ public:
 	CPPUNIT_TEST( testSizeBSONObjectId );
 	CPPUNIT_TEST( testSizeDocumentElement );
 	CPPUNIT_TEST( testSizeListElement );
-
 	CPPUNIT_TEST( testWriteCString );
 	CPPUNIT_TEST( testWriteString );
 	CPPUNIT_TEST( testWriteElementBool );
@@ -81,12 +76,14 @@ public:
 	CPPUNIT_TEST( testWriteBSONObjectId );
 	CPPUNIT_TEST( testWriteDocumentElement );
 	CPPUNIT_TEST( testWriteListElement );
-
 	CPPUNIT_TEST( testWriteDocument );
 	CPPUNIT_TEST( testWriteList );
 
+	/* MOBL compatibility not yet implemented
+  CPPUNIT_TEST( testGZStreamWriteBinary );
 	CPPUNIT_TEST( testWriteElementBinaryMOBLCompatible );
-
+	*/
+	
 	CPPUNIT_TEST_SUITE_END();
   
 public:
@@ -314,11 +311,6 @@ public:
 		// 57
 		CPPUNIT_ASSERT_EQUAL(UInt32(57), s);
 	}
-
-	void testGZStreamWriteBinary()
-	{
-    CPPUNIT_FAIL("Not implemented");
-	}
   
 	void testWriteCString()
 	{
@@ -407,7 +399,7 @@ public:
 		}
 
 		output.seekp(0, std::ios::beg);
-		CPPUNIT_ASSERT_EQUAL(0x10, output.get());
+		CPPUNIT_ASSERT_EQUAL(0x12, output.get());
 		CPPUNIT_ASSERT_EQUAL((int)'T', output.get());
 		CPPUNIT_ASSERT_EQUAL((int)'e', output.get());
 		CPPUNIT_ASSERT_EQUAL((int)'d', output.get());
@@ -420,86 +412,226 @@ public:
   
 	void testWriteElementFloat64()
 	{
-		char data[1+4+8];
-		data[0] = 0x01;
-		strcpy(&data[1], "Ted");
-		double d(-23.99993);
-		memcpy(&data[5], &d, 8);
-    
-    CPPUNIT_FAIL("Not implemented");
-    
+		std::stringstream output(std::ios::binary | std::ios::out | std::ios::in);
+
+		{
+			TreeFloat64 value(-138.2765);
+			BSONOutputStreamSTL stream(output);
+			BSONWriter writer(stream);
+			writer.WriteElement("Ted", value);
+		}
+
+		output.seekp(0, std::ios::beg);
+		CPPUNIT_ASSERT_EQUAL(0x01, output.get());
+		CPPUNIT_ASSERT_EQUAL((int)'T', output.get());
+		CPPUNIT_ASSERT_EQUAL((int)'e', output.get());
+		CPPUNIT_ASSERT_EQUAL((int)'d', output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		double readback(0.0);
+		output.read((char*)&readback, sizeof(readback));
+		CPPUNIT_ASSERT_EQUAL(-138.2765, readback);
 	}
   
 	void testWriteElementBinary()
 	{
-		UInt8 data[] = {
-			0x05,
-			'T', 'e', 'd', '\0',
-			0x07, 0x00, 0x00, 0x00,
-			0x00,
-			0x03, 0x04, 0x05, 0xA1, 0xB1, 0xAA, 0x11 };
-    CPPUNIT_FAIL("Not implemented");
-	}
-  
-	void testWriteElementBinaryMOBLCompatible()
-	{
-		UInt8 data[] = {
-			0x05,
-			'T', 'e', 'd', '\0',
-			0x0B, 0x00, 0x00, 0x00,
-			0x00,
-			0x07, 0x00, 0x00, 0x00,	// the size of data not including this element - this is extra stuff added by MOBL writer
-			0x03, 0x04, 0x05, 0xA1, 0xB1, 0xAA, 0x11 };
-    CPPUNIT_FAIL("Not implemented");
+		std::stringstream output(std::ios::binary | std::ios::out | std::ios::in);
+
+		{
+			MemoryHandlerBasic mem(7);
+			mem.Data()[0] = 0xAA;
+			mem.Data()[1] = 0x04;
+			mem.Data()[2] = 0x05;
+			mem.Data()[3] = 0xA1;
+			mem.Data()[4] = 0xB1;
+			mem.Data()[5] = 0xAA;
+			mem.Data()[6] = 0x11;
+			TreeBinary value(&mem);
+			BSONOutputStreamSTL stream(output);
+			BSONWriter writer(stream);
+			writer.WriteElement("Ted", value);
+		}
+
+		output.seekp(0, std::ios::beg);
+		CPPUNIT_ASSERT_EQUAL(0x05, output.get());	// binary type
+		CPPUNIT_ASSERT_EQUAL((int)'T', output.get());
+		CPPUNIT_ASSERT_EQUAL((int)'e', output.get());
+		CPPUNIT_ASSERT_EQUAL((int)'d', output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(7, output.get());	// data size
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());	// binary sub-type
+		CPPUNIT_ASSERT_EQUAL(0xAA, output.get());	// data
+		CPPUNIT_ASSERT_EQUAL(0x04, output.get());
+		CPPUNIT_ASSERT_EQUAL(0x05, output.get());
+		CPPUNIT_ASSERT_EQUAL(0xA1, output.get());
+		CPPUNIT_ASSERT_EQUAL(0xB1, output.get());
+		CPPUNIT_ASSERT_EQUAL(0xAA, output.get());
+		CPPUNIT_ASSERT_EQUAL(0x11, output.get());
 	}
   
 	void testWriteElementString()
 	{
-		UInt8 data[] = {
-			0x02,
-			'T', 'e', 'd', '\0',
-			0x07, 0x00, 0x00, 0x00,
-			'P', 'o', 't', 'a', 't', 'o', '\0'
-		};
-    CPPUNIT_FAIL("Not implemented");
+		std::stringstream output(std::ios::binary | std::ios::out | std::ios::in);
+
+		{
+			TreeString value("OK!");
+			BSONOutputStreamSTL stream(output);
+			BSONWriter writer(stream);
+			writer.WriteElement("Good", value);
+		}
+
+		output.seekp(0, std::ios::beg);
+		CPPUNIT_ASSERT_EQUAL(0x02, output.get());
+		CPPUNIT_ASSERT_EQUAL((int)'G', output.get());
+		CPPUNIT_ASSERT_EQUAL((int)'o', output.get());
+		CPPUNIT_ASSERT_EQUAL((int)'o', output.get());
+		CPPUNIT_ASSERT_EQUAL((int)'d', output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(4, output.get());	// string size incl null
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL((int)'O', output.get());
+		CPPUNIT_ASSERT_EQUAL((int)'K', output.get());
+		CPPUNIT_ASSERT_EQUAL((int)'!', output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
 	}
 	
 	void testWriteBSONTimestamp()
 	{
-		UInt8 data[] = {
-			0x11,
-			'T', 'e', 'd', '\0',
-			0x25, 0x00, 0x00, 0x00,
-			0x09, 0x00, 0x00, 0x00
-		};
-    CPPUNIT_FAIL("Not implemented");
+		std::stringstream output(std::ios::binary | std::ios::out | std::ios::in);
+
+		{
+			BSONTimestampHolder holder;
+			holder.BSONTimestamp.Increment = 23;
+			holder.BSONTimestamp.Seconds = 54;
+			std::auto_ptr<TreeValue> value(holder.ToTree());
+			BSONOutputStreamSTL stream(output);
+			BSONWriter writer(stream);
+			writer.WriteElement("t", *value);
+		}
+
+		output.seekp(0, std::ios::beg);
+		CPPUNIT_ASSERT_EQUAL(0x11, output.get());
+		CPPUNIT_ASSERT_EQUAL((int)'t', output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(23, output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(54, output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
 	}
   
  
 	void testWriteBSONObjectId()
 	{
-    CPPUNIT_FAIL("Not implemented");
+		std::stringstream output(std::ios::binary | std::ios::out | std::ios::in);
+
+		{
+			BSONObjectIdBinary data = { 8, 9, 7, 6, 50, 0, 70, 230, 55, 165, 255, 9 };
+			BSONObjectIdHolder holder;
+			holder.FromBinary(data);
+			std::auto_ptr<TreeValue> value(holder.ToTree());
+			BSONOutputStreamSTL stream(output);
+			BSONWriter writer(stream);
+			writer.WriteElement("MyID", *value);
+		}
+
+		output.seekp(0, std::ios::beg);
+		CPPUNIT_ASSERT_EQUAL(0x07, output.get());
+		CPPUNIT_ASSERT_EQUAL((int)'M', output.get());
+		CPPUNIT_ASSERT_EQUAL((int)'y', output.get());
+		CPPUNIT_ASSERT_EQUAL((int)'I', output.get());
+		CPPUNIT_ASSERT_EQUAL((int)'D', output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(8, output.get());
+		CPPUNIT_ASSERT_EQUAL(9, output.get());
+		CPPUNIT_ASSERT_EQUAL(7, output.get());
+		CPPUNIT_ASSERT_EQUAL(6, output.get());
+		CPPUNIT_ASSERT_EQUAL(50, output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(70, output.get());
+		CPPUNIT_ASSERT_EQUAL(230, output.get());
+		CPPUNIT_ASSERT_EQUAL(55, output.get());
+		CPPUNIT_ASSERT_EQUAL(165, output.get());
+		CPPUNIT_ASSERT_EQUAL(255, output.get());
+		CPPUNIT_ASSERT_EQUAL(9, output.get());
 	}
   
 	void testWriteDocument()
 	{
-		UInt8 data[] = {
-			0x26, 0x00, 0x00, 0x00,
-			0x02,
-			'O', 'n', 'e', '\0',
-			0x07, 0x00, 0x00, 0x00,
-			'P', 'o', 't', 'a', 't', 'o', '\0',
-			0x01,
-			'B', 'i', 'g', 'n', 'e', 's', 's', '\0',
-			0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-			0x00
-		};
-    
-    CPPUNIT_FAIL("Not implemented");
+		std::stringstream output(std::ios::binary | std::ios::out | std::ios::in);
+
+		{
+			std::auto_ptr<TreeCompound> tree(new TreeCompound);
+			tree->Set("One", new TreeString("Potato"));
+			tree->Set("Bigness", new TreeFloat64(0.0));
+			BSONOutputStreamSTL stream(output);
+			BSONWriter writer(stream);
+			writer.WriteDocument(*tree);
+		}
+  
+ 		output.seekp(0, std::ios::beg);
+		CPPUNIT_ASSERT_EQUAL(38, output.get());	// document size
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(2, output.get());	// string type id
+		CPPUNIT_ASSERT_EQUAL((int)'O', output.get());
+		CPPUNIT_ASSERT_EQUAL((int)'n', output.get());
+		CPPUNIT_ASSERT_EQUAL((int)'e', output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(7, output.get());	// string size
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL((int)'P', output.get());
+		CPPUNIT_ASSERT_EQUAL((int)'o', output.get());
+		CPPUNIT_ASSERT_EQUAL((int)'t', output.get());
+		CPPUNIT_ASSERT_EQUAL((int)'a', output.get());
+		CPPUNIT_ASSERT_EQUAL((int)'t', output.get());
+		CPPUNIT_ASSERT_EQUAL((int)'o', output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(1, output.get());	// 64-bit float type id
+		CPPUNIT_ASSERT_EQUAL((int)'B', output.get());
+		CPPUNIT_ASSERT_EQUAL((int)'i', output.get());
+		CPPUNIT_ASSERT_EQUAL((int)'g', output.get());
+		CPPUNIT_ASSERT_EQUAL((int)'n', output.get());
+		CPPUNIT_ASSERT_EQUAL((int)'e', output.get());
+		CPPUNIT_ASSERT_EQUAL((int)'s', output.get());
+		CPPUNIT_ASSERT_EQUAL((int)'s', output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());	// 64-bit float value (0.0)
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());	// document terminator
 	}
   
 	void testWriteDocumentElement()
 	{
+		std::stringstream output(std::ios::binary | std::ios::out | std::ios::in);
+
+		{
+			std::string name("Stuff");
+			std::auto_ptr<TreeCompound> tree(new TreeCompound);
+			tree->Set("One", new TreeString("Potato"));
+			tree->Set("Bigness", new TreeFloat64(0.0));
+			BSONOutputStreamSTL stream(output);
+			BSONWriter writer(stream);
+			writer.WriteElement(name, *tree);
+		}
+
+		/*
 		UInt8 data[] = {
 			0x03,
 			'S', 't', 'u', 'f', 'f', '\0',
@@ -513,53 +645,230 @@ public:
 			0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 			0x00
 		};
-    
-    CPPUNIT_FAIL("Not implemented");
+		*/
+
+ 		output.seekp(0, std::ios::beg);
+		CPPUNIT_ASSERT_EQUAL(3, output.get());	// document type id
+		CPPUNIT_ASSERT_EQUAL((int)'S', output.get());	// document element name
+		CPPUNIT_ASSERT_EQUAL((int)'t', output.get());
+		CPPUNIT_ASSERT_EQUAL((int)'u', output.get());
+		CPPUNIT_ASSERT_EQUAL((int)'f', output.get());
+		CPPUNIT_ASSERT_EQUAL((int)'f', output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());	// document element name terminator
+		CPPUNIT_ASSERT_EQUAL(38, output.get());	// document size
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(2, output.get());	// string type id
+		CPPUNIT_ASSERT_EQUAL((int)'O', output.get());
+		CPPUNIT_ASSERT_EQUAL((int)'n', output.get());
+		CPPUNIT_ASSERT_EQUAL((int)'e', output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(7, output.get());	// string size
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL((int)'P', output.get());
+		CPPUNIT_ASSERT_EQUAL((int)'o', output.get());
+		CPPUNIT_ASSERT_EQUAL((int)'t', output.get());
+		CPPUNIT_ASSERT_EQUAL((int)'a', output.get());
+		CPPUNIT_ASSERT_EQUAL((int)'t', output.get());
+		CPPUNIT_ASSERT_EQUAL((int)'o', output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(1, output.get());	// 64-bit float type id
+		CPPUNIT_ASSERT_EQUAL((int)'B', output.get());
+		CPPUNIT_ASSERT_EQUAL((int)'i', output.get());
+		CPPUNIT_ASSERT_EQUAL((int)'g', output.get());
+		CPPUNIT_ASSERT_EQUAL((int)'n', output.get());
+		CPPUNIT_ASSERT_EQUAL((int)'e', output.get());
+		CPPUNIT_ASSERT_EQUAL((int)'s', output.get());
+		CPPUNIT_ASSERT_EQUAL((int)'s', output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());	// 64-bit float value (0.0)
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());	// document terminator	
 	}
   
 	void testWriteList()
 	{
-		UInt8 data[] = {
-			0x35, 0x00, 0x00, 0x00,
-			0x02,
-			'1', '5', '6', '\0',
-			0x05, 0x00, 0x00, 0x00,
-			'F', 'o', 'o', 'd', '\0',
-			0x02,
-			'1', '5', '9', '\0',
-			0x07, 0x00, 0x00, 0x00,
-			'P', 'o', 't', 'a', 't', 'o', '\0',
-			0x02,
-			'3', '0', '9', '2', '\0',
-			0x08, 0x00, 0x00, 0x00,
-			'B', 'a', 'n', 'a', 'n', 'a', 's', '\0',
-			0x00
-		};
-    
-    CPPUNIT_FAIL("Not implemented");
+		std::stringstream output(std::ios::binary | std::ios::out | std::ios::in);
+
+		{
+			std::auto_ptr<TreeList> items(new TreeList("Aircraft"));
+			items->Add(new TreeString("Plane"));
+			items->Add(new TreeString("Rocket"));
+			items->Add(new TreeString("Balloon"));
+			BSONOutputStreamSTL stream(output);
+			BSONWriter writer(stream);
+			writer.WriteList(*items);
+		}
+
+ 		output.seekp(0, std::ios::beg);
+		CPPUNIT_ASSERT_EQUAL(63, output.get());	// array size (bytes)
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(2, output.get());	// string type id
+		CPPUNIT_ASSERT_EQUAL((int)'0', output.get());	// index
+		CPPUNIT_ASSERT_EQUAL(0, output.get());				// index terminator
+		CPPUNIT_ASSERT_EQUAL(9, output.get());				// string size
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL((int)'A', output.get());	// index
+		CPPUNIT_ASSERT_EQUAL((int)'i', output.get());	// index
+		CPPUNIT_ASSERT_EQUAL((int)'r', output.get());	// index
+		CPPUNIT_ASSERT_EQUAL((int)'c', output.get());	// index
+		CPPUNIT_ASSERT_EQUAL((int)'r', output.get());	// index
+		CPPUNIT_ASSERT_EQUAL((int)'a', output.get());	// index
+		CPPUNIT_ASSERT_EQUAL((int)'f', output.get());	// index
+		CPPUNIT_ASSERT_EQUAL((int)'t', output.get());	// index
+		CPPUNIT_ASSERT_EQUAL(0, output.get());				// string terminator
+		CPPUNIT_ASSERT_EQUAL(2, output.get());	// string type id
+		CPPUNIT_ASSERT_EQUAL((int)'1', output.get());	// index
+		CPPUNIT_ASSERT_EQUAL(0, output.get());				// index terminator
+		CPPUNIT_ASSERT_EQUAL(6, output.get());				// string size
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL((int)'P', output.get());	// index
+		CPPUNIT_ASSERT_EQUAL((int)'l', output.get());	// index
+		CPPUNIT_ASSERT_EQUAL((int)'a', output.get());	// index
+		CPPUNIT_ASSERT_EQUAL((int)'n', output.get());	// index
+		CPPUNIT_ASSERT_EQUAL((int)'e', output.get());	// index
+		CPPUNIT_ASSERT_EQUAL(0, output.get());				// string terminator
+		CPPUNIT_ASSERT_EQUAL(2, output.get());	// string type id
+		CPPUNIT_ASSERT_EQUAL((int)'2', output.get());	// index
+		CPPUNIT_ASSERT_EQUAL(0, output.get());				// index terminator
+		CPPUNIT_ASSERT_EQUAL(7, output.get());				// string size
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL((int)'R', output.get());	// index
+		CPPUNIT_ASSERT_EQUAL((int)'o', output.get());	// index
+		CPPUNIT_ASSERT_EQUAL((int)'c', output.get());	// index
+		CPPUNIT_ASSERT_EQUAL((int)'k', output.get());	// index
+		CPPUNIT_ASSERT_EQUAL((int)'e', output.get());	// index
+		CPPUNIT_ASSERT_EQUAL((int)'t', output.get());	// index
+		CPPUNIT_ASSERT_EQUAL(0, output.get());				// string terminator
+		CPPUNIT_ASSERT_EQUAL(2, output.get());	// string type id
+		CPPUNIT_ASSERT_EQUAL((int)'3', output.get());	// index
+		CPPUNIT_ASSERT_EQUAL(0, output.get());				// index terminator
+		CPPUNIT_ASSERT_EQUAL(8, output.get());				// string size
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL((int)'B', output.get());	// index
+		CPPUNIT_ASSERT_EQUAL((int)'a', output.get());	// index
+		CPPUNIT_ASSERT_EQUAL((int)'l', output.get());	// index
+		CPPUNIT_ASSERT_EQUAL((int)'l', output.get());	// index
+		CPPUNIT_ASSERT_EQUAL((int)'o', output.get());	// index
+		CPPUNIT_ASSERT_EQUAL((int)'o', output.get());	// index
+		CPPUNIT_ASSERT_EQUAL((int)'n', output.get());	// index
+		CPPUNIT_ASSERT_EQUAL(0, output.get());				// string terminator
+		CPPUNIT_ASSERT_EQUAL(0, output.get());				// array terminator
 	}
   
 	void testWriteListElement()
 	{
-		UInt8 data[] = {
-			0x04,
-			'S', 't', 'u', 'f', 'f', '\0',
-			0x35, 0x00, 0x00, 0x00,
-			0x02,
-			'1', '5', '6', '\0',
-			0x05, 0x00, 0x00, 0x00,
-			'F', 'o', 'o', 'd', '\0',
-			0x02,
-			'1', '5', '9', '\0',
-			0x07, 0x00, 0x00, 0x00,
-			'P', 'o', 't', 'a', 't', 'o', '\0',
-			0x02,
-			'3', '0', '9', '2', '\0',
-			0x08, 0x00, 0x00, 0x00,
-			'B', 'a', 'n', 'a', 'n', 'a', 's', '\0',
-			0x00
-		};
-    
+		std::stringstream output(std::ios::binary | std::ios::out | std::ios::in);
+
+		{
+			std::auto_ptr<TreeList> items(new TreeList("Aircraft"));
+			items->Add(new TreeString("Plane"));
+			items->Add(new TreeString("Rocket"));
+			items->Add(new TreeString("Balloon"));
+			BSONOutputStreamSTL stream(output);
+			BSONWriter writer(stream);
+			writer.WriteElement("Stuff", *items);
+		}
+
+ 		output.seekp(0, std::ios::beg);
+		CPPUNIT_ASSERT_EQUAL(4, output.get());				// array type id
+		CPPUNIT_ASSERT_EQUAL((int)'S', output.get());	// array name
+		CPPUNIT_ASSERT_EQUAL((int)'t', output.get());
+		CPPUNIT_ASSERT_EQUAL((int)'u', output.get());
+		CPPUNIT_ASSERT_EQUAL((int)'f', output.get());
+		CPPUNIT_ASSERT_EQUAL((int)'f', output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());	// array name terminator
+		CPPUNIT_ASSERT_EQUAL(63, output.get());	// array size (bytes)
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(2, output.get());	// string type id
+		CPPUNIT_ASSERT_EQUAL((int)'0', output.get());	// index
+		CPPUNIT_ASSERT_EQUAL(0, output.get());				// index terminator
+		CPPUNIT_ASSERT_EQUAL(9, output.get());				// string size
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL((int)'A', output.get());	// index
+		CPPUNIT_ASSERT_EQUAL((int)'i', output.get());	// index
+		CPPUNIT_ASSERT_EQUAL((int)'r', output.get());	// index
+		CPPUNIT_ASSERT_EQUAL((int)'c', output.get());	// index
+		CPPUNIT_ASSERT_EQUAL((int)'r', output.get());	// index
+		CPPUNIT_ASSERT_EQUAL((int)'a', output.get());	// index
+		CPPUNIT_ASSERT_EQUAL((int)'f', output.get());	// index
+		CPPUNIT_ASSERT_EQUAL((int)'t', output.get());	// index
+		CPPUNIT_ASSERT_EQUAL(0, output.get());				// string terminator
+		CPPUNIT_ASSERT_EQUAL(2, output.get());	// string type id
+		CPPUNIT_ASSERT_EQUAL((int)'1', output.get());	// index
+		CPPUNIT_ASSERT_EQUAL(0, output.get());				// index terminator
+		CPPUNIT_ASSERT_EQUAL(6, output.get());				// string size
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL((int)'P', output.get());	// index
+		CPPUNIT_ASSERT_EQUAL((int)'l', output.get());	// index
+		CPPUNIT_ASSERT_EQUAL((int)'a', output.get());	// index
+		CPPUNIT_ASSERT_EQUAL((int)'n', output.get());	// index
+		CPPUNIT_ASSERT_EQUAL((int)'e', output.get());	// index
+		CPPUNIT_ASSERT_EQUAL(0, output.get());				// string terminator
+		CPPUNIT_ASSERT_EQUAL(2, output.get());	// string type id
+		CPPUNIT_ASSERT_EQUAL((int)'2', output.get());	// index
+		CPPUNIT_ASSERT_EQUAL(0, output.get());				// index terminator
+		CPPUNIT_ASSERT_EQUAL(7, output.get());				// string size
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL((int)'R', output.get());	// index
+		CPPUNIT_ASSERT_EQUAL((int)'o', output.get());	// index
+		CPPUNIT_ASSERT_EQUAL((int)'c', output.get());	// index
+		CPPUNIT_ASSERT_EQUAL((int)'k', output.get());	// index
+		CPPUNIT_ASSERT_EQUAL((int)'e', output.get());	// index
+		CPPUNIT_ASSERT_EQUAL((int)'t', output.get());	// index
+		CPPUNIT_ASSERT_EQUAL(0, output.get());				// string terminator
+		CPPUNIT_ASSERT_EQUAL(2, output.get());	// string type id
+		CPPUNIT_ASSERT_EQUAL((int)'3', output.get());	// index
+		CPPUNIT_ASSERT_EQUAL(0, output.get());				// index terminator
+		CPPUNIT_ASSERT_EQUAL(8, output.get());				// string size
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL((int)'B', output.get());	// index
+		CPPUNIT_ASSERT_EQUAL((int)'a', output.get());	// index
+		CPPUNIT_ASSERT_EQUAL((int)'l', output.get());	// index
+		CPPUNIT_ASSERT_EQUAL((int)'l', output.get());	// index
+		CPPUNIT_ASSERT_EQUAL((int)'o', output.get());	// index
+		CPPUNIT_ASSERT_EQUAL((int)'o', output.get());	// index
+		CPPUNIT_ASSERT_EQUAL((int)'n', output.get());	// index
+		CPPUNIT_ASSERT_EQUAL(0, output.get());				// string terminator
+		CPPUNIT_ASSERT_EQUAL(0, output.get());				// array terminator
+	}
+
+	void testGZStreamWriteBinary()
+	{
+    CPPUNIT_FAIL("Not implemented");
+	}
+
+	void testWriteElementBinaryMOBLCompatible()
+	{
     CPPUNIT_FAIL("Not implemented");
 	}
 };

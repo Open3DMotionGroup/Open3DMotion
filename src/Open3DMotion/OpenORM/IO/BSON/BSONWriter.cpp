@@ -6,6 +6,8 @@
  --*/
 
 #include "BSONWriter.h"
+#include "BSONTimestampHolder.h"
+#include "BSONObjectIdHolder.h"
 #include "Open3DMotion/OpenORM/Leaves/TreeFloat64.h"
 #include "Open3DMotion/OpenORM/Leaves/TreeInt32.h"
 #include "Open3DMotion/OpenORM/Leaves/TreeString.h"
@@ -134,13 +136,30 @@ namespace Open3DMotion
 		}
 		else if (value.ClassNameMatches(TreeCompound::classname))
 		{
-			size = SizeBSONDocument(static_cast<const TreeCompound&>(value));
 			supported = true;
+			
+			// get compound object
+			const TreeCompound& compound = static_cast<const TreeCompound&>(value);
+			
+			// override behaviour for certain known structures
+			if (compound.GetType<TreeString>(MEMBER_NAME(BSONObjectIdHolder::BSONObjectId)))
+			{
+				size = BSONObjectIdBytes;
+			}
+			else if (compound.GetType<TreeCompound>(MEMBER_NAME(BSONTimestampHolder::BSONTimestamp)))
+			{
+				size = 8;
+			}
+			else
+			{
+				// normal behaviour
+				size = SizeBSONDocument(compound);
+			}
 		}
 		else if (value.ClassNameMatches(TreeList::classname))
 		{
-			size = SizeBSONArray(static_cast<const TreeList&>(value));
 			supported = true;
+			size = SizeBSONArray(static_cast<const TreeList&>(value));
 		}
 
 		return supported;
@@ -148,18 +167,58 @@ namespace Open3DMotion
 
 	void BSONWriter::WriteCString(const std::string& s) throw(BSONWriteException)
 	{
+		WriteBinary(&s[0], s.size());
+		UInt8 term(0);
+		WriteBinary(&term, 1);
 	}
     
 	void BSONWriter::WriteString(const std::string& s) throw(BSONWriteException)
 	{
+		Int32 bytes = s.size() + 1;
+		WriteBinary(&bytes, 4);
+		WriteBinary(&s[0], s.size());
+		UInt8 term(0);
+		WriteBinary(&term, 1);
 	}
 
 	void BSONWriter::WriteDocument(const TreeCompound& compound)  throw(BSONWriteException)
 	{
+		UInt32 size = SizeBSONDocument(compound);
+		WriteBinary(&size, 4);
+		for (size_t index = 0; index < compound.NumElements(); index++)
+		{
+			const TreeCompoundNode* node = compound.Node(index);
+			WriteElement(node->Name(), *node->Value());
+		}
+		UInt8 term(0);
+		WriteBinary(&term, 1);
 	}
 
 	void BSONWriter::WriteList(const TreeList& tlist)  throw(BSONWriteException)
 	{
+		// compute and write size
+		UInt32 size = SizeBSONArray(tlist);
+		WriteBinary(&size, 4);
+		
+		// write element name as first element
+		std::string str_index_first("0");
+		UInt8 name_type_id(2);
+		WriteBinary(&name_type_id, 1);
+		WriteCString(str_index_first);
+		WriteString(tlist.ElementName());
+		
+		// write elements with string indices "1", "2", "3", ...
+		char index_buffer[16];
+		for (size_t index = 0; index < tlist.NumElements(); index++)
+		{
+			_snprintf(index_buffer, 16, "%u", index + 1);
+			std::string str_index(index_buffer);
+			WriteElement(str_index, *tlist.ElementArray()[index]);
+		}
+
+		// array document terminator
+		UInt8 term(0);
+		WriteBinary(&term, 1);
 	}
 
 	bool BSONWriter::WriteElement(const std::string& name, const TreeValue& value)  throw(BSONWriteException)
@@ -170,34 +229,100 @@ namespace Open3DMotion
 		// introspection to determine size of info to write
 		if (value.ClassNameMatches(TreeBool::classname))
 		{
-			bson_type = 0x08;
-			output.WriteBinary(&bson_type, 1);			
 			supported = true;
+			bson_type = 0x08;
+			const TreeBool& boolval = static_cast<const TreeBool&>(value);
+			UInt8 value = (boolval.Value() != 0) ? 0x01 : 0x00;
+			WriteBinary(&bson_type, 1);
+			WriteCString(name);
+			WriteBinary(&value, 1);
 		}
 		else if (value.ClassNameMatches(TreeInt32::classname))
 		{
 			supported = true;
+			bson_type = 0x12;	// write as 64-bit integer
+			Int32 value_lsb = static_cast<const TreeInt32&>(value).Value();
+			Int32 value_msb = 0;
+			WriteBinary(&bson_type, 1);
+			WriteCString(name);
+			WriteBinary(&value_lsb, 4);
+			WriteBinary(&value_msb, 4);
 		}
 		else if (value.ClassNameMatches(TreeFloat64::classname))
 		{
 			supported = true;
+			bson_type = 0x01;
+			const TreeFloat64& floatval = static_cast<const TreeFloat64&>(value);
+			Int32 value_msb = 0;
+			output.WriteBinary(&bson_type, 1);
+			WriteCString(name);
+			WriteBinary(&floatval.Value(), 8);
 		}
 		else if (value.ClassNameMatches(TreeString::classname))
 		{
 			supported = true;
+			bson_type = 0x02;
+			output.WriteBinary(&bson_type, 1);
+			WriteCString(name);
+			WriteString(static_cast<const TreeString&>(value).Value());
 		}
 		else if (value.ClassNameMatches(TreeBinary::classname))
 		{
 			// 4 byte data size value, 1 byte BSON subtype indicator, then data
 			supported = true;
+			bson_type = 0x05;
+			const TreeBinary& bin = static_cast<const TreeBinary&>(value);
+			UInt32 data_size = (UInt32)bin.SizeBytes();
+			UInt8 sub_type = 0;
+			WriteBinary(&bson_type, 1);
+			WriteCString(name);
+			WriteBinary(&data_size, 4);
+			WriteBinary(&sub_type, 1);
+			WriteBinary(bin.Data(), data_size);
 		}
 		else if (value.ClassNameMatches(TreeCompound::classname))
 		{
 			supported = true;
+			const TreeCompound& compound = static_cast<const TreeCompound&>(value);
+
+			// override behaviour for certain known structures
+			if (compound.GetType<TreeString>(MEMBER_NAME(BSONObjectIdHolder::BSONObjectId)))
+			{
+				bson_type = 0x07;
+				WriteBinary(&bson_type, 1);
+				WriteCString(name);
+				BSONObjectIdHolder holder;
+				holder.FromTree(&compound);
+				BSONObjectIdBinary bin;
+				holder.ToBinary(bin);
+				WriteBinary(bin, BSONObjectIdBytes);
+			}
+			else if (compound.GetType<TreeCompound>(MEMBER_NAME(BSONTimestampHolder::BSONTimestamp)))
+			{
+				bson_type = 0x11;
+				WriteBinary(&bson_type, 1);
+				WriteCString(name);
+				BSONTimestampHolder holder;
+				holder.FromTree(&compound);
+				WriteBinary(&holder.BSONTimestamp.Increment.Value(), 4);
+				WriteBinary(&holder.BSONTimestamp.Seconds.Value(), 4);			}
+			else
+			{
+				// normal behaviour
+				bson_type = 0x03;
+				WriteBinary(&bson_type, 1);
+				WriteCString(name);
+				WriteDocument(compound);
+			}
 		}
 		else if (value.ClassNameMatches(TreeList::classname))
 		{
 			supported = true;
+			bson_type = 0x04;
+			const TreeList& compound = static_cast<const TreeList&>(value);
+			WriteBinary(&bson_type, 1);
+			WriteCString(name);
+			WriteList(compound);
 		}
 
 		return supported;
