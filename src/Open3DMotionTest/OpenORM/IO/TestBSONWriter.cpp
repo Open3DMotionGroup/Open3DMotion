@@ -15,6 +15,7 @@
 #include "Open3DMotion/OpenORM/IO/BSON/BSONOutputStreamSTL.h"
 #include "Open3DMotion/OpenORM/IO/BSON/BSONOutputStreamGZ.h"
 #include "Open3DMotion/OpenORM/IO/BSON/BSONWriter.h"
+#include "Open3DMotion/OpenORM/IO/BSON/BSONWriterMOBL.h"
 #include "Open3DMotion/OpenORM/IO/BSON/BSONTimestampHolder.h"
 #include "Open3DMotion/OpenORM/IO/BSON/BSONObjectIdHolder.h"
 
@@ -78,10 +79,11 @@ public:
 	CPPUNIT_TEST( testWriteListElement );
 	CPPUNIT_TEST( testWriteDocument );
 	CPPUNIT_TEST( testWriteList );
+	CPPUNIT_TEST( testSizeElementBinaryMOBLCompatible );
+	CPPUNIT_TEST( testWriteElementBinaryMOBLCompatible );
 
 	/* MOBL compatibility not yet implemented
   CPPUNIT_TEST( testGZStreamWriteBinary );
-	CPPUNIT_TEST( testWriteElementBinaryMOBLCompatible );
 	*/
 	
 	CPPUNIT_TEST_SUITE_END();
@@ -862,12 +864,64 @@ public:
 		CPPUNIT_ASSERT_EQUAL(0, output.get());				// array terminator
 	}
 
-	void testGZStreamWriteBinary()
-	{
-    CPPUNIT_FAIL("Not implemented");
+	void testSizeElementBinaryMOBLCompatible()
+	{ 
+		BSONOutputStreamNull nullstream;
+		BSONWriterMOBL writer(nullstream);
+		MemoryHandlerBasic binarydata(623);
+		std::string name("Info");
+		TreeBinary value(&binarydata);
+		UInt32 s = writer.SizeElement(name, value);
+		// 1 byte type ID, 4 byte name, 1 byte name term,
+		// 4 byte binary length, 1 byte binary sub-type, 
+		// 4 byte internal binary length, 623 bytes binary data
+		CPPUNIT_ASSERT_EQUAL(UInt32(638), s);
 	}
 
 	void testWriteElementBinaryMOBLCompatible()
+	{
+		std::stringstream output(std::ios::binary | std::ios::out | std::ios::in);
+
+		{
+			MemoryHandlerBasic mem(7);
+			mem.Data()[0] = 0xAA;
+			mem.Data()[1] = 0x04;
+			mem.Data()[2] = 0x05;
+			mem.Data()[3] = 0xA1;
+			mem.Data()[4] = 0xB1;
+			mem.Data()[5] = 0xAA;
+			mem.Data()[6] = 0x11;
+			TreeBinary value(&mem);
+			BSONOutputStreamSTL stream(output);
+			BSONWriterMOBL writer(stream);
+			writer.WriteElement("Ted", value);
+		}
+
+		output.seekp(0, std::ios::beg);
+		CPPUNIT_ASSERT_EQUAL(0x05, output.get());	// binary type
+		CPPUNIT_ASSERT_EQUAL((int)'T', output.get());
+		CPPUNIT_ASSERT_EQUAL((int)'e', output.get());
+		CPPUNIT_ASSERT_EQUAL((int)'d', output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(11, output.get());		// 11 = 7 bytes data size plus 4-byte internal size descriptor
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());		// binary sub-type
+		CPPUNIT_ASSERT_EQUAL(7, output.get());		// internal data size descriptor
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(0xAA, output.get());	// data
+		CPPUNIT_ASSERT_EQUAL(0x04, output.get());
+		CPPUNIT_ASSERT_EQUAL(0x05, output.get());
+		CPPUNIT_ASSERT_EQUAL(0xA1, output.get());
+		CPPUNIT_ASSERT_EQUAL(0xB1, output.get());
+		CPPUNIT_ASSERT_EQUAL(0xAA, output.get());
+		CPPUNIT_ASSERT_EQUAL(0x11, output.get());
+	}
+
+	void testGZStreamWriteBinary()
 	{
     CPPUNIT_FAIL("Not implemented");
 	}

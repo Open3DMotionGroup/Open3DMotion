@@ -18,7 +18,7 @@ namespace Open3DMotion
 {
 	class BinMemFactory;
   
-	/** Read from a stream of BSON-encoded data and translate into OpenORM++ objects */
+	/** Write OpenORM++ objects to stream using BSON encoding */
 	class BSONWriter
 	{
 	public:
