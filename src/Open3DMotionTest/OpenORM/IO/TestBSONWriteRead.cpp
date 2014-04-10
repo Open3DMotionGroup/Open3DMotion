@@ -39,7 +39,7 @@ class TestBSONWriteRead : public CppUnit::TestFixture
 {
 public:
 	// Test object
-	static class ObjectA : public MapCompound
+	class ObjectA : public MapCompound
 	{
 	public:
 		ObjectA()
@@ -60,7 +60,7 @@ public:
 	};
 
 	// Another test object with compound array of ObjectA
-	static class ObjectB : public MapCompound
+	class ObjectB : public MapCompound
 	{
 	public:
 		ObjectB() :

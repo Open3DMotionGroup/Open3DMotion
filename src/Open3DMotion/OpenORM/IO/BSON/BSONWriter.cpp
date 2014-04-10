@@ -13,6 +13,7 @@
 #include "Open3DMotion/OpenORM/Leaves/TreeString.h"
 #include "Open3DMotion/OpenORM/Leaves/TreeBinary.h"
 #include "Open3DMotion/OpenORM/Leaves/TreeBool.h"
+#include <sstream>
 
 namespace Open3DMotion
 {
@@ -208,12 +209,11 @@ namespace Open3DMotion
 		WriteString(tlist.ElementName());
 		
 		// write elements with string indices "1", "2", "3", ...
-		char index_buffer[16];
 		for (size_t index = 0; index < tlist.NumElements(); index++)
 		{
-			_snprintf(index_buffer, 16, "%u", index + 1);
-			std::string str_index(index_buffer);
-			WriteElement(str_index, *tlist.ElementArray()[index]);
+      std::ostringstream index_string;
+      index_string << (index+1) << std::ends;
+			WriteElement(index_string.str(), *tlist.ElementArray()[index]);
 		}
 
 		// array document terminator
@@ -253,7 +253,6 @@ namespace Open3DMotion
 			supported = true;
 			bson_type = 0x01;
 			const TreeFloat64& floatval = static_cast<const TreeFloat64&>(value);
-			Int32 value_msb = 0;
 			output.WriteBinary(&bson_type, 1);
 			WriteCString(name);
 			WriteBinary(&floatval.Value(), 8);

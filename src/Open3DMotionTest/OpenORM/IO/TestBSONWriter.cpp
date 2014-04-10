@@ -39,7 +39,7 @@ namespace Open3DMotion
 		{
 		}
     
-		virtual void WriteBinary(const void* binary, UInt32 size)  throw(BSONWriteException)
+		virtual void WriteBinary(const void* /*binary*/, UInt32 /*size*/)  throw(BSONWriteException)
 		{ throw BSONWriteException(__FILE__ ": unexpected call to BSONOutputStreamNull::WriteBinary"); }
 	};
 }
