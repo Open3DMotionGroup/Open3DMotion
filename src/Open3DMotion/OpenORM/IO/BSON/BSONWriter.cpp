@@ -211,9 +211,10 @@ namespace Open3DMotion
 		// write elements with string indices "1", "2", "3", ...
 		for (size_t index = 0; index < tlist.NumElements(); index++)
 		{
-      std::ostringstream index_string;
-      index_string << (index+1) << std::ends;
-			WriteElement(index_string.str(), *tlist.ElementArray()[index]);
+      std::ostringstream index_string_stream;
+      index_string_stream << (index+1);
+      std::string index_string = index_string_stream.str();
+			WriteElement(index_string, *tlist.ElementArray()[index]);
 		}
 
 		// array document terminator
