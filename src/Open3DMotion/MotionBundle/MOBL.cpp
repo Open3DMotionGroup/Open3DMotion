@@ -32,7 +32,7 @@ namespace Open3DMotion
 	 * 
 	 * UInt32 Size          : 21  (total size of this signature block as little-endian)
 	 * UInt8  DataType      : 16 (0x10, means a BSON cstring text key with corresponding int32 value)
-	 * UInt8  FormatID[10]  : "CODABUNDLE" or "CODAGZUNDLE" as ASCII
+	 * UInt8  FormatID[10]  : "CODABUNDLE" or "CODAGZNDLE" as ASCII
 	 * UInt8  FormatIDTerm  : 0 (BSON terminator for the format id string)
 	 * UInt32 FormatVersion : 1
 	 * UInt8  SignatureTerm : 0 (BSON terminator for the signature block)
