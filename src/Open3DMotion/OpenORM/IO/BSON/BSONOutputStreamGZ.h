@@ -8,14 +8,17 @@
 #ifndef _ORMPP_BSON_OUTPUT_STREAM_GZ_H_
 #define _ORMPP_BSON_OUTPUT_STREAM_GZ_H_
 
-#include "Open3DMotion/OpenORM/Types.h"
-#include "Open3DMotion/OpenORM/IO/BSON/BSONWriteException.h"
+#include "Open3DMotion/OpenORM/IO/BSON/BSONOutputStream.h"
 #include <ostream>
+#include <memory>
+#include <vector>
+
+struct z_stream_s;
 
 namespace Open3DMotion
 {
 	/** Abstract base class for writing to binary streams */
-	class BSONOutputStreamGZ
+	class BSONOutputStreamGZ : BSONOutputStream
 	{
 	public:
     BSONOutputStreamGZ(std::ostream& _output);
@@ -26,7 +29,8 @@ namespace Open3DMotion
     
   protected:
     std::ostream& output;
-    
+		std::auto_ptr<z_stream_s> strm;    
+		std::vector<UInt8> output_buffer;
 	};
   
 }
