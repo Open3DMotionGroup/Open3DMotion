@@ -33,10 +33,10 @@ namespace Open3DMotion
       
 
 		/** Evaluate size of C-string (ASCII subset of UTF-8) */
-		UInt32 SizeCString(const std::string& s);
+		static UInt32 SizeCString(const std::string& s);
 
 		/** Evaluate size of C-string (ASCII subset of UTF-8) */
-		UInt32 SizeString(const std::string& s);
+		static UInt32 SizeString(const std::string& s);
 
 		/** Evaluate size of encoding of list object as BSON array - including element name written as first item */
 		UInt32 SizeBSONArray(const TreeList& tlist);
@@ -53,6 +53,9 @@ namespace Open3DMotion
 		    assuming element name as first item */
 		static UInt32 SizeBSONArrayIndices(size_t num_elements);
 
+		/** Helper to evaluate storage required for special case of list of ObjectIds */
+		UInt32 SizeBSONObjectIdList(const TreeList& tlist);
+
 		/** Write a C-string (ASCII subset of UTF-8) */
 		void WriteCString(const std::string& s) throw(BSONWriteException);
     
@@ -64,6 +67,9 @@ namespace Open3DMotion
 
 		/** Encode a list object as top level - element name is written as first item in BSON array */
 		void WriteList(const TreeList& tlist)  throw(BSONWriteException);
+
+		/** Encode special case of Object Id list that doesn't have an item label */
+		void WriteBSONObjectIdList(const TreeList& tlist)  throw(BSONWriteException);
 
 		/** Write any element from tree if supported
      

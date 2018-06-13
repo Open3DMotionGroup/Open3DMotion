@@ -16,7 +16,9 @@
 #include "Open3DMotion/OpenORM/Mappings/RichBinary/BinMemFactory.h"
 
 #include "BSONObjectIdHolder.h"
+#include "BSONObjectIdList.h"
 #include "BSONTimestampHolder.h"
+#include "BSONDateHolder.h"
 
 #include <memory>
 
@@ -57,45 +59,52 @@ namespace Open3DMotion
 
 	TreeList* BSONReader::ReadList()  throw(BSONReadException)
 	{
-		UInt32 size(0);
+    // Get list size
+	  UInt32 size(0);
 		ReadBinary(&size, 4);
 
-		TreeValue* value = NULL;
-		std::string name;
+    // Attempt read first element
+  	std::string readname;
+    TreeValue* readvalue(NULL);
+		std::auto_ptr<TreeValue> value;
+    {
+	  	ReadElement(readname, readvalue);
+      value.reset(readvalue);
+    }
 
-		// read first element - should be a string - otherwise returns empty list
-		TreeList* lst(NULL);
-		ReadElement(name, value);
-		if (value != NULL && value->ClassNameMatches(TreeString::classname))
+    // First element could be a string (in which case it is a label for list items)
+    // Or special case for list of ObjectIds that have no item label
+    // as used in the ODIN schema for ancestry lists
+		std::auto_ptr<TreeList> lst;
+		if (value.get() != NULL)
 		{
-			lst = new TreeList(((TreeString*)value)->Value().c_str());
-		}
-
-		// finished with current value (whether the element name or not)
-		if (value != NULL)
-		{
-			delete value;
-			value = NULL;
+      if (value->ClassNameMatches(TreeString::classname))
+      {
+        // Usual behaviour is just to make a new list where the first
+        // BSON entry is taken to be the label used for list items
+  			lst.reset(new TreeList(((TreeString*)value.get())->Value().c_str()));
+      }
+      else if (value->ClassNameMatches(TreeCompound::classname) &&
+               TreeValueCast<TreeCompound>(value.get())->GetType<TreeString>(MEMBER_NAME(BSONObjectIdHolder::BSONObjectId)) != NULL)
+      {
+        // But if an Object Id is encountered instead then assume
+        // it's a list of ObjectIds
+        lst.reset(new BSONObjectIdList());
+        lst->Add(value.release());
+      }
 		}
 
 		// read all elements and add
-		while (ReadElement(name, value))
+		while (ReadElement(readname, readvalue))
 		{
-			if (value != NULL)
+      value.reset(readvalue);
+			if (lst.get())
 			{
-				if (lst)
-				{
-					lst->Add(value);
-				}
-				else
-				{
-					delete value;
-					value = NULL;
-				}
+				lst->Add(value.release());
 			}
 		}
 
-		return lst;
+    return lst.release();
 	}
 
 	bool BSONReader::ReadElement(std::string& name, TreeValue*& value)  throw(BSONReadException)
@@ -206,7 +215,6 @@ namespace Open3DMotion
 				BSONObjectIdHolder holder;
 				holder.FromBinary(binary);
 				return holder.ToTree();
-				break;
 			}
 
 			case 0x11:	// Timestamp (Int32 increment, Int32 time)
@@ -215,13 +223,14 @@ namespace Open3DMotion
 				ReadBinary(&holder.BSONTimestamp.Increment.Value(), 4);
 				ReadBinary(&holder.BSONTimestamp.Seconds.Value(), 4);
 				return holder.ToTree();
-				break;
 			}
 
 			case 0x09: // 64-bit UTC date/time
 			{
-				SkipBytes(8);
-				break;
+				BSONDateHolder holder;
+				ReadBinary(&holder.BSONDate.LSB.Value(), 4);
+				ReadBinary(&holder.BSONDate.MSB.Value(), 4);
+				return holder.ToTree();
 			}
 
 			case 0x0B: // regular exp (cstring, cstring)

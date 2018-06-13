@@ -51,8 +51,6 @@ namespace Open3DMotion
 		/** Read generic UTF-8 string */
 		void ReadString(std::string& s) throw(BSONReadException);
 
-	protected:
-
 		/** Read the value part of a BSON element */
 		virtual TreeValue* ReadElementValue(UInt8 elementcode) throw (BSONReadException);
 

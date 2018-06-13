@@ -6,8 +6,10 @@
  --*/
 
 #include "BSONWriter.h"
-#include "BSONTimestampHolder.h"
 #include "BSONObjectIdHolder.h"
+#include "BSONObjectIdList.h"
+#include "BSONTimestampHolder.h"
+#include "BSONDateHolder.h"
 #include "Open3DMotion/OpenORM/Leaves/TreeFloat64.h"
 #include "Open3DMotion/OpenORM/Leaves/TreeInt32.h"
 #include "Open3DMotion/OpenORM/Leaves/TreeString.h"
@@ -151,20 +153,68 @@ namespace Open3DMotion
 			{
 				size = 8;
 			}
+			else if (compound.GetType<TreeCompound>(MEMBER_NAME(BSONDateHolder::BSONDate)))
+	    {
+				size = 8;
+  	  }
 			else
 			{
 				// normal behaviour
 				size = SizeBSONDocument(compound);
 			}
-		}
+		}		
 		else if (value.ClassNameMatches(TreeList::classname))
 		{
 			supported = true;
-			size = SizeBSONArray(static_cast<const TreeList&>(value));
+			if (static_cast<const TreeList&>(value).ElementName() == BSONObjectIdList::ItemName)
+			{
+				// Override behaviour for special case of list of BSON object ids
+				size = SizeBSONObjectIdList(static_cast<const TreeList&>(value));
+			}
+			else
+			{
+				size = SizeBSONArray(static_cast<const TreeList&>(value));
+			}
 		}
 
 		return supported;
 	}
+
+  UInt32 BSONWriter::SizeBSONObjectIdList(const TreeList& tlist)
+  {
+    // Init to zero
+    UInt32 size(0);
+    
+    // 4 byte space at start to store this document size value
+    size += 4;
+
+    // space for each list element
+    size_t num_supported_elements = 0;
+    for (size_t index = 0; index < tlist.NumElements(); index++)
+    {
+      UInt32 elsize(0);
+      if (SizeElementValue(elsize, *tlist.ElementArray()[index]))
+      {
+        size += elsize;
+        num_supported_elements++;
+      }
+    }
+
+    // space for 1-byte type id for each element
+    size += (UInt32)num_supported_elements;						
+
+    // space for array indices as strings (less one because no name string to store)
+    size += SizeBSONArrayIndices(num_supported_elements - 1);	
+
+    // space for null terminators for those strings
+    size += (UInt32)num_supported_elements;
+
+    // space for list terminator
+    size += 1;
+
+		return size;
+  }
+
 
 	void BSONWriter::WriteCString(const std::string& s) throw(BSONWriteException)
 	{
@@ -221,6 +271,28 @@ namespace Open3DMotion
 		UInt8 term(0);
 		WriteBinary(&term, 1);
 	}
+
+  void BSONWriter::WriteBSONObjectIdList(const TreeList& tlist) throw(BSONWriteException)
+  {
+    // Get list size
+    UInt32 size = SizeBSONObjectIdList(tlist);
+
+    // Store the size value
+    WriteBinary(&size, 4);
+			
+		// write elements with string indices "0", "1", "2", ...
+		for (size_t index = 0; index < tlist.NumElements(); index++)
+		{
+      std::ostringstream index_string_stream;
+      index_string_stream << index;
+      std::string index_string = index_string_stream.str();
+			WriteElement(index_string, *tlist.ElementArray()[index]);
+		}
+
+		// array document terminator
+		UInt8 term(0);
+    WriteBinary(&term, 1);
+  }
 
 	bool BSONWriter::WriteElement(const std::string& name, const TreeValue& value)  throw(BSONWriteException)
 	{
@@ -305,7 +377,18 @@ namespace Open3DMotion
 				BSONTimestampHolder holder;
 				holder.FromTree(&compound);
 				WriteBinary(&holder.BSONTimestamp.Increment.Value(), 4);
-				WriteBinary(&holder.BSONTimestamp.Seconds.Value(), 4);			}
+				WriteBinary(&holder.BSONTimestamp.Seconds.Value(), 4);
+			}
+			else if (compound.GetType<TreeCompound>(MEMBER_NAME(BSONDateHolder::BSONDate)))
+			{
+				UInt8 bson_type = 0x09;
+				WriteBinary(&bson_type, 1);
+				WriteCString(name);
+				BSONDateHolder holder;
+				holder.FromTree(&value);
+				WriteBinary(&holder.BSONDate.LSB.Value(), 4);
+				WriteBinary(&holder.BSONDate.MSB.Value(), 4); 
+			}
 			else
 			{
 				// normal behaviour
@@ -319,10 +402,17 @@ namespace Open3DMotion
 		{
 			supported = true;
 			bson_type = 0x04;
-			const TreeList& compound = static_cast<const TreeList&>(value);
 			WriteBinary(&bson_type, 1);
 			WriteCString(name);
-			WriteList(compound);
+			const TreeList& tlist = static_cast<const TreeList&>(value);
+			if (tlist.ElementName() == BSONObjectIdList::ItemName)
+			{
+				WriteBSONObjectIdList(tlist);
+			}
+			else
+			{
+				WriteList(tlist);
+			}
 		}
 
 		return supported;

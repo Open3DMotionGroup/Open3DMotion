@@ -22,7 +22,7 @@ namespace Open3DMotion
 		{
 		}
 
-	protected:
+	public:
 		
 		/** Read the value part of a BSON element */
 		virtual TreeValue* ReadElementValue(UInt8 elementcode) throw (BSONReadException);
