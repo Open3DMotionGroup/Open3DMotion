@@ -1,15 +1,21 @@
 # cppunit build file
 
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 3.5)
 
 project (cppunit)
 
-# Inlclude path
-include_directories (${PROJECT_SOURCE_DIR}/include)
-
-# Build the library
-file(GLOB_RECURSE Source_Files ${PROJECT_SOURCE_DIR}/src/cppunit/*.cpp)
+# Specify source files
+file(GLOB_RECURSE Source_Files ${CMAKE_CURRENT_SOURCE_DIR}/src/cppunit/*.cpp)
 add_library(cppunit ${Source_Files})
 
-# Place in output path so other projects can also link
-install(TARGETS cppunit LIBRARY DESTINATION lib ARCHIVE DESTINATION lib)
+# Specify include directories
+target_include_directories(cppunit
+    PUBLIC
+        $<INSTALL_INTERFACE:include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+)
+
+# Installation
+install(TARGETS cppunit EXPORT cppunit-export LIBRARY DESTINATION lib ARCHIVE DESTINATION lib)
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/ DESTINATION include FILES_MATCHING PATTERN "cppunit/*.h")
+install(EXPORT cppunit-export FILE cppunit-targets.cmake DESTINATION lib/cmake/cppunit)

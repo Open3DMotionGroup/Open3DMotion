@@ -1,15 +1,21 @@
 # pugixml build file
 
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 3.5)
 
 project (pugixml)
 
-# Inlclude path
-include_directories (${PROJECT_SOURCE_DIR}/src)
-
-# Build the library
-file(GLOB_RECURSE Source_Files ${PROJECT_SOURCE_DIR}/src/*.cpp)
+# Specify source files
+file(GLOB_RECURSE Source_Files ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
 add_library(pugixml ${Source_Files})
 
-# Place in output path so other projects can also link
-install(TARGETS pugixml LIBRARY DESTINATION lib ARCHIVE DESTINATION lib)
+# Specify include directories
+target_include_directories(pugixml
+    PUBLIC
+        $<INSTALL_INTERFACE:include/pugixml>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
+)
+
+# Installation
+install(TARGETS pugixml EXPORT pugixml-export LIBRARY DESTINATION lib ARCHIVE DESTINATION lib)
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/ DESTINATION include/pugixml FILES_MATCHING PATTERN "*.hpp")
+install(EXPORT pugixml-export FILE pugixml-targets.cmake DESTINATION lib/cmake/pugixml)
