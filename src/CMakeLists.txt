@@ -33,44 +33,45 @@ option(OPEN3DMOTION_OWNINCLUDE_CLAPACK "Put our own clapack directory on the inc
 # Append 'd' to end of library name for the debug version of the libraries we build
 SET(CMAKE_DEBUG_POSTFIX d)
 
-# Additional warning flags for GCC/Clang on Apple
-if(APPLE)
-  set(CMAKE_CXX_FLAGS_DEBUG  "-g -Wnon-virtual-dtor -Wno-long-long -Wchar-subscripts -Wall -Wextra -Wpointer-arith -Wformat-security -Woverloaded-virtual -Wcast-align -fno-common")
-  if(CMAKE_COMPILER_IS_GNUCXX)
-      set(CMAKE_CXX_FLAGS_DEBUG  ${CMAKE_CXX_FLAGS_DEBUG} "-ansi -fno-check-new ")
-  endif(CMAKE_COMPILER_IS_GNUCXX)
-endif(APPLE)
-
 # Optionally use static libraries on windows
 if (OPEN3DMOTION_MSVC_RUNTIME_STATIC)
   foreach(flag_var
         CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE
         CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO 
-	CMAKE_C_FLAGS CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE
+	      CMAKE_C_FLAGS CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE
         CMAKE_C_FLAGS_MINSIZEREL CMAKE_C_FLAGS_RELWITHDEBINFO)
     if(${flag_var} MATCHES "/MD")
       string(REGEX REPLACE "/MD" "/MT" ${flag_var} "${${flag_var}}")
-    endif(${flag_var} MATCHES "/MD")
+      set(${flag_var} "${${flag_var}}" CACHE STRING "" FORCE)
+      endif(${flag_var} MATCHES "/MD")
   endforeach(flag_var)
 endif(OPEN3DMOTION_MSVC_RUNTIME_STATIC)
 
-# Disable warnings for sprintf and sscanf on MSC
-if (MSVC)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_CRT_SECURE_NO_WARNINGS")
-endif(MSVC)
+# Per-architecture (and customiseable) library directories
+if (WIN32 AND MSVC)
+  if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+     set(INSTALL_ARCHITECTURE "win64")
+  else(CMAKE_SIZEOF_VOID_P EQUAL 8)
+    set(INSTALL_ARCHITECTURE "win32")
+  endif (CMAKE_SIZEOF_VOID_P EQUAL 8)
+  set(INSTALL_COMPILER "msvc")
+  set(CMAKE_LIBRARY_ARCHITECTURE ${INSTALL_ARCHITECTURE}-${INSTALL_COMPILER}-${MSVC_VERSION})
+  message(${PROJECT_NAME} " building for architecture: " ${CMAKE_LIBRARY_ARCHITECTURE})
+endif(WIN32 AND MSVC)
+set(CMAKE_INSTALL_LIBDIR "lib/${CMAKE_LIBRARY_ARCHITECTURE}" CACHE STRING "Subdirectory for library")
 
-# Python includes
+# Hard-coded path to Python if requested
 if (OPEN3DMOTION_BIND_PYTHON)
   include_directories (${OPEN3DMOTION_BIND_PYTHON_INSTALLPATH}/include)
-  set(CMAKE_CXX_FLAGS_DEBUG  "${CMAKE_CXX_FLAGS_DEBUG} -DPy_DEBUG")
-  set(CMAKE_C_FLAGS_DEBUG  "${CMAKE_C_FLAGS_DEBUG} -DPy_DEBUG")
+  link_directories(${OPEN3DMOTION_BIND_PYTHON_INSTALLPATH}/libs)
 endif(OPEN3DMOTION_BIND_PYTHON)
 
-# Option to use Eigen library instead of CLAPACK
+# Hard-coded path to Eigen if requested
 if (OPEN3DMOTION_LINEAR_ALGEBRA_EIGEN)
-  add_definitions(-DOPEN3DMOTION_LINEAR_ALGEBRA_EIGEN)
   include_directories(${OPEN3DMOTION_LINEAR_ALGEBRA_EIGEN_INCLUDEPATH})
 endif(OPEN3DMOTION_LINEAR_ALGEBRA_EIGEN)
+
+# Do our own build of dependent libraries if requested
 
 if (OPEN3DMOTION_OWNBUILD_LIBB64)
   add_subdirectory(ThirdParty/libb64)
@@ -84,12 +85,6 @@ if (OPEN3DMOTION_OWNBUILD_ZLIB)
   add_subdirectory(ThirdParty/zlib)
 endif (OPEN3DMOTION_OWNBUILD_ZLIB)
 
-# Create CMake definition for CLAPACK using our headers and externally imported lib files
-if(OPEN3DMOTION_OWNDEFINITION_CLAPACK)
-  add_subdirectory(ThirdParty/clapack)
-endif(OPEN3DMOTION_OWNDEFINITION_CLAPACK)
-
-# Build cppunit if required
 if (OPEN3DMOTION_OWNBUILD_CPPUNIT)
   add_subdirectory(ThirdParty/cppunit)
 endif(OPEN3DMOTION_OWNBUILD_CPPUNIT)
@@ -130,20 +125,41 @@ target_include_directories(Open3DMotion
         $<$<BOOL:OPEN3DMOTION_OWNINCLUDE_CLAPACK>:${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/CLAPACK>
 )
 
-# Link dependent library
+# Link core dependencies
 target_link_libraries(Open3DMotion libb64 pugixml zlib)
 
 # Link CLAPACK unless using Eigen
 if(NOT OPEN3DMOTION_LINEAR_ALGEBRA_EIGEN)
-  find_package(clapack PATHS ${OPEN3DMOTION_LINEAR_ALGEBRA_CLAPACK_FINDPATH})
+  find_package(CLAPACK PATHS ${OPEN3DMOTION_LINEAR_ALGEBRA_CLAPACK_FINDPATH})
   target_link_libraries(Open3DMotion f2c blas lapack)
 endif(NOT OPEN3DMOTION_LINEAR_ALGEBRA_EIGEN)
+
+# Additional warning flags for GCC/Clang on Apple
+target_compile_options(${PROJECT_NAME}
+  PUBLIC
+    $<$<BOOL:${APPLE}>:
+      $<$<CONFIG:DEBUG>:
+        "-g -Wnon-virtual-dtor -Wno-long-long -Wchar-subscripts -Wall -Wextra -Wpointer-arith -Wformat-security -Woverloaded-virtual -Wcast-align -fno-common"
+        $<$<CXX_COMPILER_ID:GNU>:" -ansi -fno-check-new "> > >
+  )
+
+# Disable warnings for sprintf and sscanf on MSC
+target_compile_definitions(${PROJECT_NAME} PUBLIC $<$<CXX_COMPILER_ID:MSVC>:"_CRT_SECURE_NO_WARNINGS">)
+
+# Set Eigen flag if present
+target_compile_definitions(${PROJECT_NAME} PUBLIC $<$<BOOL:${OPEN3DMOTION_LINEAR_ALGEBRA_EIGEN}>:OPEN3DMOTION_LINEAR_ALGEBRA_EIGEN>)
+
+# Set Python debug mode if debug build and binding to Python
+target_compile_definitions(${PROJECT_NAME} PUBLIC $<$<BOOL:${OPEN3DMOTION_BIND_PYTHON}>:$<$<CONFIG:DEBUG>:Py_DEBUG>>)
 
 # Define tests
 enable_testing()
 add_subdirectory(Open3DMotionTest)
 
 # Installation
-install(TARGETS Open3DMotion EXPORT Open3DMotion-export LIBRARY DESTINATION lib ARCHIVE DESTINATION lib)
-install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Open3DMotion DESTINATION include FILES_MATCHING PATTERN "*.h")
-install(EXPORT Open3DMotion-export FILE Open3DMotion-targets.cmake DESTINATION lib/cmake/Open3DMotion)
+install(TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}-export LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME} DESTINATION include FILES_MATCHING PATTERN "*.h")
+install(EXPORT ${PROJECT_NAME}-export FILE ${PROJECT_NAME}-config.cmake DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
+
+# Allow import directly from build directory if required
+export(EXPORT ${PROJECT_NAME}-export FILE ${PROJECT_NAME}-config.cmake)

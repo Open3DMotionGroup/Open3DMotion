@@ -16,6 +16,9 @@ target_include_directories(pugixml
 )
 
 # Installation
-install(TARGETS pugixml EXPORT pugixml-export LIBRARY DESTINATION lib ARCHIVE DESTINATION lib)
+install(TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}-export LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/ DESTINATION include/pugixml FILES_MATCHING PATTERN "*.hpp")
-install(EXPORT pugixml-export FILE pugixml-targets.cmake DESTINATION lib/cmake/pugixml)
+install(EXPORT ${PROJECT_NAME}-export FILE ${PROJECT_NAME}-config.cmake DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
+
+# Allow import directly from build directory if required
+export(EXPORT ${PROJECT_NAME}-export FILE ${PROJECT_NAME}-config.cmake)

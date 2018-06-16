@@ -16,6 +16,9 @@ target_include_directories(zlib
 )
 
 # Installation
-install(TARGETS zlib EXPORT zlib-export LIBRARY DESTINATION lib ARCHIVE DESTINATION lib)
+install(TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}-export LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/ DESTINATION include/zlib FILES_MATCHING PATTERN "*.h")
-install(EXPORT zlib-export FILE zlib-targets.cmake DESTINATION lib/cmake/zlib)
+install(EXPORT ${PROJECT_NAME}-export FILE ${PROJECT_NAME}-config.cmake DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
+
+# Allow import directly from build directory if required
+export(EXPORT ${PROJECT_NAME}-export FILE ${PROJECT_NAME}-config.cmake)

@@ -16,6 +16,9 @@ target_include_directories(libb64
 )
 
 # Installation
-install(TARGETS libb64 EXPORT libb64-export LIBRARY DESTINATION lib ARCHIVE DESTINATION lib)
+install(TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}-export LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/ DESTINATION include FILES_MATCHING PATTERN "b64/*.h")
-install(EXPORT libb64-export FILE libb64-targets.cmake DESTINATION lib/cmake/libb64)
+install(EXPORT ${PROJECT_NAME}-export FILE ${PROJECT_NAME}-config.cmake DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
+
+# Allow import directly from build directory if required
+export(EXPORT ${PROJECT_NAME}-export FILE ${PROJECT_NAME}-config.cmake)

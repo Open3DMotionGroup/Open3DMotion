@@ -16,6 +16,9 @@ target_include_directories(cppunit
 )
 
 # Installation
-install(TARGETS cppunit EXPORT cppunit-export LIBRARY DESTINATION lib ARCHIVE DESTINATION lib)
-install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/ DESTINATION include FILES_MATCHING PATTERN "cppunit/*.h")
-install(EXPORT cppunit-export FILE cppunit-targets.cmake DESTINATION lib/cmake/cppunit)
+install(TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}-export LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/ DESTINATION include)
+install(EXPORT ${PROJECT_NAME}-export FILE ${PROJECT_NAME}-config.cmake DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
+
+# Allow import directly from build directory if required
+export(EXPORT ${PROJECT_NAME}-export FILE ${PROJECT_NAME}-config.cmake)
