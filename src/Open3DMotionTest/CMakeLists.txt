@@ -7,33 +7,29 @@
 # CMake build file for tests
 #
 
-cmake_minimum_required(VERSION 3.5)
-
-# Note no project set (assumes Open3DMotion is project)
-
 # Define test source files
 
 file(GLOB_RECURSE Open3DMotionTest_CPP 
-  ${CMAKE_CURRENT_SOURCE_DIR}/Open3DMotionTest.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/Data/*.cpp  
-  ${CMAKE_CURRENT_SOURCE_DIR}/OpenORM/*.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/Maths/*.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/Biomechanics/*.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/MotionBundle/*.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/MotionFile/*.cpp)
+  Open3DMotionTest.cpp
+  Data/*.cpp  
+  OpenORM/*.cpp
+  Maths/*.cpp
+  Biomechanics/*.cpp
+  MotionBundle/*.cpp
+  MotionFile/*.cpp)
 
 file(GLOB_RECURSE Open3DMotionTest_H 
-  ${CMAKE_CURRENT_SOURCE_DIR}/OpenORM/*.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/Data/*.h  
-  ${CMAKE_CURRENT_SOURCE_DIR}/Maths/*.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/Biomechanics/*.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/MotionFile/*.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/MotionBundle/*.h)
+  OpenORM/*.h
+  Data/*.h  
+  Maths/*.h
+  Biomechanics/*.h
+  MotionFile/*.h
+  MotionBundle/*.h)
 
 # Only require Python tests when Python bindings are enabled
 if(OPEN3DMOTION_BIND_PYTHON)
-  file(GLOB_RECURSE Open3DMotionTest_Python_CPP ${CMAKE_CURRENT_SOURCE_DIR}/Bindings/Python/*.cpp)
-  file(GLOB_RECURSE Open3DMotionTest_Python_H ${CMAKE_CURRENT_SOURCE_DIR}/Bindings/Python/*.h)
+  file(GLOB_RECURSE Open3DMotionTest_Python_CPP Bindings/Python/*.cpp)
+  file(GLOB_RECURSE Open3DMotionTest_Python_H Bindings/Python/*.h)
 endif(OPEN3DMOTION_BIND_PYTHON)
 
 # Define all dependencies of test executable

@@ -66,9 +66,11 @@ if (OPEN3DMOTION_BIND_PYTHON)
   link_directories(${OPEN3DMOTION_BIND_PYTHON_INSTALLPATH}/libs)
 endif(OPEN3DMOTION_BIND_PYTHON)
 
-# Hard-coded path to Eigen if requested
+# Hard-coded path to Eigen if requested, otherwise find clapack package
 if (OPEN3DMOTION_LINEAR_ALGEBRA_EIGEN)
   include_directories(${OPEN3DMOTION_LINEAR_ALGEBRA_EIGEN_INCLUDEPATH})
+else(OPEN3DMOTION_LINEAR_ALGEBRA_EIGEN)
+  find_package(CLAPACK PATHS ${OPEN3DMOTION_LINEAR_ALGEBRA_CLAPACK_FINDPATH})
 endif(OPEN3DMOTION_LINEAR_ALGEBRA_EIGEN)
 
 # Do our own build of dependent libraries if requested
@@ -89,77 +91,9 @@ if (OPEN3DMOTION_OWNBUILD_CPPUNIT)
   add_subdirectory(ThirdParty/cppunit)
 endif(OPEN3DMOTION_OWNBUILD_CPPUNIT)
 
-# Source dependencies
-
-file(GLOB_RECURSE Open3DMotion_CPP 
-  Open3DMotion/OpenORM/*.cpp
-  Open3DMotion/Maths/*.cpp
-  Open3DMotion/Biomechanics/*.cpp
-  Open3DMotion/MotionBundle/*.cpp
-  Open3DMotion/MotionFile/*.cpp)
-
-file(GLOB_RECURSE Open3DMotion_H 
-  Open3DMotion/OpenORM/*.h
-  Open3DMotion/Maths/*.h
-  Open3DMotion/Biomechanics/*.h
-  Open3DMotion/MotionFile/*.h
-  Open3DMotion/MotionBundle/*.h)
-
-# Optional python dependencies
-
-if(OPEN3DMOTION_BIND_PYTHON)
-  file(GLOB_RECURSE Open3DMotion_Python_CPP Open3DMotion/Bindings/Python/*.cpp)
-  file(GLOB_RECURSE Open3DMotion_Python_H Open3DMotion/Bindings/Python/*.h)
-endif(OPEN3DMOTION_BIND_PYTHON)
-
-# Define the library source files
-add_library(Open3DMotion ${Open3DMotion_CPP} ${Open3DMotion_H} ${Open3DMotion_Python_CPP} ${Open3DMotion_Python_H})
-
-# Specify include directories to export
-# and optionally use our own clapack headers
-target_include_directories(Open3DMotion 
-    PUBLIC 
-        $<INSTALL_INTERFACE:include>    
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-    PRIVATE
-        $<$<BOOL:OPEN3DMOTION_OWNINCLUDE_CLAPACK>:${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/CLAPACK>
-)
-
-# Link core dependencies
-target_link_libraries(Open3DMotion libb64 pugixml zlib)
-
-# Link CLAPACK unless using Eigen
-if(NOT OPEN3DMOTION_LINEAR_ALGEBRA_EIGEN)
-  find_package(CLAPACK PATHS ${OPEN3DMOTION_LINEAR_ALGEBRA_CLAPACK_FINDPATH})
-  target_link_libraries(Open3DMotion f2c blas lapack)
-endif(NOT OPEN3DMOTION_LINEAR_ALGEBRA_EIGEN)
-
-# Additional warning flags for GCC/Clang on Apple
-target_compile_options(${PROJECT_NAME}
-  PUBLIC
-    $<$<BOOL:${APPLE}>:
-      $<$<CONFIG:DEBUG>:
-        "-g -Wnon-virtual-dtor -Wno-long-long -Wchar-subscripts -Wall -Wextra -Wpointer-arith -Wformat-security -Woverloaded-virtual -Wcast-align -fno-common"
-        $<$<CXX_COMPILER_ID:GNU>:" -ansi -fno-check-new "> > >
-  )
-
-# Disable warnings for sprintf and sscanf on MSC
-target_compile_definitions(${PROJECT_NAME} PUBLIC $<$<CXX_COMPILER_ID:MSVC>:"_CRT_SECURE_NO_WARNINGS">)
-
-# Set Eigen flag if present
-target_compile_definitions(${PROJECT_NAME} PUBLIC $<$<BOOL:${OPEN3DMOTION_LINEAR_ALGEBRA_EIGEN}>:OPEN3DMOTION_LINEAR_ALGEBRA_EIGEN>)
-
-# Set Python debug mode if debug build and binding to Python
-target_compile_definitions(${PROJECT_NAME} PUBLIC $<$<BOOL:${OPEN3DMOTION_BIND_PYTHON}>:$<$<CONFIG:DEBUG>:Py_DEBUG>>)
+# Define the library
+add_subdirectory(Open3DMotion)
 
 # Define tests
 enable_testing()
 add_subdirectory(Open3DMotionTest)
-
-# Installation
-install(TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}-export LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
-install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME} DESTINATION include FILES_MATCHING PATTERN "*.h")
-install(EXPORT ${PROJECT_NAME}-export FILE ${PROJECT_NAME}-config.cmake DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
-
-# Allow import directly from build directory if required
-export(EXPORT ${PROJECT_NAME}-export FILE ${PROJECT_NAME}-config.cmake)
