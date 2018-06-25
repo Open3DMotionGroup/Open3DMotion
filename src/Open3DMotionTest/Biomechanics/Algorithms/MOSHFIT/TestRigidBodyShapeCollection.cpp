@@ -180,6 +180,7 @@ public:
 	CPPUNIT_TEST( testVisibilityCanon );
 	CPPUNIT_TEST( testConnectedVisibilityCanon );
 	CPPUNIT_TEST( testComputeApproxMeanShape );
+	CPPUNIT_TEST( testComputeMeanShapeExact );
 	CPPUNIT_TEST( testComputeMeanShape );
 	CPPUNIT_TEST( testMOSHFIT );
 	CPPUNIT_TEST_SUITE_END();
@@ -561,6 +562,75 @@ public:
 		CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, mean.Marker(3).position[0], 0.0001);
 		CPPUNIT_ASSERT_DOUBLES_EQUAL(3.0, mean.Marker(3).position[1], 0.0001);
 		CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, mean.Marker(3).position[2], 0.0001);
+	}
+
+	void testComputeMeanShapeExact()
+	{
+		// Fixed shape to use
+		double testshape[12] =
+		{
+			-3.0, -4.0,  1.0,
+			 3.2, -4.5,  1.5,
+			 3.5,  4.2,  1.2,
+			-3.3,  4.1,  0.9
+		};
+
+		// Simulated duration
+		TimeRange tr;
+		tr.Frames = 7;
+		tr.Start = 0.0;
+		tr.Rate = 1.0;
+
+		// Use fixed coordinates with starting frame where only 2 points are present
+		vector<const TimeSequence*> tsarray;
+		for (UInt32 imarker = 0; imarker < 4; imarker++)
+		{
+			TimeSequence* ts = TSFactoryOccValue(3).New(tr, BinMemFactoryDefault());
+			for (TSOccVector3Iter iter( *ts ); iter.HasFrame(); iter.Next())
+			{
+				if ((imarker == 1 || imarker == 2) && (iter.FrameIndex() == 0))
+				{
+					// Simulate these occluded points in first frame
+					iter.Occluded() = 1;
+					iter.Value()[0] = 0.0;
+					iter.Value()[1] = 0.0;
+					iter.Value()[2] = 0.0;
+				}
+				else
+				{
+					// Fixed coordinates (no simulated noise here)
+					iter.Occluded() = 0;
+					iter.Value()[0] = testshape[3*imarker+0];
+					iter.Value()[1] = testshape[3*imarker+1];
+					iter.Value()[2] = testshape[3*imarker+2];
+				}
+			}
+			tsarray.push_back(ts);
+		}
+
+		// Build input
+		RigidBodyShapeCollection collection;
+		collection.CopyFromTimeSequences(tsarray);
+
+		// Run the method
+		RigidBodyShape mean;
+		UInt32 status = collection.ComputeMeanShape(mean, 0.1, 1.0E-9);
+
+		// Check results - should be exact
+		CPPUNIT_ASSERT_EQUAL(RigidBodyResult::success, status);		
+		CPPUNIT_ASSERT_EQUAL(size_t(4), mean.NumMarkers());
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(-3.0, mean.Marker(0).position[0], 1.0E-9);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(-4.0, mean.Marker(0).position[1], 1.0E-9);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0, mean.Marker(0).position[2], 1.0E-9);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL( 3.2, mean.Marker(1).position[0], 1.0E-9);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(-4.5, mean.Marker(1).position[1], 1.0E-9);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.5, mean.Marker(1).position[2], 1.0E-9);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL( 3.5, mean.Marker(2).position[0], 1.0E-9);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL( 4.2, mean.Marker(2).position[1], 1.0E-9);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.2, mean.Marker(2).position[2], 1.0E-9);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(-3.3, mean.Marker(3).position[0], 1.0E-9);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL( 4.1, mean.Marker(3).position[1], 1.0E-9);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.9, mean.Marker(3).position[2], 1.0E-9);		
 	}
 
 	void testComputeMeanShape()

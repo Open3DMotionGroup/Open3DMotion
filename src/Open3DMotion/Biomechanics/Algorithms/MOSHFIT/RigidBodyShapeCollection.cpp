@@ -165,23 +165,25 @@ namespace Open3DMotion
 			for (std::vector<RigidBodyShape>::const_iterator iter_shape( shape.begin() ); iter_shape != shape.end(); iter_shape++)
 			{
 				RigidTransform3 T;
-				iter_shape->ComputeFitTo(T, mean);
-				for (size_t marker_index = 0; marker_index < num_markers; marker_index++)
+				if (iter_shape->ComputeFitTo(T, mean) == RigidBodyResult::success)
 				{
-					const RigidBodyMarker& x = iter_shape->Marker(marker_index);
-					if (x.visible)
+					for (size_t marker_index = 0; marker_index < num_markers; marker_index++)
 					{
-						// transform point to be nearest to mean as we can
-						Vector3 Tx;
-						RigidTransform3::MulVec(Tx, T, x.position);
-						point_sum[marker_index] += Tx;
-						point_count[marker_index]++;
+						const RigidBodyMarker& x = iter_shape->Marker(marker_index);
+						if (x.visible)
+						{
+							// transform point to be nearest to mean as we can
+							Vector3 Tx;
+							RigidTransform3::MulVec(Tx, T, x.position);
+							point_sum[marker_index] += Tx;
+							point_count[marker_index]++;
 
-						// form sum residuals
-						// Vector3 dx;
-						// Vector3::Sub(dx, Tx, x.position);
-						// dx2_sum += dx.Modulus2();
-						// dx2_count++;
+							// form sum residuals
+							// Vector3 dx;
+							// Vector3::Sub(dx, Tx, x.position);
+							// dx2_sum += dx.Modulus2();
+							// dx2_count++;
+						}
 					}
 				}
 			}
