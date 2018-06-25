@@ -1,6 +1,6 @@
 /*--
   Open3DMotion 
-  Copyright (c) 2004-2012.
+  Copyright (c) 2004-2018.
   All rights reserved.
   See LICENSE.txt for more information.
 --*/
@@ -12,7 +12,7 @@
 #ifndef OPEN3DMOTION_LINEAR_ALGEBRA_EIGEN
 extern "C"
 {
-#include <f2clibs/f2c.h>
+#include <f2c.h>
 #include <clapack.h>
 }
 #else
