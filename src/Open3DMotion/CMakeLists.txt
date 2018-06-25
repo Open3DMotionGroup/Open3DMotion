@@ -66,9 +66,6 @@ target_compile_definitions(Open3DMotion PUBLIC $<$<CXX_COMPILER_ID:MSVC>:_CRT_SE
 # Set Eigen flag if present
 target_compile_definitions(Open3DMotion PUBLIC $<$<BOOL:${OPEN3DMOTION_LINEAR_ALGEBRA_EIGEN}>:OPEN3DMOTION_LINEAR_ALGEBRA_EIGEN>)
 
-# Set Python debug mode if debug build and binding to Python
-target_compile_definitions(Open3DMotion PUBLIC $<$<BOOL:${OPEN3DMOTION_BIND_PYTHON}>:$<$<CONFIG:DEBUG>:Py_DEBUG>>)
-
 # Installation
 install(TARGETS Open3DMotion EXPORT Open3DMotionExport LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} DESTINATION include FILES_MATCHING PATTERN "*.h")
