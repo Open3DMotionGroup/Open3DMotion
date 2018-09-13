@@ -18,6 +18,7 @@
 #include "Open3DMotion/OpenORM/IO/BSON/BSONWriterMOBL.h"
 #include "Open3DMotion/OpenORM/IO/BSON/BSONTimestampHolder.h"
 #include "Open3DMotion/OpenORM/IO/BSON/BSONObjectIdHolder.h"
+#include "Open3DMotion/OpenORM/IO/BSON/BSONObjectIdList.h"
 
 #include <cppunit/extensions/HelperMacros.h>
 #include <istream>
@@ -81,6 +82,7 @@ public:
 	CPPUNIT_TEST( testWriteList );
 	CPPUNIT_TEST( testSizeElementBinaryMOBLCompatible );
 	CPPUNIT_TEST( testWriteElementBinaryMOBLCompatible );
+	CPPUNIT_TEST( testWriteBSONObjectIdList );
 
 	/* MOBL compatibility not yet implemented
   CPPUNIT_TEST( testGZStreamWriteBinary );
@@ -919,6 +921,52 @@ public:
 		CPPUNIT_ASSERT_EQUAL(0xB1, output.get());
 		CPPUNIT_ASSERT_EQUAL(0xAA, output.get());
 		CPPUNIT_ASSERT_EQUAL(0x11, output.get());
+	}
+
+	void testWriteBSONObjectIdList()
+	{
+		std::stringstream output(std::ios::binary | std::ios::out | std::ios::in);
+
+		{
+			BSONObjectIdHolder holder0, holder1;
+			holder0.BSONObjectId = "12abcd34fe567891a3b4c7d3";
+			holder1.BSONObjectId = "234a2daa11223399b3e104dd";
+
+			std::auto_ptr<BSONObjectIdList> idlist(new BSONObjectIdList());
+			idlist->Add(holder0.ToTree());
+			idlist->Add(holder1.ToTree());
+
+			TreeCompound testdata;
+			testdata.Set("JustOne", new TreeInt32(1));
+			testdata.Set("Stuff", idlist.release());
+
+			BSONOutputStreamSTL stream(output);
+			BSONWriterMOBL writer(stream);
+			writer.WriteDocument(testdata);
+		}
+
+		const UInt8 expected[] = {
+			0x40, 0x00, 0x00, 0x00,					                // int32 document size
+			0x12,                                           // 64-bit number coming up
+			'J', 'u', 's', 't', 'O', 'n', 'e', '\0',        // name of item
+			0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // item
+			0x04,                                           // list coming up
+			'S', 't', 'u', 'f', 'f',  '\0',                 // name of list
+			0x23, 0x00, 0x00, 0x00,					                // int32 list size
+			0x07,
+			'0', '\0',
+			0x12, 0xAB, 0xCD, 0x34, 0xFE, 0x56, 0x78, 0x91, 0xA3, 0xB4, 0xC7, 0xD3,
+			0x07,
+			'1', '\0',
+			0x23, 0x4A, 0x2D, 0xAA, 0x11, 0x22, 0x33, 0x99, 0xB3, 0xE1, 0x04, 0xDD,
+			0x00,
+			0x00
+		};
+
+		UInt8 result[64];
+		output.seekp(0, std::ios::beg);
+		output.read((char*)result, 64);
+		CPPUNIT_ASSERT_EQUAL(0, memcmp(result, expected, 64));
 	}
 
 	void testGZStreamWriteBinary()
