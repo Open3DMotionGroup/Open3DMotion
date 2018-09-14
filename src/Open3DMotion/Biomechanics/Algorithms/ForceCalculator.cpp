@@ -1,6 +1,6 @@
 /*--
   Open3DMotion 
-  Copyright (c) 2004-2012.
+  Copyright (c) 2004-2018.
   All rights reserved.
   See LICENSE.txt for more information.
 --*/
@@ -113,12 +113,8 @@ namespace Open3DMotion
 		return true;
 	}
 
-	bool ForceCalculator::Compute(TimeSequence*& force, TimeSequence*& point, TimeSequence*& freemoment, ForceMeasurementTimeSequence& mts, const BinMemFactory& memfactory) const
+	bool ForceCalculator::Compute(TimeSequence& force, TimeSequence& point, TimeSequence& freemoment, ForceMeasurementTimeSequence& mts, const BinMemFactory& memfactory) const
 	{
-		// initialise to NULL
-		force = NULL;
-		point = NULL;
-
     // must have enough input channels
     if (mts.NumChannels() != NumInputs())
       return false;
@@ -130,18 +126,18 @@ namespace Open3DMotion
 		tr.Rate = mts.Rate();
 
 		// allocate time sequences
-		force = TSFactoryValue(3).New(tr, memfactory);
-		point = TSFactoryValue(3).New(tr, memfactory);
-		freemoment = TSFactoryValue(3).New(tr, memfactory);
+		TSFactoryValue(3).Allocate(force, tr, memfactory);
+		TSFactoryValue(3).Allocate(point, tr, memfactory);
+		TSFactoryValue(3).Allocate(freemoment, tr, memfactory);
 
 		// per-frame buffers
 		std::vector<double> buffer_rawanalog;
 		std::vector<double> buffer_calanalog;
 
 		// do all calcs
-		TSVector3Iter iter_force(*force);
-		TSVector3Iter iter_point(*point);
-		TSVector3Iter iter_freemoment(*freemoment);
+		TSVector3Iter iter_force(force);
+		TSVector3Iter iter_point(point);
+		TSVector3Iter iter_freemoment(freemoment);
 		mts.Begin();
 
 		for (; iter_force.HasFrame(); iter_force.Next(), iter_point.Next(), iter_freemoment.Next(), mts.NextFrame())

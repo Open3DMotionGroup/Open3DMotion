@@ -1,6 +1,6 @@
 /*--
   Open3DMotion 
-  Copyright (c) 2004-2012.
+  Copyright (c) 2004-2018.
   All rights reserved.
   See LICENSE.txt for more information.
 --*/
@@ -48,7 +48,7 @@ namespace Open3DMotion
 
 		bool Compute(Vector3& force, Vector3& point, Vector3& freemoment, const ForceMeasurements& measurements, std::vector<double>& buffer_rawanalog, std::vector<double>& buffer_calanalog) const;
 
-		bool Compute(TimeSequence*& force, TimeSequence*& point, TimeSequence*& freemoment, ForceMeasurementTimeSequence& mts, const BinMemFactory& memfactory) const;
+		bool Compute(TimeSequence& force, TimeSequence& point, TimeSequence& freemoment, ForceMeasurementTimeSequence& mts, const BinMemFactory& memfactory) const;
 
 		/**
 		 Summary

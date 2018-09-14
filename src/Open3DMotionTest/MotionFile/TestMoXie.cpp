@@ -1,3 +1,10 @@
+/*--
+  Open3DMotion 
+  Copyright (c) 2004-2018.
+  All rights reserved.
+  See LICENSE.txt for more information.
+--*/
+
 #include <cppunit/extensions/HelperMacros.h>
 
 #include "Open3DMotion/MotionFile/MotionFileHandler.h"
@@ -58,7 +65,7 @@ public:
 
 	void testTrialAttributes();
 
-	static void ComputeForce(TimeSequence*& force, TimeSequence*& point, const Trial& trial);
+	static void ComputeForce(TimeSequence& force, TimeSequence& point, const Trial& trial);
 
 	static void CompareTS(const TimeSequence& expected, const TimeSequence& actual, const char* message, double precision,  TSVector3ConstIter* thresholdFz = NULL);
 
@@ -211,28 +218,28 @@ void TestMoXie::testForceConversion()
 	CPPUNIT_ASSERT_EQUAL(size_t(6), trialMox.Acq.TimeSequences.NumElements());
 
 	// compute force in each case
-	TimeSequence* forceC3D(NULL), *pointC3D(NULL);
-	TimeSequence* forceMox(NULL), *pointMox(NULL);
+	TimeSequence forceC3D, pointC3D;
+	TimeSequence forceMox, pointMox;
 	ComputeForce(forceC3D, pointC3D, trialC3D);
 	ComputeForce(forceMox, pointMox, trialMox);
 
 	// all rates should match
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(forceC3D->Rate, pointC3D->Rate, 1E-6);
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(forceC3D->Rate, forceMox->Rate, 1E-6);
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(forceC3D->Rate, pointMox->Rate, 1E-6);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(forceC3D.Rate, pointC3D.Rate, 1E-6);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(forceC3D.Rate, forceMox.Rate, 1E-6);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(forceC3D.Rate, pointMox.Rate, 1E-6);
 	
 	// all frame counts should match
-	size_t numframes = forceC3D->NumFrames();
-	CPPUNIT_ASSERT_EQUAL(numframes, pointC3D->NumFrames());
-	CPPUNIT_ASSERT_EQUAL(numframes, forceMox->NumFrames());
-	CPPUNIT_ASSERT_EQUAL(numframes, pointMox->NumFrames());
+	size_t numframes = forceC3D.NumFrames();
+	CPPUNIT_ASSERT_EQUAL(numframes, pointC3D.NumFrames());
+	CPPUNIT_ASSERT_EQUAL(numframes, forceMox.NumFrames());
+	CPPUNIT_ASSERT_EQUAL(numframes, pointMox.NumFrames());
 
 	// thresholder for Fz
-	TSVector3ConstIter thresholdFz(*forceC3D);
+	TSVector3ConstIter thresholdFz(forceC3D);
 
 	// compare numbers - MoXie uses 2 d.p. for N and 2 d.p. for Nm (=> tens column for Nmm)
-	CompareTS(*forceC3D, *forceMox, "force", 0.01);
-	CompareTS(*pointC3D, *pointMox, "point", 10.0, &thresholdFz);
+	CompareTS(forceC3D, forceMox, "force", 0.01);
+	CompareTS(pointC3D, pointMox, "point", 10.0, &thresholdFz);
 }
 
 void TestMoXie::testNWalk02File(const char* filename)
@@ -342,7 +349,7 @@ void TestMoXie::CompareFrameElement(const Vector3& expected, const Vector3& actu
 }
 
 
-void TestMoXie::ComputeForce(TimeSequence*& force, TimeSequence*& point, const Trial& trial)
+void TestMoXie::ComputeForce(TimeSequence& force, TimeSequence& point, const Trial& trial)
 {
 	// compute force and centre-of-pressure in global coords
 	CPPUNIT_ASSERT(trial.Acq.ForcePlates.NumElements() >= 1);
@@ -354,12 +361,12 @@ void TestMoXie::ComputeForce(TimeSequence*& force, TimeSequence*& point, const T
 	ForceMeasurementTimeSequence mts;
 	mts.Set(fp, analog_all);
 	CPPUNIT_ASSERT_EQUAL(size_t(6), mts.NumChannels());
-	TimeSequence* freemoment(NULL);
+	TimeSequence freemoment;
   BinMemFactoryDefault memfactory;
 	CPPUNIT_ASSERT( calculator->Compute(force, point, freemoment, mts, memfactory) );
 	
 	// ignore height of plate - not supported in MoXie
-	for (TSVector3Iter iter_point(*point); iter_point.HasFrame(); iter_point.Next())
+	for (TSVector3Iter iter_point(point); iter_point.HasFrame(); iter_point.Next())
 		iter_point.Value()[2] = 0.0;
 }
 
