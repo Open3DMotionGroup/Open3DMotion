@@ -1,6 +1,6 @@
 /*--
   Open3DMotion 
-  Copyright (c) 2004-2012.
+  Copyright (c) 2004-2018.
   All rights reserved.
   See LICENSE.txt for more information.
 --*/
@@ -21,7 +21,15 @@ namespace Open3DMotion
 		}
 
 	public:
+
 		TimeSequence* New(const TimeRange& tr, const BinMemFactory& memfactory) const;
+
+		TimeSequence& Allocate(TimeSequence& ts, const TimeRange& tr, const BinMemFactory& memfactory) const;
+
+		TimeSequence& AllocateSameTimeRange(TimeSequence& ts, const TimeSequence& predicate, const BinMemFactory& memfactory) const;
+
+		const std::vector<BinaryFieldSpec>& Layout() const
+		{ return layout; }
 
 	protected:
 		void AddField(const BinaryFieldSpec& field);
@@ -48,6 +56,15 @@ namespace Open3DMotion
 		TSFactoryOccValue(Int32 dimension);
 	};
 
+	class TSFactoryOccConfValue : public TSFactoryOccValue
+	{
+	public:
+		static const char fieldname_confidence[];
+
+	public:
+		TSFactoryOccConfValue(Int32 dimension);
+	};
+
 	class TSScalarConstIter : public BinConstIter1<double>
 	{
 	public:
@@ -72,6 +89,38 @@ namespace Open3DMotion
 	public:
 		double& Value() const
 		{ return *ValuePtr0(); }
+	};
+
+	class TSOccScalarConstIter : public BinConstIter2<double, UInt8>
+	{
+	public:
+		TSOccScalarConstIter(const TimeSequence& ts) throw(NoSuchFieldException)  :
+				BinConstIter2<double, UInt8>(ts, TSFactoryValue::fieldname_value, 1, TSFactoryOccValue::fieldname_occluded, 1)
+		{
+		}
+
+	public:
+		const double& Value() const
+		{ return *ValuePtr0(); }
+
+		const UInt8& Occluded() const
+		{ return *ValuePtr1(); }
+	};
+
+	class TSOccScalarIter : public BinIter2<double, UInt8>
+	{
+	public:
+		TSOccScalarIter(TimeSequence& ts) throw(NoSuchFieldException)  :
+				BinIter2<double, UInt8>(ts, TSFactoryValue::fieldname_value, 1, TSFactoryOccValue::fieldname_occluded, 1)
+		{
+		}
+
+	public:
+		double& Value() const
+		{ return *ValuePtr0(); }
+
+		UInt8& Occluded() const
+		{ return *ValuePtr1(); }
 	};
 
 	class TSVector3ConstIter : public BinConstIter1<double>
@@ -189,6 +238,65 @@ namespace Open3DMotion
 		Open3DMotion::UInt8& Occluded() const
 		{ return *ValuePtr1(); }
 	};
+
+	class TSOccConfValueIter : public Open3DMotion::BinIter3<double, Open3DMotion::UInt8, double>
+	{
+	public:
+		TSOccConfValueIter(Open3DMotion::TimeSequence& ts, UInt32 dimension) throw(Open3DMotion::NoSuchFieldException) :
+			BinIter3<double, Open3DMotion::UInt8, double>(ts, 
+				Open3DMotion::TSFactoryValue::fieldname_value, dimension,
+				Open3DMotion::TSFactoryOccValue::fieldname_occluded, 1,
+				Open3DMotion::TSFactoryOccConfValue::fieldname_confidence, dimension*dimension)
+		{
+		}
+
+	public:
+
+		double* Value() const
+		{
+			return ValuePtr0();
+		}
+
+		Open3DMotion::UInt8& Occluded() const
+		{
+			return *ValuePtr1();
+		}
+
+		double* Confidence() const
+		{
+			return ValuePtr2();
+		}
+	};
+
+	class TSOccConfValueConstIter : public Open3DMotion::BinConstIter3<double, Open3DMotion::UInt8, double>
+	{
+	public:
+		TSOccConfValueConstIter(const Open3DMotion::TimeSequence& ts, UInt32 dimension) throw(Open3DMotion::NoSuchFieldException) :
+			BinConstIter3<double, Open3DMotion::UInt8, double>(ts,
+				Open3DMotion::TSFactoryValue::fieldname_value, dimension,
+				Open3DMotion::TSFactoryOccValue::fieldname_occluded, 1,
+				Open3DMotion::TSFactoryOccConfValue::fieldname_confidence, dimension*dimension)
+		{
+		}
+
+	public:
+
+		const double* Value() const
+		{
+			return ValuePtr0();
+		}
+
+		const Open3DMotion::UInt8& Occluded() const
+		{
+			return *ValuePtr1();
+		}
+
+		const double* Confidence() const
+		{
+			return ValuePtr2();
+		}
+	};
+
 };
 
 #endif

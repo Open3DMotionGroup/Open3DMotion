@@ -1,6 +1,6 @@
 /*--
   Open3DMotion 
-  Copyright (c) 2004-2012.
+  Copyright (c) 2004-2018.
   All rights reserved.
   See LICENSE.txt for more information.
 --*/
@@ -18,6 +18,10 @@ namespace Open3DMotion
 	{
 	public:
 		TimeRange();
+
+		bool IsSameAs(const TimeRange& other, 
+			double start_tolerance=1E-9,
+			double rate_tolerance=1E-9) const;
 
 	public:
 		MapFloat64 Rate;

@@ -1,6 +1,6 @@
 /*--
   Open3DMotion 
-  Copyright (c) 2004-2012.
+  Copyright (c) 2004-2018.
   All rights reserved.
   See LICENSE.txt for more information.
 --*/
@@ -33,6 +33,11 @@ namespace Open3DMotion
 		// after the frame data in future
 		REGISTER_MEMBER(Frames);
 
+		// Initialise required
+		Frames = 0;
+		Rate = 0.0;
+		Start = 0;
+
 		// base class will register data members
 	}
 
@@ -54,4 +59,14 @@ namespace Open3DMotion
 		t.Rate = Rate;
 		t.Frames = Frames;
 	}
+
+
+	bool TimeSequence::TimeRangeIsSameAs(const TimeSequence& other, double start_tolerance/*=1E-9*/, double rate_tolerance/*=1E-9*/) const
+	{
+		TimeRange tr_this, tr_other;
+		GetTimeRange(tr_this);
+		other.GetTimeRange(tr_other);
+		return tr_this.IsSameAs(tr_other, start_tolerance, rate_tolerance);
+	}
+
 }
