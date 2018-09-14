@@ -19,6 +19,7 @@
 #include "Open3DMotion/OpenORM/IO/BSON/BSONTimestampHolder.h"
 #include "Open3DMotion/OpenORM/IO/BSON/BSONObjectIdHolder.h"
 #include "Open3DMotion/OpenORM/IO/BSON/BSONObjectIdList.h"
+#include "Open3DMotion/OpenORM/IO/BSON/BSONDateHolder.h"
 #include "Open3DMotion/OpenORM/IO/BSON/BSONReader.h"
 #include "Open3DMotion/OpenORM/IO/BSON/BSONReaderMOBL.h"
 
@@ -50,13 +51,14 @@ public:
 	CPPUNIT_TEST(testReadElementBinary);
 	CPPUNIT_TEST(testReadElementBinaryMOBLCompatible);
 	CPPUNIT_TEST(testReadBSONTimestamp);
-	CPPUNIT_TEST(TestBSONReaderObjectIdHolder);
+	CPPUNIT_TEST(testBSONObjectIdHolder);
 	CPPUNIT_TEST(testReadBSONObjectId);
 	CPPUNIT_TEST(testReadDocument);
 	CPPUNIT_TEST(testReadList);
 	CPPUNIT_TEST(testReadObjectIdList);
 	CPPUNIT_TEST(testReadDocumentElement);
 	CPPUNIT_TEST(testReadListElement);
+	CPPUNIT_TEST(testReadBSONDate);
 	CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -409,7 +411,7 @@ public:
 		CPPUNIT_ASSERT_EQUAL(Int32(9), holder.BSONTimestamp.Seconds.Value());
 	}
 
-	void TestBSONReaderObjectIdHolder()
+	void testBSONObjectIdHolder()
 	{
 		BSONObjectIdHolder h1;
 		BSONObjectIdBinary a =
@@ -671,6 +673,44 @@ public:
 		holder1.FromTree(result->ElementArray()[1]);
 		CPPUNIT_ASSERT_EQUAL(std::string("12abcd34fe567891a3b4c7d3"), (const std::string&) holder0.BSONObjectId);
 		CPPUNIT_ASSERT_EQUAL(std::string("234a2daa11223399b3e104dd"), (const std::string&) holder1.BSONObjectId);
+	}
+
+	void testReadBSONDate()
+	{
+		UInt8 data[] =
+		{
+			// Code for Date object
+			0x09,
+
+			// Label
+			'S', 'o', 'm', 'e', 'T', 'i', 'm', 'e', '\0',
+
+			// 14/09/3001 15:39:09 is 32557390742000 milliseconds since 01/01/1970 00:00:00
+			// And this is 1D9C5BB5C1F0 in hex (must write backwards due to little-endian)
+			0xF0, 0xC1, 0xB5, 0x5B, 0x9C, 0x1D, 0x00, 0x00
+		};
+
+		// reader
+		BinaryStream input(data, sizeof(data));
+		BSONInputStreamSTL stream(input);
+		BinMemFactoryDefault memfactory;
+		BSONReader reader(stream, memfactory);
+
+		// read it
+		std::string name;
+		TreeValue* value(NULL);
+		CPPUNIT_ASSERT(reader.ReadElement(name, value));
+
+		// check read ok
+		CPPUNIT_ASSERT_EQUAL(std::string("SomeTime"), name);
+		CPPUNIT_ASSERT(value != NULL);
+		CPPUNIT_ASSERT(value->ClassNameMatches(TreeCompound::classname));
+
+		// parse as date
+		BSONDateHolder holder;
+		holder.FromTree(value);
+		CPPUNIT_ASSERT_EQUAL(0x5BB5C1F0UL, (UInt32)holder.BSONDate.LSB.Value());
+		CPPUNIT_ASSERT_EQUAL(0x00001D9CUL, (UInt32)holder.BSONDate.MSB.Value());
 	}
 };
 

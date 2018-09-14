@@ -19,6 +19,7 @@
 #include "Open3DMotion/OpenORM/IO/BSON/BSONTimestampHolder.h"
 #include "Open3DMotion/OpenORM/IO/BSON/BSONObjectIdHolder.h"
 #include "Open3DMotion/OpenORM/IO/BSON/BSONObjectIdList.h"
+#include "Open3DMotion/OpenORM/IO/BSON/BSONDateHolder.h"
 
 #include <cppunit/extensions/HelperMacros.h>
 #include <istream>
@@ -65,6 +66,7 @@ public:
 	CPPUNIT_TEST( testSizeElementBinary );
 	CPPUNIT_TEST( testSizeBSONTimestamp );
 	CPPUNIT_TEST( testSizeBSONObjectId );
+	CPPUNIT_TEST( testSizeBSONDate );
 	CPPUNIT_TEST( testSizeDocumentElement );
 	CPPUNIT_TEST( testSizeListElement );
 	CPPUNIT_TEST( testWriteCString );
@@ -83,6 +85,7 @@ public:
 	CPPUNIT_TEST( testSizeElementBinaryMOBLCompatible );
 	CPPUNIT_TEST( testWriteElementBinaryMOBLCompatible );
 	CPPUNIT_TEST( testWriteBSONObjectIdList );
+	CPPUNIT_TEST( testWriteBSONDate );
 
 	/* MOBL compatibility not yet implemented
   CPPUNIT_TEST( testGZStreamWriteBinary );
@@ -247,7 +250,21 @@ public:
 		// 1 byte type ID, 8 byte name, 1 byte name term, 12 byte time object id
 		CPPUNIT_ASSERT_EQUAL(UInt32(22), s);
 	}
-	
+
+	void testSizeBSONDate()
+	{
+		BSONOutputStreamNull nullstream;
+		BSONWriter writer(nullstream);
+		std::string name("SomeDate");
+		BSONDateHolder holder;
+		holder.BSONDate.MSB = 0x00000000;
+		holder.BSONDate.LSB = 0xABCDEF12;
+		std::auto_ptr<TreeValue> value(holder.ToTree());
+		UInt32 s = writer.SizeElement(name, *value);
+		// 1 byte type ID, 8 byte name, 1 byte name term, 8 byte date
+		CPPUNIT_ASSERT_EQUAL(UInt32(18), s);
+	}
+
 	void testSizeDocumentElement()
 	{ 
 		BSONOutputStreamNull nullstream;
@@ -969,9 +986,43 @@ public:
 		CPPUNIT_ASSERT_EQUAL(0, memcmp(result, expected, 64));
 	}
 
-	void testGZStreamWriteBinary()
+	void testWriteBSONDate()
 	{
-    CPPUNIT_FAIL("Not implemented");
+		// 14/09/3001 15:39:09 is 32557390742000 milliseconds since 01/01/1970 00:00:00
+		// And this is 1D9C5BB5C1F0 in hex 
+		BSONDateHolder holder;
+		holder.BSONDate.MSB.Value() = (Int32)0x00001D9CUL;
+		holder.BSONDate.LSB.Value() = (Int32)0x5BB5C1F0UL;
+
+		// write to stream
+		std::stringstream output(std::ios::binary | std::ios::out | std::ios::in);
+		{
+			std::auto_ptr<TreeValue> value(holder.ToTree());
+			BSONOutputStreamSTL stream(output);
+			BSONWriter writer(stream);
+			writer.WriteElement("SomeTime", *value);
+		}
+
+		// Should give BSON date representation
+		output.seekp(0, std::ios::beg);
+		CPPUNIT_ASSERT_EQUAL(0x09, output.get());
+		CPPUNIT_ASSERT_EQUAL((int)'S', output.get());
+		CPPUNIT_ASSERT_EQUAL((int)'o', output.get());
+		CPPUNIT_ASSERT_EQUAL((int)'m', output.get());
+		CPPUNIT_ASSERT_EQUAL((int)'e', output.get());
+		CPPUNIT_ASSERT_EQUAL((int)'T', output.get());
+		CPPUNIT_ASSERT_EQUAL((int)'i', output.get());
+		CPPUNIT_ASSERT_EQUAL((int)'m', output.get());
+		CPPUNIT_ASSERT_EQUAL((int)'e', output.get());
+		CPPUNIT_ASSERT_EQUAL(0, output.get());
+		CPPUNIT_ASSERT_EQUAL(0xF0, output.get());  // 1D9C5BB5C1F0 backwards for little-endian
+		CPPUNIT_ASSERT_EQUAL(0xC1, output.get());
+		CPPUNIT_ASSERT_EQUAL(0xB5, output.get());
+		CPPUNIT_ASSERT_EQUAL(0x5B, output.get());
+		CPPUNIT_ASSERT_EQUAL(0x9C, output.get());
+		CPPUNIT_ASSERT_EQUAL(0x1D, output.get());
+		CPPUNIT_ASSERT_EQUAL(0x00, output.get());
+		CPPUNIT_ASSERT_EQUAL(0x00, output.get());
 	}
 };
 
