@@ -1,6 +1,6 @@
 /*--
   Open3DMotion 
-  Copyright (c) 2004-2013.
+  Copyright (c) 2004-2018.
   All rights reserved.
   See LICENSE.txt for more information.
 --*/
@@ -62,7 +62,7 @@ namespace Open3DMotion
 			const MemoryHandlerPython* mem = NamedClassCast<MemoryHandler, MemoryHandlerPython> ( bin->BinMemory() );
 			if (mem)
 			{
-				PyObject* py_bytearray = mem->py_bytearray;
+				PyObject* py_bytearray = mem->PythonByteArray();
 				Py_INCREF(py_bytearray);
 				return py_bytearray;
 			}
@@ -127,6 +127,10 @@ namespace Open3DMotion
 		else if (PyBool_Check(py_value))
 		{
 			return new TreeBool( (py_value == Py_True) ? true : false );
+		}
+		else if (PyInt_Check(py_value))
+		{
+			return new TreeInt32(PyInt_AsLong(py_value));
 		}
 		else if (PyLong_Check(py_value))
 		{

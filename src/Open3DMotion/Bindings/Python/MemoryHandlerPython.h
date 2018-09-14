@@ -1,6 +1,6 @@
 /*--
   Open3DMotion 
-  Copyright (c) 2004-2013.
+  Copyright (c) 2004-2018.
   All rights reserved.
   See LICENSE.txt for more information.
 --*/
@@ -21,8 +21,6 @@ namespace Open3DMotion
 	*/
 	class MemoryHandlerPython : public MemoryHandler
 	{
-		friend class PythonConvert;
-
 	public:
 		DECLARE_CLASS_NAME();
 
@@ -41,6 +39,8 @@ namespace Open3DMotion
 		virtual UInt8* Data() const;
 
 		virtual size_t RefCount() const;
+
+		virtual PyObject* PythonByteArray() const;
 
 	private:
 		mutable PyObject* py_bytearray;

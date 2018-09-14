@@ -1,6 +1,6 @@
 /*--
   Open3DMotion 
-  Copyright (c) 2004-2012.
+  Copyright (c) 2004-2018.
   All rights reserved.
   See LICENSE.txt for more information.
 --*/
@@ -42,6 +42,10 @@ namespace Open3DMotion
 		/** Retrieve data structure of each event */
 		const BinaryStructure& DataStructure() const
 		{ return Structure; }
+
+		/** Underlying binary object */
+		const MapBinary& BinaryContainer() const
+		{	return Binary; }
 
 		/** Total size of all events in bytes */
 		size_t DataSizeBytes() const

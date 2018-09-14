@@ -1,6 +1,6 @@
 /*--
   Open3DMotion 
-  Copyright (c) 2004-2013.
+  Copyright (c) 2004-2018.
   All rights reserved.
   See LICENSE.txt for more information.
 --*/
@@ -58,5 +58,10 @@ namespace Open3DMotion
 	size_t MemoryHandlerPython::RefCount() const
 	{
 		return py_bytearray->ob_refcnt;
+	}
+
+	PyObject* MemoryHandlerPython::PythonByteArray() const
+	{
+		return py_bytearray;
 	}
 }
