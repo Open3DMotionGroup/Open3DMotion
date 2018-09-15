@@ -34,6 +34,8 @@ public:
 	CPPUNIT_TEST( testToString );
 	CPPUNIT_TEST( testToBool );
 	CPPUNIT_TEST( testToInt32 );
+	CPPUNIT_TEST( testToInt32FromLong );
+	CPPUNIT_TEST( testToInt32FromLongOverflow );
 	CPPUNIT_TEST( testToFloat64 );
 	CPPUNIT_TEST( testToBinary );
 	CPPUNIT_TEST( testFromEmptyList );
@@ -123,10 +125,10 @@ public:
 	{
 		size_t refcount0 = PythonTotalRefCount();
 		
-		TreeInt32 x(573);
+		TreeInt32 x(573L);
 		PyObject* py_result = PythonConvert::FromTree(&x);
-		CPPUNIT_ASSERT( PyLong_Check(py_result) );
-		CPPUNIT_ASSERT_EQUAL(573L, PyLong_AsLong(py_result));
+		CPPUNIT_ASSERT( PyInt_Check(py_result) );
+		CPPUNIT_ASSERT_EQUAL(573L, PyInt_AsLong(py_result));
 		Py_DECREF(py_result);
 
 		size_t refcount1 = PythonTotalRefCount();
@@ -225,17 +227,48 @@ public:
 		CPPUNIT_ASSERT(refcount1 == refcount0);
 	}
 
+	void testToInt32FromLong()
+	{
+		size_t refcount0 = PythonTotalRefCount();
+
+		// should work for numbers that can be represented as 32-bit
+		PyObject* py_number = PyLong_FromLong(-59982L);
+		std::auto_ptr<TreeValue> result(PythonConvert::ToTree(py_number));
+		Py_DECREF(py_number);
+		CPPUNIT_ASSERT(result.get() != NULL);
+		TreeInt32* result_int32 = TreeValueCast<TreeInt32>(result.get());
+		CPPUNIT_ASSERT(result_int32 != NULL);
+		CPPUNIT_ASSERT_EQUAL(-59982L, result_int32->Value());
+
+		size_t refcount1 = PythonTotalRefCount();
+		CPPUNIT_ASSERT(refcount1 == refcount0);
+	}
+
+	void testToInt32FromLongOverflow()
+	{
+		size_t refcount0 = PythonTotalRefCount();
+
+		// should fail when presented with long occupying more than 32-bit representation
+		PyObject* py_number = PyLong_FromLongLong(0xABCD0123CDEF3456LL);
+		std::auto_ptr<TreeValue> result( PythonConvert::ToTree(py_number) );
+		CPPUNIT_ASSERT(result.get() == NULL);
+		Py_DECREF(py_number);
+
+		size_t refcount1 = PythonTotalRefCount();
+		CPPUNIT_ASSERT(refcount1 == refcount0);
+	}
+
 	void testToInt32()
 	{
 		size_t refcount0 = PythonTotalRefCount();
 
-		PyObject* py_number = PyLong_FromLong(-583L);
-		std::auto_ptr<TreeValue> result( PythonConvert::ToTree(py_number) );
+		PyObject* py_number = PyInt_FromLong(-597L);
+		std::auto_ptr<TreeValue> result(PythonConvert::ToTree(py_number));
 		Py_DECREF(py_number);
 		CPPUNIT_ASSERT(result.get() != NULL);
-		TreeInt32* result_int32 = TreeValueCast<TreeInt32> ( result.get() );
+		TreeInt32* result_int32 = TreeValueCast<TreeInt32>(result.get());
 		CPPUNIT_ASSERT(result_int32 != NULL);
-		CPPUNIT_ASSERT_EQUAL(-583L, result_int32->Value());
+		CPPUNIT_ASSERT_EQUAL(-597L, result_int32->Value());
 
 		size_t refcount1 = PythonTotalRefCount();
 		CPPUNIT_ASSERT(refcount1 == refcount0);
@@ -329,7 +362,7 @@ public:
 		CPPUNIT_ASSERT(PyString_Check(PyList_GetItem(py_result, 0)));
 		CPPUNIT_ASSERT_EQUAL(std::string("VariedElement"), std::string(PyString_AsString(PyList_GetItem(py_result, 0))));
 
-		CPPUNIT_ASSERT(PyLong_Check(PyList_GetItem(py_result, 1)));
+		CPPUNIT_ASSERT(PyInt_Check(PyList_GetItem(py_result, 1)));
 		CPPUNIT_ASSERT_EQUAL(781L, PyLong_AsLong(PyList_GetItem(py_result, 1)));
 
 		CPPUNIT_ASSERT(PyFloat_Check(PyList_GetItem(py_result, 2)));
@@ -383,7 +416,7 @@ public:
 		// make data
 		PyObject* py_list = PyList_New(4);
 		PyList_SetItem(py_list, 0, PyString_FromString("Apples"));
-		PyList_SetItem(py_list, 1, PyLong_FromLong(23L));
+		PyList_SetItem(py_list, 1, PyInt_FromLong(23L));
 		PyList_SetItem(py_list, 2, PyFloat_FromDouble(-99999.93));
 		Py_INCREF(Py_True);
 		PyList_SetItem(py_list, 3, Py_True);
@@ -446,7 +479,7 @@ public:
 		CPPUNIT_ASSERT_EQUAL(Py_ssize_t(4), PyDict_Size(py_c));
 
 		PyObject* py_age = PyDict_GetItemString(py_c, "Age");
-		CPPUNIT_ASSERT(PyLong_Check(py_age));
+		CPPUNIT_ASSERT(PyInt_Check(py_age));
 		CPPUNIT_ASSERT_EQUAL(3L, PyLong_AsLong(py_age));
 
 		PyObject* py_height = PyDict_GetItemString(py_c, "Height");
@@ -494,7 +527,7 @@ public:
 		// build Python data
 		PyObject* py_c = PyDict_New();
 		PyObject* py_distance = PyFloat_FromDouble(33.333);
-		PyObject* py_hats = PyLong_FromLong(4);
+		PyObject* py_hats = PyInt_FromLong(4);
 		PyObject* py_c_info = PyDict_New();
 		PyObject* py_description = PyString_FromString("Hat throwing contest");
 		PyDict_SetItemString(py_c_info, "Description", py_description);

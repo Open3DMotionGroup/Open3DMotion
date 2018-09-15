@@ -47,7 +47,7 @@ namespace Open3DMotion
 		else if (value->ClassNameMatches(TreeInt32::classname))
 		{
 			const TreeInt32* value_int32 = static_cast<const TreeInt32*> (value);
-			PyObject* py_value = PyLong_FromLong(value_int32->Value());
+			PyObject* py_value = PyInt_FromLong(value_int32->Value());
 			return py_value;
 		}
 		else if (value->ClassNameMatches(TreeFloat64::classname))
@@ -134,7 +134,12 @@ namespace Open3DMotion
 		}
 		else if (PyLong_Check(py_value))
 		{
-			return new TreeInt32(PyLong_AsLong(py_value));
+			int overflow(0);
+			long result = PyLong_AsLongAndOverflow(py_value, &overflow);
+			if (overflow == 0)
+			{
+				return new TreeInt32(result);
+			}
 		}
 		else if (PyFloat_Check(py_value))
 		{
