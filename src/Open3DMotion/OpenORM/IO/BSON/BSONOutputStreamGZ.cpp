@@ -7,8 +7,8 @@ namespace Open3DMotion
 {
 	BSONOutputStreamGZ::BSONOutputStreamGZ(std::ostream& _output) :
 		output(_output),
-		output_buffer(4096),
-		strm(new z_stream_s)
+		strm(new z_stream_s),
+		output_buffer(4096)
 	{
 		memset(strm.get(), 0, sizeof(z_stream_s));
 		const int GZIP_ENCODING = 0x10;

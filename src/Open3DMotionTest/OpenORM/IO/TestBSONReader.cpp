@@ -664,7 +664,7 @@ public:
 		reader.ReadDocument(doc);
 
 		// verify 
-		CPPUNIT_ASSERT_EQUAL(1L, doc.GetType<TreeInt32>("JustOne")->Value());
+		CPPUNIT_ASSERT_EQUAL(Int32(1), doc.GetType<TreeInt32>("JustOne")->Value());
 		const BSONObjectIdList* result = doc.GetType<BSONObjectIdList>("Stuff");
 		CPPUNIT_ASSERT(result != NULL);
 		CPPUNIT_ASSERT_EQUAL(size_t(2), result->NumElements());
@@ -709,8 +709,8 @@ public:
 		// parse as date
 		BSONDateHolder holder;
 		holder.FromTree(value);
-		CPPUNIT_ASSERT_EQUAL(0x5BB5C1F0UL, (UInt32)holder.BSONDate.LSB.Value());
-		CPPUNIT_ASSERT_EQUAL(0x00001D9CUL, (UInt32)holder.BSONDate.MSB.Value());
+		CPPUNIT_ASSERT_EQUAL(UInt32(0x5BB5C1F0), (UInt32)holder.BSONDate.LSB.Value());
+		CPPUNIT_ASSERT_EQUAL(UInt32(0x00001D9C), (UInt32)holder.BSONDate.MSB.Value());
 	}
 };
 

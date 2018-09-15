@@ -51,15 +51,6 @@ if(NOT OPEN3DMOTION_LINEAR_ALGEBRA_EIGEN)
   target_link_libraries(Open3DMotion f2c blas lapack)
 endif(NOT OPEN3DMOTION_LINEAR_ALGEBRA_EIGEN)
 
-# Additional warning flags for GCC/Clang on Apple
-target_compile_options(Open3DMotion
-  PUBLIC
-    $<$<BOOL:${APPLE}>:
-      $<$<CONFIG:DEBUG>:
-        "-g -Wnon-virtual-dtor -Wno-long-long -Wchar-subscripts -Wall -Wextra -Wpointer-arith -Wformat-security -Woverloaded-virtual -Wcast-align -fno-common"
-        $<$<CXX_COMPILER_ID:GNU>:" -ansi -fno-check-new "> > >
-  )
-
 # Disable warnings for sprintf and sscanf on MSC
 target_compile_definitions(Open3DMotion PUBLIC $<$<CXX_COMPILER_ID:MSVC>:_CRT_SECURE_NO_WARNINGS>)
 

@@ -252,9 +252,9 @@ void testADemo1File(Open3DMotion::MotionFileHandler& handler, const char* filena
 			CPPUNIT_ASSERT_EQUAL(std::string("hao011"), subject.ID.Value());
 			CPPUNIT_ASSERT_EQUAL(std::string("normal"), subject.Classification.Value());
 			CPPUNIT_ASSERT_EQUAL(std::string("female"), subject.Gender.Value());
-			CPPUNIT_ASSERT_EQUAL(1975L, subject.DateOfBirth.Year.Value());
-			CPPUNIT_ASSERT_EQUAL(10L, subject.DateOfBirth.Month.Value());
-			CPPUNIT_ASSERT_EQUAL(21L, subject.Age.Value());
+			CPPUNIT_ASSERT_EQUAL(Open3DMotion::Int32(1975), subject.DateOfBirth.Year.Value());
+			CPPUNIT_ASSERT_EQUAL(Open3DMotion::Int32(10), subject.DateOfBirth.Month.Value());
+			CPPUNIT_ASSERT_EQUAL(Open3DMotion::Int32(21), subject.Age.Value());
 			CPPUNIT_ASSERT_DOUBLES_EQUAL(1549.0, subject.Height.Value(), 1E-4);
 			CPPUNIT_ASSERT_DOUBLES_EQUAL(57.0, subject.Weight.Value(), 1E-4);
 			CPPUNIT_ASSERT_DOUBLES_EQUAL(240.0, subject.PelvicWidth.Value(), 1E-4);

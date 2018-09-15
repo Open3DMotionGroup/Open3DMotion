@@ -6,6 +6,7 @@
 --*/
 
 #include "Open3DMotion/Biomechanics/Trial/TimeRange.h"
+#include <math.h>
 
 namespace Open3DMotion
 {
