@@ -1,6 +1,6 @@
 /*--
   Open3DMotion 
-  Copyright (c) 2004-2012.
+  Copyright (c) 2004-2018.
   All rights reserved.
   See LICENSE.txt for more information.
 --*/
@@ -411,9 +411,9 @@ namespace Open3DMotion
 				mts.Set(fp, analog_all);
 
 				// compute force
-				TimeSequence* force(NULL);
-				TimeSequence* point(NULL);
-				TimeSequence* freemoment(NULL);
+				TimeSequence force;
+				TimeSequence point;
+				TimeSequence freemoment;
         BinMemFactoryDefault memfactory_default;
 				if (calculator->Compute(force, point, freemoment, mts, memfactory_default))
 				{
@@ -435,9 +435,9 @@ namespace Open3DMotion
 					std::auto_ptr<TimeSequence> Mz( TSFactoryValue(1).New(tr, memfactory_default) );
 
 					// iterators
-					TSVector3ConstIter iter_force( *force );
-					TSVector3ConstIter iter_point( *point );
-					TSVector3ConstIter iter_freemoment( *freemoment );
+					TSVector3ConstIter iter_force( force );
+					TSVector3ConstIter iter_point( point );
+					TSVector3ConstIter iter_freemoment( freemoment );
 					TSScalarIter iter_timecode( *timecode );
 					TSScalarIter iter_Fx( *Fx );
 					TSScalarIter iter_Fy( *Fy );
@@ -520,11 +520,6 @@ namespace Open3DMotion
 					AddMoXieChannel(viewer_data, moxie_force_names[3], 2, Mx.get());
 					AddMoXieChannel(viewer_data, moxie_force_names[4], 2, My.get());
 					AddMoXieChannel(viewer_data, moxie_force_names[5], 2, Mz.get());
-
-					// manually delete these parts
-					delete force;
-					delete point;
-					delete freemoment;
 				}
 			}
 		}
