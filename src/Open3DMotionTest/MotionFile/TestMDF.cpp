@@ -73,7 +73,7 @@ public:
 		testADemo1File
 		*/
 	void testADemo1()
-	{ testADemo1File(handler, "Open3DMotionTest/Data/MDF/gait-bilateral-1997-Kistlerx1.mdf", true, 1, true, true); }
+	{ testADemo1File(handler, "Open3DMotionTest/Data/MDF/gait-bilateral-1997-Kistlerx1.mdf", true, 1, true, true, true); }
 
 	/*
 		Summary
@@ -86,7 +86,7 @@ public:
 	{ 
 		Open3DMotion::FileFormatOptionsMDF options;
 		options.FormatVersion = Open3DMotion::FileFormatOptionsMDF::VERSION2;
-		testReWriteADemo1(options, "MDF2.mdf", false, 1, true, true); 
+		testReWriteADemo1(options, "MDF2.mdf", false, 1, true, true, true); 
 	}
   
 	/*
@@ -100,7 +100,7 @@ public:
 	{ 
 		Open3DMotion::FileFormatOptionsMDF options;
 		options.FormatVersion = Open3DMotion::FileFormatOptionsMDF::VERSION3;
-		testReWriteADemo1(options, "MDF3.mdf", false, 1, true, true); 
+		testReWriteADemo1(options, "MDF3.mdf", false, 1, true, true, true); 
 	}
 
 
@@ -114,7 +114,7 @@ public:
 	void testReWriteADemo1_CODAmotion_xmove()
 	{ 
 		Open3DMotion::FileFormatOptionsXMove options;
-		testReWriteADemo1(options, "XMove.xml", true, 1, true, true); 
+		testReWriteADemo1(options, "XMove.xml", true, 1, true, true, true); 
 	}
 
 	/*
@@ -129,7 +129,7 @@ public:
 		Open3DMotion::FileFormatOptionsC3D options;
 		options.Processor = Open3DMotion::FileFormatOptionsC3D::ProcessorPC;
 		options.FloatingPoint = true;
-		testReWriteADemo1(options, "c3d_pc_float.c3d", true, 2, false, false); 
+		testReWriteADemo1(options, "c3d_pc_float.c3d", true, 2, false, false, false); 
 	}
 
 	/*
@@ -144,7 +144,7 @@ public:
 		Open3DMotion::FileFormatOptionsC3D options;
 		options.Processor = Open3DMotion::FileFormatOptionsC3D::ProcessorPC;
 		options.FloatingPoint = false;
-		testReWriteADemo1(options, "c3d_pc_integer.c3d", false, 2, false, false); 
+		testReWriteADemo1(options, "c3d_pc_integer.c3d", false, 2, false, false, false); 
 	}
 
 
@@ -267,7 +267,7 @@ public:
 		Test rewrite of the ADemo1 data set in the specified format
 
 		*/
-	void testReWriteADemo1(const Open3DMotion::FileFormatOptions& options, const char* suffix, bool strict, size_t forcedecimation, bool checkmarkerid, bool checkgaitcycle);
+	void testReWriteADemo1(const Open3DMotion::FileFormatOptions& options, const char* suffix, bool strict, size_t forcedecimation, bool checkmarkerid, bool checkgaitcycle, bool checksubjectdata);
 
 	/*
 		Summary
@@ -450,7 +450,7 @@ void TestMDF::testAMTIForceCoPConsistent(const char* filename, size_t numplates,
 	}
 }
 
-void TestMDF::testReWriteADemo1(const Open3DMotion::FileFormatOptions& options, const char* suffix, bool strict, size_t forcedecimation, bool checkmarkerid, bool checkgaitcycle)
+void TestMDF::testReWriteADemo1(const Open3DMotion::FileFormatOptions& options, const char* suffix, bool strict, size_t forcedecimation, bool checkmarkerid, bool checkgaitcycle, bool checksubjectdata)
 {
 	// make save name
 	std::string savename = 
@@ -476,7 +476,7 @@ void TestMDF::testReWriteADemo1(const Open3DMotion::FileFormatOptions& options, 
 	}
 
 	// verify data from re-load
-	testADemo1File(handler, savename.c_str(), strict, forcedecimation, checkmarkerid, checkgaitcycle);
+	testADemo1File(handler, savename.c_str(), strict, forcedecimation, checkmarkerid, checkgaitcycle, checksubjectdata);
 }
 
 void TestMDF::testReWriteWalk4Descriptors(const Open3DMotion::FileFormatOptions& options, const char* suffix, bool enforcestartoffset)

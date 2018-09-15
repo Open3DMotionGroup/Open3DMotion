@@ -1,6 +1,6 @@
 /*--
   Open3DMotion 
-  Copyright (c) 2004-2013.
+  Copyright (c) 2004-2018.
   All rights reserved.
   See LICENSE.txt for more information.
 --*/
@@ -656,7 +656,7 @@ namespace Open3DMotion
     }
 
     // classification
-    if (data[VAR_PATIENT_CLASSIFICATION].size())
+		if (data[VAR_PATIENT_CLASSIFICATION].size())
     {
 			DecodeMDFString(trial->UserInput.Subject.Classification.Value(), data[VAR_PATIENT_CLASSIFICATION][0]);
     }
@@ -681,6 +681,9 @@ namespace Open3DMotion
 			trial->UserInput.Subject.Age = (Int32)*reinterpret_cast<Int16*>(&data[VAR_PATIENT_DATA][2][0]);
 			trial->UserInput.Subject.Weight = (double)*reinterpret_cast<Int16*>(&data[VAR_PATIENT_DATA][3][0]);
       trial->UserInput.Subject.Height = (double)*reinterpret_cast<Int16*>(&data[VAR_PATIENT_DATA][4][0]);
+
+			// keep hold of weight info for later use
+			subjectWeight = trial->UserInput.Subject.Weight;
     }
 
     // segment parameters
@@ -926,115 +929,119 @@ namespace Open3DMotion
     }
 
     //-- calculated data (MDR)
-
-    size_t iCalcDataGroup(0);
-    for (i = DataMarker; i < NumDataTypes; i++)
-    {
-      if (data[i].empty())
-        continue;
-
-      // deduce timerange based on all data sequences being 
-      // the same length
-      if (!num_markers)
-        throw(MotionFileException(
-        MotionFileException::formaterror,
-        "No raw marker data present (required to deduce frame rate for calculated data)"));
-
-			// group names are accessible directly
-			std::string mdf_group_name;
-			DecodeMDFString(mdf_group_name, data[DataGroupName][iCalcDataGroup]);
-
-      // channel names are concatenated
-      const std::vector<UInt8>& channelnames = data[DataChannelNames][iCalcDataGroup];
-
-      // get scaling
-      float scaling = *reinterpret_cast<float*>(&data[DataScaling][iCalcDataGroup][0]);
-
-      // retrieve each channel
-			std::string str_group = std::string("Calculated ") + mdf_group_name;
-      const char* ch = (const char*)&channelnames[0];
-      size_t ich(0);
-      for (size_t j = 0; j < data[i].size(); j++)
-      {
-				// must have 2 bytes per element
-				if (elementsize[i] > 0 && elementsize[i] % 2 != 0)
-				{
+		//   NOTE: should only defined when markers present as it's the marker sample rate
+		//         that's used as the sample rate here
+		if (num_markers)
+		{
+			size_t iCalcDataGroup(0);
+			for (i = DataMarker; i < NumDataTypes; i++)
+			{
+				if (data[i].empty())
 					continue;
-				}
 
-				// extract name
-        std::string str_name;
-        while (*ch != '\t' && ich < channelnames.size())
-        {
-          str_name += *ch;
-          ch++;
-          ich++;
-        }
+				// deduce timerange based on all data sequences being 
+				// the same length
+				if (!num_markers)
+					throw(MotionFileException(
+					MotionFileException::formaterror,
+					"No raw marker data present (required to deduce frame rate for calculated data)"));
 
-        // point to next (for next iteration)
-        ch++;
-        ich++;
+				// group names are accessible directly
+				std::string mdf_group_name;
+				DecodeMDFString(mdf_group_name, data[DataGroupName][iCalcDataGroup]);
 
-        // number of frames
-        size_t num_frames = data[i][j].size() / elementsize[i];
+				// channel names are concatenated
+				const std::vector<UInt8>& channelnames = data[DataChannelNames][iCalcDataGroup];
 
-        // find sample rate
-        double rateHz = 
-					timerange_marker0.Rate *
-            (double) num_frames /
-						(double)timerange_marker0.Frames;
+				// get scaling
+				float scaling = *reinterpret_cast<float*>(&data[DataScaling][iCalcDataGroup][0]);
 
-        // time range for data
-        TimeRange timerange;
-				timerange.Rate = rateHz;
-				timerange.Start = 0.0;
-				timerange.Frames = num_frames;
-
-				// units for data
-				std::string str_units(MDF_CalculatedGroup[i-DataMarker].units);
-
-				// find value dimension (number of dims per frame)
-				size_t valuedim = elementsize[i] / 2;
-
-				// copy
-				TimeSequence* ts = TSFactoryValue(valuedim).New(timerange, memfactory);
-				ts->Channel = str_name;
-				ts->Group = str_group;
-				ts->HardwareID = j + 1;
-				ts->Units = str_units;
-
-        const Int16* value = reinterpret_cast<const Int16*>(&data[i][j][0]);
-				if (valuedim == 1)
+				// retrieve each channel
+				std::string str_group = std::string("Calculated ") + mdf_group_name;
+				const char* ch = (const char*)&channelnames[0];
+				size_t ich(0);
+				for (size_t j = 0; j < data[i].size(); j++)
 				{
-					// scalar data
-					for (TSScalarIter iter_ts(*ts); iter_ts.HasFrame(); iter_ts.Next(), value++)
+					// must have 2 bytes per element
+					if (elementsize[i] > 0 && elementsize[i] % 2 != 0)
 					{
-						iter_ts.Value() = *value * scaling;
+						continue;
 					}
-				}
-				else if (valuedim == 3)
-				{
-					// 3D data
-					for (TSVector3Iter iter_ts(*ts); iter_ts.HasFrame(); iter_ts.Next(), value+=3)
+
+					// extract name
+					std::string str_name;
+					while (*ch != '\t' && ich < channelnames.size())
 					{
-						iter_ts.Value()[0] = value[0] * scaling;
-						iter_ts.Value()[1] = value[1] * scaling;
-						iter_ts.Value()[2] = value[2] * scaling;
+						str_name += *ch;
+						ch++;
+						ich++;
 					}
-				}
-				else
-				{
-					delete ts;
-					continue;
+
+					// point to next (for next iteration)
+					ch++;
+					ich++;
+
+					// number of frames
+					size_t num_frames = data[i][j].size() / elementsize[i];
+
+					// find sample rate
+					double rateHz = 
+						timerange_marker0.Rate *
+							(double) num_frames /
+							(double)timerange_marker0.Frames;
+
+					// time range for data
+					TimeRange timerange;
+					timerange.Rate = rateHz;
+					timerange.Start = 0.0;
+					timerange.Frames = num_frames;
+
+					// units for data
+					std::string str_units(MDF_CalculatedGroup[i-DataMarker].units);
+
+					// find value dimension (number of dims per frame)
+					size_t valuedim = elementsize[i] / 2;
+
+					// copy
+					TimeSequence* ts = TSFactoryValue(valuedim).New(timerange, memfactory);
+					ts->Channel = str_name;
+					ts->Group = str_group;
+					ts->HardwareID = j + 1;
+					ts->Units = str_units;
+
+					const Int16* value = reinterpret_cast<const Int16*>(&data[i][j][0]);
+					if (valuedim == 1)
+					{
+						// scalar data
+						for (TSScalarIter iter_ts(*ts); iter_ts.HasFrame(); iter_ts.Next(), value++)
+						{
+							iter_ts.Value() = *value * scaling;
+						}
+					}
+					else if (valuedim == 3)
+					{
+						// 3D data
+						for (TSVector3Iter iter_ts(*ts); iter_ts.HasFrame(); iter_ts.Next(), value+=3)
+						{
+							iter_ts.Value()[0] = value[0] * scaling;
+							iter_ts.Value()[1] = value[1] * scaling;
+							iter_ts.Value()[2] = value[2] * scaling;
+						}
+					}
+					else
+					{
+						delete ts;
+						continue;
+					}
+
+					// got sequence ok
+
 				}
 
-				// got sequence ok
-
+				// count calculated data groups
+				iCalcDataGroup++;
 			}
-
-      // count calculated data groups
-      iCalcDataGroup++;
-    }
+		}
 
 		return trial->ToTree();
 	}
@@ -1195,12 +1202,16 @@ namespace Open3DMotion
 		// subject data count
 		bool subject_data_basic = subject.Gender.IsSet() || subject.DateOfBirth.IsSet() || subject.Age.IsSet() || subject.Height.IsSet() || subject.Weight.IsSet();
 		bool subject_data_widths = subject.PelvicWidth.IsSet() || subject.PelvicDepth.IsSet() || subject.LKneeWidth.IsSet() || subject.RKneeWidth.IsSet() || subject.LAnkleWidth.IsSet() || subject.RAnkleWidth.IsSet();
-
-		// TODO: get limb inertial params too
+		bool subject_mdf_hip_offset = trial.MDF.HipOffsetRatioX.IsSet();
+		bool subject_data_sacral_offset = subject.SacralOffset.IsSet();
 
 		// data count
 		size_t subject_data_count(0);
-		if (subject_data_widths)
+		if (subject_data_sacral_offset)
+			subject_data_count = 17;
+		else if (subject_mdf_hip_offset)
+			subject_data_count = 14;
+		else if (subject_data_widths)
 			subject_data_count = 11;
 		else if (subject_data_basic)
 			subject_data_count = 5;
@@ -1208,6 +1219,22 @@ namespace Open3DMotion
 		// add headers for data
 		if (subject_data_count)
       header.push_back(HeaderEntry(VAR_PATIENT_DATA,1,2,subject_data_count));
+
+		// inertial properties (assume set if we have leg lengths)
+		bool subject_segment_inertial =
+			subject.Weight.IsSet() &&
+			(subject.LThighLength.IsSet() || subject.RThighLength.IsSet() ||
+	  	 subject.LShankLength.IsSet() || subject.RShankLength.IsSet() ||
+  		 subject.LFootLength.IsSet() || subject.RFootLength.IsSet());
+
+		// add headers for inertial properties
+		size_t subject_segment_inertial_count(0);
+		if (subject_segment_inertial)
+		{
+			// items are 4 bytes each (32-bit float representation) and one per side
+			subject_segment_inertial_count = 15;
+			header.push_back(HeaderEntry(VAR_PATIENT_SEGMENT_DATA, 2, 8, subject_segment_inertial_count));
+		}
 
     // marker header
     size_t num_markers = marker.size();
@@ -1358,6 +1385,129 @@ namespace Open3DMotion
       os.write((const char*)&wElements,2);
       os.write((const char*)&s,2);			
 		}
+
+		if (subject_data_count >= 14)
+		{
+			// Hip model - here for historical purposes - 
+			// should not be used for calculation
+
+			short s;
+			wElements = 1;
+
+			s = (short)(trial.MDF.HipOffsetRatioX + 0.5);
+			os.write((const char*)&wElements, 2);
+			os.write((const char*)&s, 2);
+
+			s = (short)(trial.MDF.HipOffsetRatioY + 0.5);
+			os.write((const char*)&wElements, 2);
+			os.write((const char*)&s, 2);
+
+			s = (short)(trial.MDF.HipOffsetRatioZ + 0.5);
+			os.write((const char*)&wElements, 2);
+			os.write((const char*)&s, 2);
+		}
+
+		if (subject_data_count >= 17)
+		{
+			short s;
+			wElements = 1;
+
+			s = (short)(subject.SacralOffset + 0.5);
+			os.write((const char*)&wElements, 2);
+			os.write((const char*)&s, 2);
+
+			s = 0;
+			os.write((const char*)&wElements, 2);
+			os.write((const char*)&s, 2);
+
+			s = 0;
+			os.write((const char*)&wElements, 2);
+			os.write((const char*)&s, 2);
+		}
+
+		if (subject_segment_inertial)
+		{
+			float f[2];
+			wElements = 1;
+
+			f[0] = (float)(subject.LThighLength * 0.001);
+			f[1] = (float)(subject.RThighLength * 0.001);
+			os.write((const char*)&wElements, 2);
+			os.write((const char*)&f[0], 8);
+
+			f[0] = (float)(subject.LShankLength * 0.001);
+			f[1] = (float)(subject.RShankLength * 0.001);
+			os.write((const char*)&wElements, 2);
+			os.write((const char*)&f[0], 8);
+
+			f[0] = (float)(subject.LFootLength * 0.001);
+			f[1] = (float)(subject.RFootLength * 0.001);
+			os.write((const char*)&wElements, 2);
+			os.write((const char*)&f[0], 8);
+
+			f[0] = (float)(subject.LThighMass / subject.Weight);
+			f[1] = (float)(subject.RThighMass / subject.Weight);
+			os.write((const char*)&wElements, 2);
+			os.write((const char*)&f[0], 8);
+
+			f[0] = (float)(subject.LShankMass / subject.Weight);
+			f[1] = (float)(subject.RShankMass / subject.Weight);
+			os.write((const char*)&wElements, 2);
+			os.write((const char*)&f[0], 8);
+
+			f[0] = (float)(subject.LFootMass / subject.Weight);
+			f[1] = (float)(subject.RFootMass / subject.Weight);
+			os.write((const char*)&wElements, 2);
+			os.write((const char*)&f[0], 8);
+
+			f[0] = (float)trial.MDF.COM_LThigh.Value();
+			f[1] = (float)trial.MDF.COM_RThigh.Value();
+			os.write((const char*)&wElements, 2);
+			os.write((const char*)&f[0], 8);
+
+			f[0] = (float)trial.MDF.COM_LShank.Value();
+			f[1] = (float)trial.MDF.COM_RShank.Value();
+			os.write((const char*)&wElements, 2);
+			os.write((const char*)&f[0], 8);
+
+			f[0] = (float)trial.MDF.COM_LFoot.Value();
+			f[1] = (float)trial.MDF.COM_RFoot.Value();
+			os.write((const char*)&wElements, 2);
+			os.write((const char*)&f[0], 8);
+
+			// segment radii of gyration (X = Y)
+
+			f[0] = (float)(subject.RadGyr_LThigh_X / subject.LThighLength);
+			f[1] = (float)(subject.RadGyr_RThigh_X / subject.RThighLength);
+			os.write((const char*)&wElements, 2);
+			os.write((const char*)&f[0], 8);
+
+			f[0] = (float)(subject.RadGyr_LShank_X / subject.LShankLength);
+			f[1] = (float)(subject.RadGyr_RShank_X / subject.RShankLength);
+			os.write((const char*)&wElements, 2);
+			os.write((const char*)&f[0], 8);
+
+			f[0] = (float)(subject.RadGyr_LFoot_X / subject.LFootLength);
+			f[1] = (float)(subject.RadGyr_RFoot_X / subject.RFootLength);
+			os.write((const char*)&wElements, 2);
+			os.write((const char*)&f[0], 8);
+
+			f[0] = (float)(subject.RadGyr_LThigh_Z / subject.RadGyr_LThigh_X);
+			f[1] = (float)(subject.RadGyr_RThigh_Z / subject.RadGyr_RThigh_X);
+			os.write((const char*)&wElements, 2);
+			os.write((const char*)&f[0], 8);
+
+			f[0] = (float)(subject.RadGyr_LShank_Z / subject.RadGyr_LShank_X);
+			f[1] = (float)(subject.RadGyr_RShank_Z / subject.RadGyr_RShank_X);
+			os.write((const char*)&wElements, 2);
+			os.write((const char*)&f[0], 8);
+
+			f[0] = (float)(subject.RadGyr_LFoot_Z / subject.RadGyr_LFoot_X);
+			f[1] = (float)(subject.RadGyr_RFoot_Z / subject.RadGyr_RFoot_X);
+			os.write((const char*)&wElements, 2);
+			os.write((const char*)&f[0], 8);
+		}
+
 
     if (num_markers)
     {

@@ -17,7 +17,7 @@
 
 #include <math.h>
 
-void testADemo1File(Open3DMotion::MotionFileHandler& handler, const char* filename, bool strict, Open3DMotion::UInt32 forcedecimation, bool checkmarkerid, bool checkgaitcycle)
+void testADemo1File(Open3DMotion::MotionFileHandler& handler, const char* filename, bool strict, Open3DMotion::UInt32 forcedecimation, bool checkmarkerid, bool checkgaitcycle, bool checksubjectdata)
 {
 	// tolerances
 	double markertol = strict ? 1E-4 : 0.001;
@@ -221,6 +221,78 @@ void testADemo1File(Open3DMotion::MotionFileHandler& handler, const char* filena
 			CPPUNIT_ASSERT_DOUBLES_EQUAL(TestData::ADemo1_gaitcycle_left [2], ea.EventTime(3), 0.0001);
 			CPPUNIT_ASSERT_DOUBLES_EQUAL(TestData::ADemo1_gaitcycle_right[1], ea.EventTime(4), 0.0001);
 			CPPUNIT_ASSERT_DOUBLES_EQUAL(TestData::ADemo1_gaitcycle_right[2], ea.EventTime(5), 0.0001);
+		}
+
+		if (checksubjectdata)
+		{
+			/* Patient data file says
+				[Subject]
+				ID=hao011
+				Classification=normal
+				[Patient Data]
+				Sex=F
+				DateOfBirth=7510
+				Age=21
+				Height=1.549
+				Weight= 57.0
+				[Joint Data]
+				Widths=240,120,100,101,63,63
+				PelvOffset=0,0,0
+				HipOffset=0.19,0.36,0.30
+				[Segment Data]
+				Lengths=400,300,200,400,300,200
+				Masses=0.1113,0.0428,0.0143,0.1113,0.0428,0.0143
+				Centres=0.4600,0.4400,0.4200,0.4600,0.4400,0.4200
+				RadGyrations=0.2910,0.2930,0.2440,0.2910,0.2930,0.2440
+				RadGyrRatios=0.1000,0.0600,0.0600,0.1000,0.0600,0.0600
+			*/
+
+			CPPUNIT_ASSERT(trial->UserInput.Subject.IsSet());
+			const Open3DMotion::TrialSubject& subject = trial->UserInput.Subject;
+			CPPUNIT_ASSERT_EQUAL(std::string("hao011"), subject.ID.Value());
+			CPPUNIT_ASSERT_EQUAL(std::string("normal"), subject.Classification.Value());
+			CPPUNIT_ASSERT_EQUAL(std::string("female"), subject.Gender.Value());
+			CPPUNIT_ASSERT_EQUAL(1975L, subject.DateOfBirth.Year.Value());
+			CPPUNIT_ASSERT_EQUAL(10L, subject.DateOfBirth.Month.Value());
+			CPPUNIT_ASSERT_EQUAL(21L, subject.Age.Value());
+			CPPUNIT_ASSERT_DOUBLES_EQUAL(1549.0, subject.Height.Value(), 1E-4);
+			CPPUNIT_ASSERT_DOUBLES_EQUAL(57.0, subject.Weight.Value(), 1E-4);
+			CPPUNIT_ASSERT_DOUBLES_EQUAL(240.0, subject.PelvicWidth.Value(), 1E-4);
+			CPPUNIT_ASSERT_DOUBLES_EQUAL(120.0, subject.PelvicDepth.Value(), 1E-4);
+			CPPUNIT_ASSERT_DOUBLES_EQUAL(100.0, subject.LKneeWidth, 1E-4);
+			CPPUNIT_ASSERT_DOUBLES_EQUAL(101.0, subject.RKneeWidth, 1E-4);
+			CPPUNIT_ASSERT_DOUBLES_EQUAL(63.0, subject.LAnkleWidth, 1E-4);
+			CPPUNIT_ASSERT_DOUBLES_EQUAL(63.0, subject.RAnkleWidth, 1E-4);
+			CPPUNIT_ASSERT_DOUBLES_EQUAL(400.0, subject.LThighLength, 1E-4);
+			CPPUNIT_ASSERT_DOUBLES_EQUAL(300.0, subject.LShankLength, 1E-4);
+			CPPUNIT_ASSERT_DOUBLES_EQUAL(200.0, subject.LFootLength, 1E-4);
+			CPPUNIT_ASSERT_DOUBLES_EQUAL(400.0, subject.RThighLength, 1E-4);
+			CPPUNIT_ASSERT_DOUBLES_EQUAL(300.0, subject.RShankLength, 1E-4);
+			CPPUNIT_ASSERT_DOUBLES_EQUAL(200.0, subject.RFootLength, 1E-4);
+			CPPUNIT_ASSERT_DOUBLES_EQUAL(0.1113*57.0, subject.LThighMass, 1E-6);
+			CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0428*57.0, subject.LShankMass, 1E-6);
+			CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0143*57.0, subject.LFootMass, 1E-6);
+			CPPUNIT_ASSERT_DOUBLES_EQUAL(0.1113*57.0, subject.RThighMass, 1E-6);
+			CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0428*57.0, subject.RShankMass, 1E-6);
+			CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0143*57.0, subject.RFootMass, 1E-6);
+			CPPUNIT_ASSERT_DOUBLES_EQUAL(0.2910*400.0, subject.RadGyr_LThigh_X.Value(), 1E-4);
+			CPPUNIT_ASSERT_DOUBLES_EQUAL(0.2910*400.0, subject.RadGyr_LThigh_Y.Value(), 1E-4);
+			CPPUNIT_ASSERT_DOUBLES_EQUAL(0.1000*0.2910*400.0, subject.RadGyr_LThigh_Z.Value(), 1E-4);
+			CPPUNIT_ASSERT_DOUBLES_EQUAL(0.2930*300.0, subject.RadGyr_LShank_X.Value(), 1E-4);
+			CPPUNIT_ASSERT_DOUBLES_EQUAL(0.2930*300.0, subject.RadGyr_LShank_Y.Value(), 1E-4);
+			CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0600*0.2930*300.0, subject.RadGyr_LShank_Z.Value(), 1E-4);
+			CPPUNIT_ASSERT_DOUBLES_EQUAL(0.2440*200.0, subject.RadGyr_LFoot_X.Value(), 1E-4);
+			CPPUNIT_ASSERT_DOUBLES_EQUAL(0.2440*200.0, subject.RadGyr_LFoot_Y.Value(), 1E-4);
+			CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0600*0.2440*200.0, subject.RadGyr_LFoot_Z.Value(), 1E-4);
+			CPPUNIT_ASSERT_DOUBLES_EQUAL(0.2910*400.0, subject.RadGyr_RThigh_X.Value(), 1E-4);
+			CPPUNIT_ASSERT_DOUBLES_EQUAL(0.2910*400.0, subject.RadGyr_RThigh_Y.Value(), 1E-4);
+			CPPUNIT_ASSERT_DOUBLES_EQUAL(0.1000*0.2910*400.0, subject.RadGyr_RThigh_Z.Value(), 1E-4);
+			CPPUNIT_ASSERT_DOUBLES_EQUAL(0.2930*300.0, subject.RadGyr_RShank_X.Value(), 1E-4);
+			CPPUNIT_ASSERT_DOUBLES_EQUAL(0.2930*300.0, subject.RadGyr_RShank_Y.Value(), 1E-4);
+			CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0600*0.2930*300.0, subject.RadGyr_RShank_Z.Value(), 1E-4);
+			CPPUNIT_ASSERT_DOUBLES_EQUAL(0.2440*200.0, subject.RadGyr_RFoot_X.Value(), 1E-4);
+			CPPUNIT_ASSERT_DOUBLES_EQUAL(0.2440*200.0, subject.RadGyr_RFoot_Y.Value(), 1E-4);
+			CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0600*0.2440*200.0, subject.RadGyr_RFoot_Z.Value(), 1E-4);
 		}
 	}
 }

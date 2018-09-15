@@ -133,13 +133,13 @@ public:
 
 	void testADemo1Open3DMotion()
 	{
-		testADemo1File(handler, "Open3DMotionTest/Data/XMove/ADemo1.Open3DMotion.xmove", true, 1, true, true);
+		testADemo1File(handler, "Open3DMotionTest/Data/XMove/ADemo1.Open3DMotion.xmove", true, 1, true, true, true);
 	}
 
 	void testADemo1ODINLegacy()
 	{
 		// verify data
-		testADemo1File(handler, "Open3DMotionTest/Data/XMove/ADemo1.ODIN.Legacy.xmove", true, 1, true, true);
+		testADemo1File(handler, "Open3DMotionTest/Data/XMove/ADemo1.ODIN.Legacy.xmove", true, 1, true, true, true);
 	}
 
 	void testODINLegacyReWrite()
@@ -158,7 +158,7 @@ public:
 			handler.Write("Open3DMotionTest/Data/Temp/TestXMove.ADemo1.ODIN.Legacy.ReWrite.xml", tree.get(), options_tree.get());
 
 			// re-read and check
-			testADemo1File(handler, "Open3DMotionTest/Data/Temp/TestXMove.ADemo1.ODIN.Legacy.ReWrite.xml", true, 1, true, true);
+			testADemo1File(handler, "Open3DMotionTest/Data/Temp/TestXMove.ADemo1.ODIN.Legacy.ReWrite.xml", true, 1, true, true, true);
 		}
 		catch(const Open3DMotion::MotionFileException& error)
 		{

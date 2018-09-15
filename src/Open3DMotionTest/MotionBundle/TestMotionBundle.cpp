@@ -104,7 +104,7 @@ public:
 			filehandler.Write(tempfilename, tree.get(), xmove_options_tree.get());
 
 			// reload from XMove and check results
-			testADemo1File(filehandler, tempfilename, true, 1, true, true);
+			testADemo1File(filehandler, tempfilename, true, 1, true, true, true);
 		}
 		catch (const Open3DMotion::MotionFileException& e)
 		{
