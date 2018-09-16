@@ -202,9 +202,7 @@ namespace Open3DMotion
 			}
 			return c;
 		}
-		else
-		{
-			return NULL;
-		}
+
+		return NULL;
 	}
 }
