@@ -1,6 +1,6 @@
 /*--
   Open3DMotion 
-  Copyright (c) 2004-2013.
+  Copyright (c) 2004-2018.
   All rights reserved.
   See LICENSE.txt for more information.
 --*/
@@ -57,6 +57,16 @@ namespace Open3DMotion
 			if (t != NULL)
 			{
 				return TreeValueCast<ValueType> (t);
+			}
+			return NULL;
+		}
+
+		template<class ValueType> ValueType* GetType(const char* name)
+		{
+			TreeValue* t = Get(name);
+			if (t != NULL)
+			{
+				return TreeValueCast<ValueType>(t);
 			}
 			return NULL;
 		}

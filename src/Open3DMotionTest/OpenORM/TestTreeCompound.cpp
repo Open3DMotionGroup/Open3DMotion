@@ -8,6 +8,7 @@
 #include "Open3DMotion/OpenORM/Branches/TreeCompound.h"
 #include "Open3DMotion/OpenORM/Leaves/TreeInt32.h"
 #include "Open3DMotion/OpenORM/Leaves/TreeBinary.h"
+#include "Open3DMotion/OpenORM/Leaves/TreeFloat64.h"
 #include "Open3DMotion/OpenORM/Leaves/MemoryHandlerBasic.h"
 
 #include <cppunit/extensions/HelperMacros.h>
@@ -26,6 +27,7 @@ public:
 	CPPUNIT_TEST( testClear );
 	CPPUNIT_TEST( testNewBlank );
 	CPPUNIT_TEST( testCopyFrom );
+	CPPUNIT_TEST( testGetType );
 	CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -238,6 +240,46 @@ public:
 
 		delete tc;
 	}
+
+	void testGetType()
+	{
+		// compound with two integer elements
+		TreeCompound tc;
+		tc.Set("A", new TreeInt32(587));
+		tc.Set("B", new TreeInt32(-33));
+
+		// get as integer type should succeed
+		const TreeInt32* retrieve_b = tc.GetType<TreeInt32>("B");
+		CPPUNIT_ASSERT(retrieve_b != NULL);
+		CPPUNIT_ASSERT_EQUAL(Int32(-33), retrieve_b->Value());
+
+		// but get as some other type should fail
+		CPPUNIT_ASSERT(tc.GetType<TreeFloat64>("A") == NULL);
+		CPPUNIT_ASSERT(tc.GetType<TreeFloat64>("B") == NULL);
+
+		// similary behaviour with non-const version
+		TreeInt32* rewrite_b = tc.GetType<TreeInt32>("B");
+		CPPUNIT_ASSERT(rewrite_b != NULL);
+		CPPUNIT_ASSERT_EQUAL(Int32(-33), rewrite_b->Value());
+
+		// change it
+		rewrite_b->Value() = 101202;
+
+		// check retrieval now matches new value
+		retrieve_b = tc.GetType<TreeInt32>("B");
+		CPPUNIT_ASSERT(retrieve_b != NULL);
+		CPPUNIT_ASSERT_EQUAL(Int32(101202), retrieve_b->Value());
+
+		// retrieval as other non-const types fails
+		TreeFloat64* attempt_retrieve_nonconst_float64_a = tc.GetType<TreeFloat64>("A");
+		TreeFloat64* attempt_retrieve_nonconst_float64_b = tc.GetType<TreeFloat64>("B");
+		CPPUNIT_ASSERT(attempt_retrieve_nonconst_float64_a == NULL);
+		CPPUNIT_ASSERT(attempt_retrieve_nonconst_float64_b == NULL);
+
+		// finally, sanity check that the A value is still what we set it to
+		CPPUNIT_ASSERT_EQUAL(Int32(587), tc.GetType<TreeInt32>("A")->Value());
+	}
+
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION( TestTreeCompound );

@@ -1,6 +1,6 @@
 /*--
   Open3DMotion 
-  Copyright (c) 2004-2012.
+  Copyright (c) 2004-2018.
   All rights reserved.
   See LICENSE.txt for more information.
 --*/
@@ -64,6 +64,10 @@ namespace Open3DMotion
 		/** End point for iterators */
 		ConstIterator End() const
 		{ return formatmap.end(); }
+
+		/** Total formats in list */
+		size_t NumFormats() const
+		{ return formatmap.size(); }
 
 	private:
 		std::map<std::string, MotionFileFormat*> formatmap;

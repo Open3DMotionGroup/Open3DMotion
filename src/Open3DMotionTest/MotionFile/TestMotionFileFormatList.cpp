@@ -87,6 +87,7 @@ public:
 		CPPUNIT_ASSERT(f.DefaultFormat() == NULL);
 		CPPUNIT_ASSERT(f.Begin() == f.End());
 		CPPUNIT_ASSERT(f.Find("SomeFormat") == NULL);
+		CPPUNIT_ASSERT_EQUAL(size_t(0), f.NumFormats());
 	}
 
 	void testAddTwo()
@@ -111,6 +112,7 @@ public:
 			CPPUNIT_ASSERT(iter.Format() == testfind);
 			iter++;
 			CPPUNIT_ASSERT(iter == f.End());
+			CPPUNIT_ASSERT_EQUAL(size_t(1), f.NumFormats());
 
 			// add another format
 			f.Register(new CrazyFormat(&rc2));
@@ -136,6 +138,8 @@ public:
 			CPPUNIT_ASSERT_EQUAL(size_t(2), names.size());
 			CPPUNIT_ASSERT_EQUAL(std::string("Crazy"), names.front());
 			CPPUNIT_ASSERT_EQUAL(std::string("Interesting"), names.back());
+
+			CPPUNIT_ASSERT_EQUAL(size_t(2), f.NumFormats());
 		}
 
 		// should be destroyed now
