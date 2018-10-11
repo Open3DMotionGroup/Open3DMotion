@@ -27,7 +27,12 @@ namespace Open3DMotion
 		{
 			const TreeString* value_string = static_cast<const TreeString*> (value);
 			std::string strcopy( value_string->Value() );
-			PyObject* py_string = PyString_FromString(&strcopy[0]);
+			PyObject* py_string = 
+#if PY_MAJOR_VERSION >= 3
+				PyUnicode_FromString(&strcopy[0]);
+#else
+				PyString_FromString(&strcopy[0]);
+#endif
 			return py_string;
 		}
 		else if (value->ClassNameMatches(TreeBool::classname))
@@ -45,7 +50,12 @@ namespace Open3DMotion
 		else if (value->ClassNameMatches(TreeInt32::classname))
 		{
 			const TreeInt32* value_int32 = static_cast<const TreeInt32*> (value);
-			PyObject* py_value = PyInt_FromLong(value_int32->Value());
+			PyObject* py_value =
+#if PY_MAJOR_VERSION >= 3
+				PyLong_FromLong(value_int32->Value());
+#else
+				PyInt_FromLong(value_int32->Value());
+#endif
 			return py_value;
 		}
 		else if (value->ClassNameMatches(TreeFloat64::classname))
@@ -127,18 +137,27 @@ namespace Open3DMotion
 		{
 			return NULL;
 		}
+#if PY_MAJOR_VERSION >= 3
+		else if (PyUnicode_Check(py_value))
+		{
+			return new TreeString(PyUnicode_AsUTF8(py_value));
+		}
+#else
 		else if (PyString_Check(py_value))
 		{
 			return new TreeString( PyString_AS_STRING(py_value) );
 		}
+#endif
 		else if (PyBool_Check(py_value))
 		{
 			return new TreeBool( (py_value == Py_True) ? true : false );
 		}
+#if PY_MAJOR_VERSION < 3
 		else if (PyInt_Check(py_value))
 		{
 			return new TreeInt32(PyInt_AsLong(py_value));
 		}
+#endif
 		else if (PyLong_Check(py_value))
 		{
 			int overflow(0);
@@ -168,10 +187,22 @@ namespace Open3DMotion
 				PyObject* py_dict_value = NULL;
 				Py_ssize_t pos = 0;
 				PyDict_Next(py_value, &pos, &py_dict_key, &py_dict_value);
-				if (py_dict_value && py_dict_key && PyList_Check(py_dict_value) && PyString_Check(py_dict_key))
+				if (py_dict_value && py_dict_key && 
+							PyList_Check(py_dict_value) && 
+#if PY_MAJOR_VERSION >= 3
+					PyUnicode_Check(py_dict_key)
+#else
+					PyString_Check(py_dict_key)
+#endif
+						)
 				{
 					py_list = py_dict_value;
-					elementname = PyString_AsString(py_dict_key);
+					elementname = 
+#if PY_MAJOR_VERSION >= 3
+						PyUnicode_AsUTF8(py_dict_key);
+#else
+						PyString_AsString(py_dict_key);
+#endif
 				}
 			}
 
@@ -200,12 +231,21 @@ namespace Open3DMotion
 				Py_ssize_t pos = 0;
 				while (PyDict_Next(py_value, &pos, &key, &py_element))
 				{
+#if PY_MAJOR_VERSION >= 3
+					if (PyUnicode_Check(key))
+#else 
 					if (PyString_Check(key))
+#endif
 					{
 						TreeValue* element = PythonConvert::ToTree(py_element);
 						if (element != NULL)
 						{
-							const char* key_string = PyString_AsString(key);
+							const char* key_string = 
+#if PY_MAJOR_VERSION >= 3
+								PyUnicode_AsUTF8(key);
+#else
+								PyString_AsString(key);
+#endif
 							result_compound->Set(key_string, element);
 						}
 					}

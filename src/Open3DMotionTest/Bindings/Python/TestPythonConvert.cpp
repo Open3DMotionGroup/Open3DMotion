@@ -92,8 +92,13 @@ public:
 		size_t refcount0 = PythonTotalRefCount();
 		TreeString s("Hello");
 		PyObject* py_result = PythonConvert::FromTree(&s);
+#if PY_MAJOR_VERSION >= 3
+		CPPUNIT_ASSERT(PyUnicode_Check(py_result));
+		const char* chars = PyUnicode_AsUTF8(py_result);
+#else
 		CPPUNIT_ASSERT( PyString_Check(py_result) );
 		const char* chars = PyString_AsString(py_result);
+#endif
 		CPPUNIT_ASSERT(chars != NULL);
 		CPPUNIT_ASSERT_EQUAL(std::string("Hello"), std::string(chars));
 		Py_DECREF(py_result);
@@ -127,8 +132,13 @@ public:
 		
 		TreeInt32 x(573L);
 		PyObject* py_result = PythonConvert::FromTree(&x);
-		CPPUNIT_ASSERT( PyInt_Check(py_result) );
+#if PY_MAJOR_VERSION >= 3
+		CPPUNIT_ASSERT(PyLong_Check(py_result));
+		CPPUNIT_ASSERT_EQUAL(573L, PyLong_AsLong(py_result));
+#else
+		CPPUNIT_ASSERT(PyInt_Check(py_result));
 		CPPUNIT_ASSERT_EQUAL(573L, PyInt_AsLong(py_result));
+#endif
 		Py_DECREF(py_result);
 
 		size_t refcount1 = PythonTotalRefCount();
@@ -196,7 +206,12 @@ public:
 	{
 		size_t refcount0 = PythonTotalRefCount();
 
-		PyObject* py_correct = PyString_FromString("Correct!");
+		PyObject* py_correct = 
+#if PY_MAJOR_VERSION >= 3
+			PyUnicode_FromString("Correct!");
+#else
+			PyString_FromString("Correct!");
+#endif
 		std::auto_ptr<TreeValue> result( PythonConvert::ToTree(py_correct) );
 		Py_DECREF(py_correct);
 		CPPUNIT_ASSERT(result.get() != NULL);
@@ -262,7 +277,12 @@ public:
 	{
 		size_t refcount0 = PythonTotalRefCount();
 
-		PyObject* py_number = PyInt_FromLong(-597L);
+		PyObject* py_number = 
+#if PY_MAJOR_VERSION >= 3
+			PyLong_FromLong(-597L);
+#else
+			PyInt_FromLong(-597L);
+#endif
 		std::auto_ptr<TreeValue> result(PythonConvert::ToTree(py_number));
 		Py_DECREF(py_number);
 		CPPUNIT_ASSERT(result.get() != NULL);
@@ -340,9 +360,14 @@ public:
 		PyObject* py_dict_value = NULL;
 		Py_ssize_t pos = 0;
 		CPPUNIT_ASSERT(PyDict_Next(py_result, &pos, &py_dict_key, &py_dict_value) != 0);
-		CPPUNIT_ASSERT(PyString_Check(py_dict_key));
 		CPPUNIT_ASSERT(PyList_Check(py_dict_value));
+#if PY_MAJOR_VERSION >= 3
+		CPPUNIT_ASSERT(PyUnicode_Check(py_dict_key));
+		CPPUNIT_ASSERT_EQUAL(std::string("SomeElementName"), std::string(PyUnicode_AsUTF8(py_dict_key)));
+#else
+		CPPUNIT_ASSERT(PyString_Check(py_dict_key));
 		CPPUNIT_ASSERT_EQUAL(std::string("SomeElementName"), std::string(PyString_AsString(py_dict_key)));
+#endif
 		CPPUNIT_ASSERT_EQUAL(Py_ssize_t(0), PyList_Size(py_dict_value));
 		Py_DECREF(py_result);
 		size_t refcount1 = PythonTotalRefCount();
@@ -370,9 +395,13 @@ public:
 		// And should have the 3 elements
 		CPPUNIT_ASSERT_EQUAL(Py_ssize_t(3), PyList_Size(py_list));
 
-		CPPUNIT_ASSERT(PyInt_Check(PyList_GetItem(py_list, 0)));
+#if PY_MAJOR_VERSION >= 3
+		CPPUNIT_ASSERT(PyLong_Check(PyList_GetItem(py_list, 0)));
 		CPPUNIT_ASSERT_EQUAL(781L, PyLong_AsLong(PyList_GetItem(py_list, 0)));
-
+#else
+		CPPUNIT_ASSERT(PyInt_Check(PyList_GetItem(py_list, 0)));
+		CPPUNIT_ASSERT_EQUAL(781L, PyInt_AsLong(PyList_GetItem(py_list, 0)));
+#endif
 		CPPUNIT_ASSERT(PyFloat_Check(PyList_GetItem(py_list, 1)));
 		CPPUNIT_ASSERT_EQUAL(-999.321, PyFloat_AsDouble(PyList_GetItem(py_list, 1)));
 
@@ -418,7 +447,13 @@ public:
 		PyObject* py_wrapper(NULL);
 		{
 			PyObject* py_list = PyList_New(3);
-			PyList_SetItem(py_list, 0, PyInt_FromLong(23L));
+			PyList_SetItem(py_list, 0, 
+#if PY_MAJOR_VERSION >= 3
+				PyLong_FromLong(23L)
+#else
+				PyInt_FromLong(23L)
+#endif
+			);
 			PyList_SetItem(py_list, 1, PyFloat_FromDouble(-99999.93));
 			Py_INCREF(Py_True);
 			PyList_SetItem(py_list, 2, Py_True);
@@ -485,24 +520,37 @@ public:
 		CPPUNIT_ASSERT_EQUAL(Py_ssize_t(4), PyDict_Size(py_c));
 
 		PyObject* py_age = PyDict_GetItemString(py_c, "Age");
-		CPPUNIT_ASSERT(PyInt_Check(py_age));
+#if PY_MAJOR_VERSION >= 3
+		CPPUNIT_ASSERT(PyLong_Check(py_age));
 		CPPUNIT_ASSERT_EQUAL(3L, PyLong_AsLong(py_age));
-
+#else
+		CPPUNIT_ASSERT(PyInt_Check(py_age));
+		CPPUNIT_ASSERT_EQUAL(3L, PyInt_AsLong(py_age));
+#endif
 		PyObject* py_height = PyDict_GetItemString(py_c, "Height");
 		CPPUNIT_ASSERT(PyFloat_Check(py_height));
 		CPPUNIT_ASSERT_EQUAL(22.3, PyFloat_AsDouble(py_height));
 
 		PyObject* py_name = PyDict_GetItemString(py_c, "Name");
+#if PY_MAJOR_VERSION >= 3
+		CPPUNIT_ASSERT(PyUnicode_Check(py_name));
+		CPPUNIT_ASSERT_EQUAL(std::string("Ermintrude"), std::string(PyUnicode_AsUTF8(py_name)));
+#else
 		CPPUNIT_ASSERT(PyString_Check(py_name));
 		CPPUNIT_ASSERT_EQUAL( std::string("Ermintrude"), std::string( PyString_AsString(py_name) ) );
+#endif
 
 		PyObject* py_other = PyDict_GetItemString(py_c, "OtherInfo");
 		CPPUNIT_ASSERT(PyDict_Check(py_other));
 		CPPUNIT_ASSERT_EQUAL(Py_ssize_t(1), PyDict_Size(py_other));
 		PyObject* py_comment = PyDict_GetItemString(py_other, "Comment");
+#if PY_MAJOR_VERSION >= 3
+		CPPUNIT_ASSERT(PyUnicode_Check(py_comment));
+		CPPUNIT_ASSERT_EQUAL(std::string("What is this?"), std::string(PyUnicode_AsUTF8(py_comment)));
+#else
 		CPPUNIT_ASSERT(PyString_Check(py_comment));
 		CPPUNIT_ASSERT_EQUAL(std::string("What is this?"), std::string(PyString_AsString(py_comment)));
-
+#endif
 		Py_DECREF(py_c);
 
 		size_t refcount1 = PythonTotalRefCount();
@@ -533,9 +581,19 @@ public:
 		// build Python data
 		PyObject* py_c = PyDict_New();
 		PyObject* py_distance = PyFloat_FromDouble(33.333);
-		PyObject* py_hats = PyInt_FromLong(4);
+		PyObject* py_hats =
+#if PY_MAJOR_VERSION >= 3
+			PyLong_FromLong(4);
+#else
+			PyInt_FromLong(4);
+#endif
 		PyObject* py_c_info = PyDict_New();
-		PyObject* py_description = PyString_FromString("Hat throwing contest");
+		PyObject* py_description =
+#if PY_MAJOR_VERSION >= 3
+			PyUnicode_FromString("Hat throwing contest");
+#else
+			PyString_FromString("Hat throwing contest");
+#endif
 		PyDict_SetItemString(py_c_info, "Description", py_description);
 		PyDict_SetItemString(py_c, "Info", py_c_info);
 		PyDict_SetItemString(py_c, "Distance", py_distance);
