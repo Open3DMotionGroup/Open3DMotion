@@ -334,10 +334,16 @@ public:
 		size_t refcount0 = PythonTotalRefCount();
 		TreeList testlist("SomeElementName");
 		PyObject* py_result = PythonConvert::FromTree(&testlist);
-		CPPUNIT_ASSERT(PyList_Check(py_result));
-		CPPUNIT_ASSERT_EQUAL(Py_ssize_t(1), PyList_Size(py_result));
-		CPPUNIT_ASSERT(PyString_Check(PyList_GetItem(py_result, 0)));
-		CPPUNIT_ASSERT_EQUAL(std::string("SomeElementName"), std::string(PyString_AsString(PyList_GetItem(py_result, 0))));
+		CPPUNIT_ASSERT(PyDict_Check(py_result));
+		CPPUNIT_ASSERT_EQUAL(Py_ssize_t(1), PyDict_Size(py_result));
+		PyObject* py_dict_key = NULL;
+		PyObject* py_dict_value = NULL;
+		Py_ssize_t pos = 0;
+		CPPUNIT_ASSERT(PyDict_Next(py_result, &pos, &py_dict_key, &py_dict_value) != 0);
+		CPPUNIT_ASSERT(PyString_Check(py_dict_key));
+		CPPUNIT_ASSERT(PyList_Check(py_dict_value));
+		CPPUNIT_ASSERT_EQUAL(std::string("SomeElementName"), std::string(PyString_AsString(py_dict_key)));
+		CPPUNIT_ASSERT_EQUAL(Py_ssize_t(0), PyList_Size(py_dict_value));
 		Py_DECREF(py_result);
 		size_t refcount1 = PythonTotalRefCount();
 		CPPUNIT_ASSERT(refcount1 == refcount0);
@@ -354,22 +360,24 @@ public:
 
 		PyObject* py_result = PythonConvert::FromTree(&testlist);
 
-		CPPUNIT_ASSERT(PyList_Check(py_result));
+		// The way to represent this is a dictionary with one element whose name is the list element
+		CPPUNIT_ASSERT(PyDict_Check(py_result));
+		CPPUNIT_ASSERT_EQUAL(Py_ssize_t(1), PyDict_Size(py_result));
+		PyObject* py_list = PyDict_GetItemString(py_result, "VariedElement");
+		CPPUNIT_ASSERT(py_list != NULL);
+		CPPUNIT_ASSERT(PyList_Check(py_list));
 
-		// should be one greater than original number of elements, as element name is in first item of list
-		CPPUNIT_ASSERT_EQUAL(Py_ssize_t(4), PyList_Size(py_result));
+		// And should have the 3 elements
+		CPPUNIT_ASSERT_EQUAL(Py_ssize_t(3), PyList_Size(py_list));
 
-		CPPUNIT_ASSERT(PyString_Check(PyList_GetItem(py_result, 0)));
-		CPPUNIT_ASSERT_EQUAL(std::string("VariedElement"), std::string(PyString_AsString(PyList_GetItem(py_result, 0))));
+		CPPUNIT_ASSERT(PyInt_Check(PyList_GetItem(py_list, 0)));
+		CPPUNIT_ASSERT_EQUAL(781L, PyLong_AsLong(PyList_GetItem(py_list, 0)));
 
-		CPPUNIT_ASSERT(PyInt_Check(PyList_GetItem(py_result, 1)));
-		CPPUNIT_ASSERT_EQUAL(781L, PyLong_AsLong(PyList_GetItem(py_result, 1)));
+		CPPUNIT_ASSERT(PyFloat_Check(PyList_GetItem(py_list, 1)));
+		CPPUNIT_ASSERT_EQUAL(-999.321, PyFloat_AsDouble(PyList_GetItem(py_list, 1)));
 
-		CPPUNIT_ASSERT(PyFloat_Check(PyList_GetItem(py_result, 2)));
-		CPPUNIT_ASSERT_EQUAL(-999.321, PyFloat_AsDouble(PyList_GetItem(py_result, 2)));
-
-		CPPUNIT_ASSERT(PyBool_Check(PyList_GetItem(py_result, 3)));
-		CPPUNIT_ASSERT(PyList_GetItem(py_result, 3) == Py_True);
+		CPPUNIT_ASSERT(PyBool_Check(PyList_GetItem(py_list, 2)));
+		CPPUNIT_ASSERT(PyList_GetItem(py_list, 2) == Py_True);
 
 		Py_DECREF(py_result);
 
@@ -384,26 +392,19 @@ public:
 		size_t refcount0 = PythonTotalRefCount();
 
 		// convert totally empty list (not even element name specified)
-		PyObject* py_test_empty = PyList_New(0);
+		PyObject* py_test_empty = PyDict_New();
+		PyObject* py_list = PyList_New(0);
+		PyDict_SetItemString(py_test_empty, "SomeElementNameHere", py_list);
+		Py_DECREF(py_list);
 		std::auto_ptr<TreeValue> result( PythonConvert::ToTree(py_test_empty) );
 		Py_DECREF(py_test_empty);
 		
-		// check it works and uses default element name
+		// check it works and uses the element name
 		CPPUNIT_ASSERT(result.get() != NULL);
 		TreeList* result_list = TreeValueCast<TreeList> ( result.get() );
 		CPPUNIT_ASSERT(result_list != NULL);
 		CPPUNIT_ASSERT_EQUAL(size_t(0), result_list->NumElements());
-		CPPUNIT_ASSERT_EQUAL(std::string("ArrayItem"), result_list->ElementName());
-
-		PyObject* py_test_named_element = PyList_New(1);
-		PyList_SetItem(py_test_named_element, 0, PyString_FromString("MyElementName"));
-		std::auto_ptr<TreeValue> result_named( PythonConvert::ToTree(py_test_named_element) );
-		Py_DECREF(py_test_named_element);
-		CPPUNIT_ASSERT(result_named.get() != NULL);
-		TreeList* result_named_list = TreeValueCast<TreeList> ( result_named.get() );
-		CPPUNIT_ASSERT(result_named_list != NULL);
-		CPPUNIT_ASSERT_EQUAL(size_t(0), result_named_list->NumElements());
-		CPPUNIT_ASSERT_EQUAL(std::string("MyElementName"), result_named_list->ElementName());
+		CPPUNIT_ASSERT_EQUAL(std::string("SomeElementNameHere"), result_list->ElementName());
 
 		size_t refcount1 = PythonTotalRefCount();
 		CPPUNIT_ASSERT(refcount1 == refcount0);
@@ -414,18 +415,23 @@ public:
 		size_t refcount0 = PythonTotalRefCount();
 
 		// make data
-		PyObject* py_list = PyList_New(4);
-		PyList_SetItem(py_list, 0, PyString_FromString("Apples"));
-		PyList_SetItem(py_list, 1, PyInt_FromLong(23L));
-		PyList_SetItem(py_list, 2, PyFloat_FromDouble(-99999.93));
-		Py_INCREF(Py_True);
-		PyList_SetItem(py_list, 3, Py_True);
+		PyObject* py_wrapper(NULL);
+		{
+			PyObject* py_list = PyList_New(3);
+			PyList_SetItem(py_list, 0, PyInt_FromLong(23L));
+			PyList_SetItem(py_list, 1, PyFloat_FromDouble(-99999.93));
+			Py_INCREF(Py_True);
+			PyList_SetItem(py_list, 2, Py_True);
+			py_wrapper = PyDict_New();
+			PyDict_SetItemString(py_wrapper, "Apples", py_list);
+			Py_DECREF(py_list);
+		}
 
 		// convert
-		std::auto_ptr<TreeValue> result( PythonConvert::ToTree(py_list) );
+		std::auto_ptr<TreeValue> result( PythonConvert::ToTree(py_wrapper) );
 
 		// done with data
-		Py_DECREF(py_list);
+		Py_DECREF(py_wrapper);
 
 		// check results
 		CPPUNIT_ASSERT(result.get() != NULL);

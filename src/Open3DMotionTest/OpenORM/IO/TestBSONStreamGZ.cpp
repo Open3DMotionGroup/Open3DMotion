@@ -38,6 +38,11 @@ public:
 					Int32 cyclictestdata[4] = { (index + 996) % 997, (index + 58) % 59, (index + 22) % 23, (index + 442) % 443 };
 					writer.WriteBinary(cyclictestdata, sizeof(cyclictestdata));
 				}
+
+				// Check zero-length write does nothing
+				std::streampos endpos = example.tellp();
+				writer.WriteBinary(NULL, 0);
+				CPPUNIT_ASSERT(example.tellp() == endpos);
 			}
 
 			// But compressed amount should be loads less

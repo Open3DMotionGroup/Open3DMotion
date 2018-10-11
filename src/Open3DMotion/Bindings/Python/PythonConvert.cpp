@@ -17,8 +17,6 @@
 
 namespace Open3DMotion
 {
-	const char PythonConvert::default_list_element_name[] = "ArrayItem";
-
 	PyObject* PythonConvert::FromTree(const TreeValue* value)
 	{
 		if (value == NULL)
@@ -74,9 +72,9 @@ namespace Open3DMotion
 		}
 		else if (value->ClassNameMatches(TreeList::classname))
 		{
+			// Build list of items
 			const TreeList* value_list = static_cast<const TreeList*> (value);
-			PyObject* py_list = PyList_New(1);
-			PyList_SetItem(py_list, 0, PyString_FromString(value_list->ElementName().c_str()));
+			PyObject* py_list = PyList_New(0);
 			const std::vector<TreeValue*>& element_array = value_list->ElementArray();
 			for (std::vector<TreeValue*>::const_iterator iter(element_array.begin()); iter != element_array.end(); iter++)
 			{
@@ -89,7 +87,16 @@ namespace Open3DMotion
 				}
 				Py_DECREF(py_new_item);
 			}
-			return py_list;
+			
+			// Wrap it in a dictionary specifying the element name
+			PyObject* py_wrapper = PyDict_New();
+			PyDict_SetItemString(py_wrapper, value_list->ElementName().c_str(), py_list);
+
+			// Now owned only by wrapper
+			Py_DECREF(py_list);
+
+			// Return result
+			return py_wrapper;
 		}
 		else if (value->ClassNameMatches(TreeCompound::classname))
 		{
@@ -150,57 +157,61 @@ namespace Open3DMotion
 			MemoryHandlerPython mem( py_value );
 			return new TreeBinary( &mem );
 		}
-		else if (PyList_Check(py_value))
-		{
-			// default element name if none found at start of list
-			const char* element_name = default_list_element_name;
-			
-			// if first element is a string, use it as element name
-			Py_ssize_t s = PyList_Size(py_value);
-			Py_ssize_t index(0);
-			if (s >= 1)
-			{
-				PyObject* py_obj0 = PyList_GetItem(py_value, 0);
-				if (PyString_Check(py_obj0))
-				{
-					element_name = PyString_AsString(py_obj0);
-					++index;
-				}
-			}
-
-			// copy the rest
-			TreeList* result_list = new TreeList(element_name);
-			for (; index < s; index++)
-			{
-				PyObject* py_obj = PyList_GetItem(py_value, index);
-				TreeValue* tree_item = PythonConvert::ToTree(py_obj);
-				if (tree_item)
-				{
-					result_list->Add(tree_item);
-				}
-			}
-
-			return result_list;
-		}
 		else if (PyDict_Check(py_value))
 		{
-			TreeCompound* c = new TreeCompound;
-			PyObject* key = NULL;
-			PyObject* py_element = NULL;
-			Py_ssize_t pos = 0;
-			while (PyDict_Next(py_value, &pos, &key, &py_element)) 
+			// Might represent a list if it has one element which is a Python list object
+			PyObject* py_list(NULL);
+			const char* elementname(NULL);
+			if (PyDict_Size(py_value) == 1)
 			{
-				if (PyString_Check(key))
+				PyObject* py_dict_key = NULL;
+				PyObject* py_dict_value = NULL;
+				Py_ssize_t pos = 0;
+				PyDict_Next(py_value, &pos, &py_dict_key, &py_dict_value);
+				if (py_dict_value && py_dict_key && PyList_Check(py_dict_value) && PyString_Check(py_dict_key))
 				{
-					TreeValue* element = PythonConvert::ToTree(py_element);
-					if (element != NULL)
-					{
-						const char* key_string = PyString_AsString(key);
-						c->Set(key_string, element);
-					}
+					py_list = py_dict_value;
+					elementname = PyString_AsString(py_dict_key);
 				}
 			}
-			return c;
+
+			if (py_list)
+			{
+				// it's a list
+				std::auto_ptr<TreeList> result_list(new TreeList(elementname));
+				Py_ssize_t s = PyList_Size(py_list);
+				for (Py_ssize_t index = 0; index < s; index++)
+				{
+					PyObject* py_obj = PyList_GetItem(py_list, index);
+					TreeValue* tree_item = PythonConvert::ToTree(py_obj);
+					if (tree_item)
+					{
+						result_list->Add(tree_item);
+					}
+				}
+				return result_list.release();
+			}
+			else
+			{
+				// it represents a compound object
+				std::auto_ptr<TreeCompound> result_compound(new TreeCompound);
+				PyObject* key = NULL;
+				PyObject* py_element = NULL;
+				Py_ssize_t pos = 0;
+				while (PyDict_Next(py_value, &pos, &key, &py_element))
+				{
+					if (PyString_Check(key))
+					{
+						TreeValue* element = PythonConvert::ToTree(py_element);
+						if (element != NULL)
+						{
+							const char* key_string = PyString_AsString(key);
+							result_compound->Set(key_string, element);
+						}
+					}
+				}
+				return result_compound.release();
+			}
 		}
 
 		return NULL;

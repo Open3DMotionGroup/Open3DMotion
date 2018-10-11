@@ -18,7 +18,7 @@ struct z_stream_s;
 namespace Open3DMotion
 {
 	/** Abstract base class for writing to binary streams */
-	class BSONOutputStreamGZ : BSONOutputStream
+	class BSONOutputStreamGZ : public BSONOutputStream
 	{
 	public:
     BSONOutputStreamGZ(std::ostream& _output);

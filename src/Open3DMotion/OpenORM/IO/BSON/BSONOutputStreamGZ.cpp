@@ -33,18 +33,20 @@ namespace Open3DMotion
 	
 	void BSONOutputStreamGZ::WriteBinary(const void* binary, UInt32 size)  throw(BSONWriteException)
 	{
-		strm->avail_in = size;
-		strm->next_in = (z_const Bytef *)binary;
-		do
+		if (size)
 		{
-			strm->avail_out = output_buffer.size();
-			strm->next_out = &output_buffer[0];
-			UInt32 ret = deflate(strm.get(), Z_NO_FLUSH);
-			if (ret != 0)
-				throw (BSONWriteException("compression error"));
-			UInt32 have = output_buffer.size() - strm->avail_out;
-			output.write((char*)&output_buffer[0], have);
+			strm->avail_in = size;
+			strm->next_in = (z_const Bytef *)binary;
+			do
+			{
+				strm->avail_out = output_buffer.size();
+				strm->next_out = &output_buffer[0];
+				UInt32 ret = deflate(strm.get(), Z_NO_FLUSH);
+				if (ret != 0)
+					throw (BSONWriteException("compression error"));
+				UInt32 have = output_buffer.size() - strm->avail_out;
+				output.write((char*)&output_buffer[0], have);
+			} while (strm->avail_out == 0);
 		}
-		while (strm->avail_out == 0);
 	}
 }

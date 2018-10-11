@@ -1,6 +1,6 @@
 /*--
   Open3DMotion 
-  Copyright (c) 2004-2012.
+  Copyright (c) 2004-2018.
   All rights reserved.
   See LICENSE.txt for more information.
 --*/
@@ -9,8 +9,20 @@
 
 namespace Open3DMotion
 {
+	const char TrialSection::timesequences_list_name[] = "Sequences";
+	const char TrialSection::timesequences_element_name[] = "Sequence";
+	const char TrialSection::eventgroups_list_name[] = "EventGroups";
+	const char TrialSection::eventgroups_element_name[] = "EventGroup";
 	const char TrialSectionAcq::TSGroupMarker[] = "Marker";
 	const char TrialSectionAcq::TSGroupAnalog[] = "Analog";
+
+	TrialSection::TrialSection() :
+		TimeSequences(timesequences_element_name),
+		EventGroups(eventgroups_element_name)
+	{
+		Register(timesequences_list_name, &TimeSequences);
+		Register(eventgroups_list_name, &EventGroups);
+	}
 
 	const TimeSequence* TrialSection::GetTS(const char* groupname, const char* channelname) const
 	{

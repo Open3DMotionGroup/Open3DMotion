@@ -1,6 +1,6 @@
 /*--
   Open3DMotion 
-  Copyright (c) 2004-2012.
+  Copyright (c) 2004-2018.
   All rights reserved.
   See LICENSE.txt for more information.
 --*/
@@ -17,13 +17,13 @@ namespace Open3DMotion
 	class TrialSection : public MapCompound
 	{
 	public:
-		TrialSection() :
-			TimeSequences("Sequence"),
-			EventGroups("EventGroup")
-		{
-			Register("Sequences", &TimeSequences);
-			REGISTER_MEMBER(EventGroups);
-		}
+		static const char timesequences_list_name[];
+		static const char timesequences_element_name[];
+		static const char eventgroups_list_name[];
+		static const char eventgroups_element_name[];
+
+	public:
+		TrialSection();
 
 	public:
 		

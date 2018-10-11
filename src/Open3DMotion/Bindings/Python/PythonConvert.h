@@ -17,7 +17,6 @@ namespace Open3DMotion
 	class PythonConvert
 	{
 	public:
-		static const char default_list_element_name[];
 
 		static PyObject* FromTree(const TreeValue* value);
 
