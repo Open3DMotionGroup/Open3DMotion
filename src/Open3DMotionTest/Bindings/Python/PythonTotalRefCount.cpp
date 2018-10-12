@@ -15,7 +15,12 @@ size_t PythonTotalRefCount()
 	#pragma message("Open3DMotion MESSAGE: Debug build selected. Ensure that a custom build of python shared library is used (one built with Py_DEBUG defined).")
 	PyObject* borrowed_count_function = PySys_GetObject("gettotalrefcount");
 	PyObject* py_count = PyObject_CallObject(borrowed_count_function, NULL);
-  size_t count = PyInt_AsSsize_t(py_count);
+  size_t count = 
+#if PY_MAJOR_VERSION >= 3
+		PyLong_AsSsize_t(py_count);
+#else
+		PyInt_AsSsize_t(py_count);
+#endif
   Py_DECREF(py_count);
 	return count;
 #else

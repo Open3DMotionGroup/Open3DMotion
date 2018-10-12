@@ -182,15 +182,15 @@ public:
 			PyObject* py_data = PythonConvert::FromTree(&tree_data);
 
 			// should be byte array containing data as specified
-			CPPUNIT_ASSERT(PyByteArray_Check(py_data));
-			CPPUNIT_ASSERT_EQUAL(Py_ssize_t(1000), PyByteArray_Size(py_data));
-			const char* result_data = PyByteArray_AsString(py_data);
-			CPPUNIT_ASSERT_EQUAL(UInt8(0), (UInt8)result_data[0]);
-			CPPUNIT_ASSERT_EQUAL(UInt8(0), (UInt8)result_data[10]);
-			CPPUNIT_ASSERT_EQUAL(UInt8(173), (UInt8)result_data[23]);
-			CPPUNIT_ASSERT_EQUAL(UInt8(62), (UInt8)result_data[997]);
-			CPPUNIT_ASSERT_EQUAL(UInt8(0), (UInt8)result_data[998]);
-			CPPUNIT_ASSERT_EQUAL(UInt8(3), (UInt8)result_data[999]);
+			CPPUNIT_ASSERT(PyMemoryView_Check(py_data));
+			CPPUNIT_ASSERT_EQUAL(Py_ssize_t(1000), PyMemoryView_GET_BUFFER(py_data)->len);
+			UInt8* result_data =(UInt8*) PyMemoryView_GET_BUFFER(py_data)->buf;
+			CPPUNIT_ASSERT_EQUAL(UInt8(0), result_data[0]);
+			CPPUNIT_ASSERT_EQUAL(UInt8(0), result_data[10]);
+			CPPUNIT_ASSERT_EQUAL(UInt8(173), result_data[23]);
+			CPPUNIT_ASSERT_EQUAL(UInt8(62), result_data[997]);
+			CPPUNIT_ASSERT_EQUAL(UInt8(0), result_data[998]);
+			CPPUNIT_ASSERT_EQUAL(UInt8(3), result_data[999]);
 
 			// done with array
 			Py_DECREF(py_data);
@@ -319,14 +319,21 @@ public:
 		bytes[33] = (Int8)21;
 		bytes[479] = (Int8)152;
 		PyObject* py_bytes = PyByteArray_FromStringAndSize(&bytes[0], 500);
+		CPPUNIT_ASSERT_EQUAL(1, (int)Py_REFCNT(py_bytes));
+		PyObject* py_view = PyMemoryView_FromObject(py_bytes);
+		CPPUNIT_ASSERT_EQUAL(1, (int)Py_REFCNT(py_view));
 
 		{
 			// convert
-			std::auto_ptr<TreeValue> result( PythonConvert::ToTree(py_bytes) );
+			std::auto_ptr<TreeValue> result( PythonConvert::ToTree(py_view) );
+
+			CPPUNIT_ASSERT_EQUAL(2, (int)Py_REFCNT(py_view));
 
 			// this should get rid of original reference to byte array,
 			// but shouldn't be destroyed since result should hold a new reference
-			Py_DECREF(py_bytes);
+			Py_DECREF(py_view);
+
+			CPPUNIT_ASSERT_EQUAL(1, (int)Py_REFCNT(py_view));
 
 			// check result
 			CPPUNIT_ASSERT(result.get() != NULL);
@@ -342,6 +349,10 @@ public:
 		// final reference to byte array should go at end of this scope
 		// as TreeBinary result is destroyed
 		}
+
+		CPPUNIT_ASSERT_EQUAL(1, (int)Py_REFCNT(py_bytes));
+
+		Py_DECREF(py_bytes);
 
 		size_t refcount1 = PythonTotalRefCount();
 		CPPUNIT_ASSERT(refcount1 == refcount0);

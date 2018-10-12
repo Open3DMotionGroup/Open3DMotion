@@ -70,9 +70,9 @@ namespace Open3DMotion
 			const MemoryHandlerPython* mem = NamedClassCast<MemoryHandler, MemoryHandlerPython> ( bin->BinMemory() );
 			if (mem)
 			{
-				PyObject* py_bytearray = mem->PythonByteArray();
-				Py_INCREF(py_bytearray);
-				return py_bytearray;
+				PyObject* py_view = mem->PythonMemoryView();
+				Py_INCREF(py_view);
+				return py_view;
 			}
 			else
 			{
@@ -171,7 +171,7 @@ namespace Open3DMotion
 		{
 			return new TreeFloat64(PyFloat_AsDouble(py_value));
 		}
-		else if (PyByteArray_Check(py_value))
+		else if (PyMemoryView_Check(py_value))
 		{
 			MemoryHandlerPython mem( py_value );
 			return new TreeBinary( &mem );

@@ -40,10 +40,10 @@ namespace Open3DMotion
 
 		virtual size_t RefCount() const;
 
-		virtual PyObject* PythonByteArray() const;
+		virtual PyObject* PythonMemoryView() const;
 
 	private:
-		mutable PyObject* py_bytearray;
+		mutable PyObject* py_view;
 	};
 
 }

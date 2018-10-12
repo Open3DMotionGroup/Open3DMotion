@@ -16,28 +16,30 @@ namespace Open3DMotion
 		// Since there appears to be no 'new' method,
 		// easiest way to efficiently allocate array of correct size appears to be
 		// to make one of length 1 and then resize it
-		py_bytearray = PyByteArray_FromStringAndSize("", 1);
-		PyByteArray_Resize(py_bytearray, _sizebytes);
+		PyObject* py_ownarray = PyByteArray_FromStringAndSize("", 1);
+		PyByteArray_Resize(py_ownarray, _sizebytes);
+		py_view = PyMemoryView_FromObject(py_ownarray);
+		Py_DECREF(py_ownarray);
 	}
 
 	MemoryHandlerPython::MemoryHandlerPython(const MemoryHandlerPython& ref)
 	{
 		// Copy pointer and increment Python reference
-		py_bytearray = ref.py_bytearray;
-		Py_INCREF(py_bytearray);
+		py_view = ref.py_view;
+		Py_INCREF(py_view);
 	}
 
 	MemoryHandlerPython::MemoryHandlerPython(PyObject* _py_to_acquire)
 	{
 		// Copy pointer and increment Python reference
-		py_bytearray = _py_to_acquire;
-		Py_INCREF(py_bytearray);
+		py_view = _py_to_acquire;
+		Py_INCREF(py_view);
 	}
 
 
 	MemoryHandlerPython::~MemoryHandlerPython()
 	{
-		Py_DECREF(py_bytearray);
+		Py_DECREF(py_view);
 	}
 
 	MemoryHandlerPython* MemoryHandlerPython::Clone() const
@@ -47,21 +49,21 @@ namespace Open3DMotion
 
 	size_t MemoryHandlerPython::SizeBytes() const
 	{
-		return PyByteArray_Size(py_bytearray);
+		return PyMemoryView_GET_BUFFER(py_view)->len;
 	}
 
 	UInt8* MemoryHandlerPython::Data() const
 	{
-		return (UInt8*) PyByteArray_AsString(py_bytearray);
+		return (UInt8*)PyMemoryView_GET_BUFFER(py_view)->buf;
 	}
 
 	size_t MemoryHandlerPython::RefCount() const
 	{
-		return py_bytearray->ob_refcnt;
+		return Py_REFCNT(py_view);
 	}
 
-	PyObject* MemoryHandlerPython::PythonByteArray() const
+	PyObject* MemoryHandlerPython::PythonMemoryView() const
 	{
-		return py_bytearray;
+		return py_view;
 	}
 }
