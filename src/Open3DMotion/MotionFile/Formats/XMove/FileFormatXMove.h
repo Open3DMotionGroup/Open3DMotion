@@ -14,7 +14,11 @@
 
 namespace Open3DMotion
 {
-	// MDF read/write
+	// forward decl
+	class XMLWritingMachine;
+	class FileFormatOptionsXMove;
+
+	// XMove-compliant XML read/write
 	class FileFormatXMove : public MotionFileFormat
   {
 	public:
@@ -24,18 +28,34 @@ namespace Open3DMotion
 		virtual ~FileFormatXMove();
 
 		static const char XMLFormatDescriptorSection[] /*="FileFormat"*/;
+		static const char XMLRoot[] /*="xmove"*/;
 
   public:
 
-		// check id and number type
+		// Check id and number type
     virtual bool Probe(const MotionFileHandler& context, TreeValue*& readoptions, std::istream& is) const throw(MotionFileException);
 
-    // Read MDF
+    // Read XMove
     virtual TreeValue* Read(const MotionFileHandler& context, std::istream& is, const BinMemFactory& memfactory, const TreeValue* readoptions) const throw(MotionFileException) ;
 
-    // Write MDF
+    // Write XMove
     virtual void Write(const MotionFileHandler& context, const TreeValue* contents, std::ostream& os, const TreeValue* writeoptions) const throw(MotionFileException);
 		
+		// Write header only
+		void WriteHeader(std::ostream& os) const;
+
+		// Write footer only
+		void WriteFooter(std::ostream& os) const;
+
+		// Build internal writing object
+		Open3DMotion::XMLWritingMachine* BuildXMLWritingMachine(std::ostream& os, const FileFormatOptionsXMove& xmove_options) const;
+
+		// Write format descriptor only
+		void WriteFileFormatDescriptor(const MotionFileHandler& context, XMLWritingMachine* writer, const FileFormatOptionsXMove& xmove_options) const;
+
+		// Write data contents
+		void WriteContents(const MotionFileHandler& context, const TreeValue* contents, XMLWritingMachine* writer, const FileFormatOptionsXMove& xmove_options) const throw(MotionFileException);
+
 	protected:
 		static void ConvertListFloat32To64(TreeCompound* section, const char* listname, const char* structurename, const BinMemFactory& memfactory);
 		static void ConvertListFloat64To32(TreeCompound* section, const char* listname, const char* structurename, const BinMemFactory& memfactory);

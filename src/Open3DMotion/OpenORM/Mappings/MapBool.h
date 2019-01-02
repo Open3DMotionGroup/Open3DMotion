@@ -18,7 +18,7 @@ namespace Open3DMotion
 	{
 	public:
 
-		operator bool()
+		operator bool() const
 		{ return Value(); }
 
 		const bool& operator=(const bool& _x)

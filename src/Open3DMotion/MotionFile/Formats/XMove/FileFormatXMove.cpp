@@ -21,6 +21,7 @@
 namespace Open3DMotion
 {	
 	const char FileFormatXMove::XMLFormatDescriptorSection[] = "FileFormat";
+	const char FileFormatXMove::XMLRoot[] = "xmove";
 
 	FileFormatXMove::FileFormatXMove() :
 			MotionFileFormat("XMove", "XMove", "xmove,xml")
@@ -108,40 +109,66 @@ namespace Open3DMotion
 
 	}
 
-	void FileFormatXMove::Write(const MotionFileHandler& context, const TreeValue* contents, std::ostream& os, const TreeValue* writeoptions) const throw(MotionFileException)
+	void FileFormatXMove::WriteHeader(std::ostream& os) const
 	{
-		// options
-		FileFormatOptionsXMove xmove_options;
-		xmove_options.FromTree(writeoptions);
+		os << "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>";
 
-		// format descriptor for audit trail
+		// write contents
+		os << "<" << FileFormatXMove::XMLRoot << ">\n";
+	}
+
+	void FileFormatXMove::WriteFooter(std::ostream& os) const
+	{
+		os << "</" << FileFormatXMove::XMLRoot << ">\n";
+	}
+
+	XMLWritingMachine* FileFormatXMove::BuildXMLWritingMachine(std::ostream& os, const FileFormatOptionsXMove& xmove_options) const
+	{
+		// choose format based on options
+		if (xmove_options.LegacyCompoundNames)
+		{
+			return new XMLWritingMachineLegacy(os);
+		}
+		else
+		{
+			return new XMLWritingMachine(os);
+		}
+	}
+
+	void FileFormatXMove::WriteFileFormatDescriptor(const MotionFileHandler& context, XMLWritingMachine* writer, const FileFormatOptionsXMove& xmove_options) const
+	{
+		// Descriptor object
 		FileFormatDescriptor descriptor;
-		
+
 		// fill with library info
 		descriptor.ProgramName = context.ProgramName();
 		descriptor.ProgramVersion = context.ProgramVersion();
 		descriptor.LibraryName = context.LibraryName;
 		descriptor.LibraryVersion = context.LibraryVersion;
 
-		// choose format based on options
-		std::auto_ptr<XMLWritingMachine> writer;
+		// describe format based on options
 		if (xmove_options.LegacyCompoundNames)
 		{
 			descriptor.FormatID = "CODAmotion_xmove";
-			writer = std::auto_ptr<XMLWritingMachine>(new XMLWritingMachineLegacy(os));
 		}
 		else
 		{
 			descriptor.FormatID = "CODAmotion_xmove2";
-			writer = std::auto_ptr<XMLWritingMachine>(new XMLWritingMachine(os));
 		}
 
+		// write to file
+		std::auto_ptr<TreeValue> descriptor_tree(descriptor.ToTree());
+		writer->WriteValue(FileFormatXMove::XMLFormatDescriptorSection, descriptor_tree.get());
+	}
+
+	void FileFormatXMove::WriteContents(const MotionFileHandler& context, const TreeValue* contents, XMLWritingMachine* writer, const FileFormatOptionsXMove& xmove_options) const throw(MotionFileException)
+	{
 		// make copy of trial so we can adjust its structure according to export options
-		std::auto_ptr<TreeCompound> export_contents( new TreeCompound );
-		const TreeCompound* input_contents = TreeValueCast<TreeCompound> ( contents );
+		std::auto_ptr<TreeCompound> export_contents(new TreeCompound);
+		const TreeCompound* input_contents = TreeValueCast<TreeCompound>(contents);
 		if (input_contents)
 		{
-			export_contents->CopyFrom( input_contents );
+			export_contents->CopyFrom(input_contents);
 		}
 
 		// remove any existing format info - we will write a new one
@@ -155,37 +182,46 @@ namespace Open3DMotion
 			BinMemFactoryDefault memfactory;
 			for (size_t calclevel = 0; calclevel < export_contents->NumElements(); calclevel++)
 			{
-				TreeCompound* section = TreeValueCast<TreeCompound> ( export_contents->Node(calclevel)->Value() );
+				TreeCompound* section = TreeValueCast<TreeCompound>(export_contents->Node(calclevel)->Value());
 				ConvertListFloat64To32(section, "Sequences", TimeSequence::StructureName, memfactory);
 				ConvertListFloat64To32(section, "EventGroups", EventGroup::StructureName, memfactory);
 			}
 		}
 
-		os << "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>";
-
-		// write contents
-		const char* xmove_tag = "xmove";
-		os << "<" << xmove_tag << ">\n";
-
-		// format descriptor
-		std::auto_ptr<TreeValue> descriptor_tree( descriptor.ToTree() );
-		writer->WriteValue(XMLFormatDescriptorSection, descriptor_tree.get() );
-
 		// all elements of trial, optionally excluding Calc section
 		for (size_t element_index = 0; element_index < export_contents->NumElements(); element_index++)
 		{
 			const TreeCompoundNode* node = export_contents->Node(element_index);
-				
+
 			// optionally exclude calc
 			if (xmove_options.ExcludeCalc && node->Name().compare(MEMBER_NAME(Trial::Calc)) == 0)
 				continue;
-				
+
 			// otherwise write the node
 			writer->WriteValue(node->Name(), node->Value());
 		}
+	}
 
-		os << "</" << xmove_tag << ">\n";
+	void FileFormatXMove::Write(const MotionFileHandler& context, const TreeValue* contents, std::ostream& os, const TreeValue* writeoptions) const throw(MotionFileException)
+	{
+		// parse options
+		FileFormatOptionsXMove xmove_options;
+		xmove_options.FromTree(writeoptions);
 
+		// build writer based on options
+		std::auto_ptr<XMLWritingMachine> writer(BuildXMLWritingMachine(os, xmove_options));
+
+		// XML pre-amble
+		WriteHeader(os);
+
+		// format descriptor for audit trail
+		WriteFileFormatDescriptor(context, writer.get(), xmove_options);
+
+		// data itself
+		WriteContents(context, contents, writer.get(), xmove_options);
+	
+		// XML post-amble
+		WriteFooter(os);
 	}
 	
 	void FileFormatXMove::ConvertListFloat32To64(TreeCompound* section, const char* listname, const char* structurename, const BinMemFactory& memfactory)
