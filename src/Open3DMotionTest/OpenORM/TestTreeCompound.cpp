@@ -47,7 +47,7 @@ public:
 
 		// test set
 		MemoryHandlerBasic m(321);
-		TreeCompoundNode* b = new TreeCompoundNode("Juggle", new TreeBinary(&m));
+		TreeCompoundNode* b = new TreeCompoundNode("Juggle", new TreeBinary(m.Clone()));
 		CPPUNIT_ASSERT_EQUAL(size_t(2), m.RefCount());
 		CPPUNIT_ASSERT_EQUAL(string("Juggle"), b->Name());
 		CPPUNIT_ASSERT_EQUAL(size_t(321), TreeValueCast<TreeBinary>( b->Value() )->SizeBytes() );
@@ -57,7 +57,7 @@ public:
 		CPPUNIT_ASSERT_EQUAL(size_t(1), m.RefCount());
 
 		// test modification
-		TreeCompoundNode* c = new TreeCompoundNode("Juggle", new TreeBinary(&m));
+		TreeCompoundNode* c = new TreeCompoundNode("Juggle", new TreeBinary(m.Clone()));
 		const TreeCompoundNode* c_const = c;
 		CPPUNIT_ASSERT_EQUAL(size_t(2), m.RefCount());
 		c->ChangeValue(new TreeInt32(876));
@@ -140,7 +140,7 @@ public:
 
 		// and binary handler useful for reference counting
 		MemoryHandlerBasic m(5);
-		tc->Set("C", new TreeBinary(&m));
+		tc->Set("C", new TreeBinary(m.Clone()));
 
 		// check num elements etc as expected
 		CPPUNIT_ASSERT_EQUAL(size_t(3), tc->NumElements());
@@ -229,7 +229,7 @@ public:
 
 		// and binary handler
 		MemoryHandlerBasic m(5);
-		tc->Set("C", new TreeBinary(&m));
+		tc->Set("C", new TreeBinary(m.Clone()));
 
 		CPPUNIT_ASSERT_EQUAL(size_t(3), tc->NumElements());
 		CPPUNIT_ASSERT_EQUAL(size_t(2), m.RefCount());

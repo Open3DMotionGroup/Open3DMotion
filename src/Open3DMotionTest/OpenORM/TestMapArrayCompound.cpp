@@ -66,8 +66,7 @@ public:
 			Trees = trees;
 			Notes = notes;
 			this->Acres = acres;
-			MemoryHandlerBasic mem(ringdatasize);
-			this->RingData.SetData(&mem);
+			this->RingData.SetData(new MemoryHandlerBasic(ringdatasize));
 		}
 
 	private:
@@ -116,7 +115,7 @@ public:
 			w0.Trees = 1002;
 			w0.Acres = 100.0;
 			w0.Notes = "One Hundred Acre Wood";
-			w0.RingData.SetData(&m0);
+			w0.RingData.SetData(m0.Clone());
 			m.Add(w0);
 
 			// copy this onto array
@@ -130,7 +129,7 @@ public:
 			w2->Trees = 3;
 			w2->Acres = 0.0001;
 			w2->Notes = "Pointless";
-			w2->RingData.SetData(&m2);
+			w2->RingData.SetData(m2.Clone());
 			m.Add(w2);
 		}
 
@@ -257,8 +256,8 @@ public:
 			t1->Set("Trees", new TreeInt32(3333));
 			t1->Set("Acres", new TreeFloat64(1000.11));
 			t1->Set("Notes", new TreeString("Some notes"));
-			MemoryHandlerBasic m(888);
-			t1->Set("RingData", new TreeBinary(&m));
+			std::auto_ptr<MemoryHandlerBasic> m(new MemoryHandlerBasic(888));
+			t1->Set("RingData", new TreeBinary(m.release()));
 			t.Add(t1);
 		}
 

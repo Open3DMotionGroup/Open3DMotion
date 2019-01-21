@@ -23,7 +23,7 @@ namespace Open3DMotion
 
 		TreeBinary();
 
-		TreeBinary(const MemoryHandler* _binmemory);
+		TreeBinary(MemoryHandler* _binmemory);
 
 		virtual ~TreeBinary();
 
@@ -31,7 +31,7 @@ namespace Open3DMotion
 
 		virtual void CopyFrom(const TreeValue* v);
 
-		virtual void SetData(const MemoryHandler* _binmemory);
+		virtual void SetData(MemoryHandler* _binmemory);
 
 		const UInt8* Data() const
 		{ return binmemory->Data(); }

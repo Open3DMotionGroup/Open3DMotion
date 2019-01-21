@@ -176,7 +176,7 @@ namespace Open3DMotion
 				ReadBinary(&subtype, 1);
 				std::auto_ptr<MemoryHandler> memory( memfactory.Allocate(numbytes) );
 				ReadBinary(memory->Data(), numbytes);
-				return new TreeBinary(memory.get());
+				return new TreeBinary(memory.release());
 			}
 
 			case 0x08:	// boolean

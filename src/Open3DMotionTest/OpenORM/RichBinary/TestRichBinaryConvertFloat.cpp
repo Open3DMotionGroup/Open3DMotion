@@ -32,7 +32,7 @@ public:
 	{
 		std::auto_ptr<TreeCompound> tree ( new TreeCompound );
 		MemoryHandlerBasic junk(2003);
-		tree->Set(MEMBER_NAME(RichBinary::Data),  new TreeBinary(&junk) );
+		tree->Set(MEMBER_NAME(RichBinary::Data), new TreeBinary(junk.Clone()));
 		BinMemFactoryDefault memfactory;
 		TreeValue* result = RichBinaryConvertFloat32To64(tree.get(), "MyStructure", memfactory);
 		CPPUNIT_ASSERT(result == NULL);
@@ -42,7 +42,7 @@ public:
 	{
 		std::auto_ptr<TreeCompound> tree ( new TreeCompound );
 		MemoryHandlerBasic junk(2003);
-		tree->Set(MEMBER_NAME(RichBinary::Data),  new TreeBinary(&junk) );
+		tree->Set(MEMBER_NAME(RichBinary::Data),  new TreeBinary(junk.Clone()) );
 		BinMemFactoryDefault memfactory;
 		TreeValue* result = RichBinaryConvertFloat32To64(tree.get(), "MyStructure", memfactory);
 		CPPUNIT_ASSERT(result == NULL);

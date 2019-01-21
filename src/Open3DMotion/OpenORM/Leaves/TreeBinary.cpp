@@ -18,8 +18,8 @@ namespace Open3DMotion
 	{
 	}
 		
-	TreeBinary::TreeBinary(const MemoryHandler* _binmemory) :
-		binmemory(_binmemory->Clone())
+	TreeBinary::TreeBinary(MemoryHandler* _binmemory) :
+		binmemory(_binmemory)
 	{
 	}
 
@@ -43,10 +43,10 @@ namespace Open3DMotion
 		}
 	}
 
-	void TreeBinary::SetData(const MemoryHandler* _binmemory)
+	void TreeBinary::SetData(MemoryHandler* _binmemory)
 	{
 		delete binmemory;
-		binmemory = _binmemory->Clone();
+		binmemory = _binmemory;
 	}
 
 }

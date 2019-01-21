@@ -23,7 +23,7 @@ namespace Open3DMotion
 		{
 		}
 
-		virtual void SetData(const MemoryHandler* _binmemory)
+		virtual void SetData(MemoryHandler* _binmemory)
 		{ TreeBinary::SetData(_binmemory); ChildValueChanged(); }
 
 		UInt8* Data()

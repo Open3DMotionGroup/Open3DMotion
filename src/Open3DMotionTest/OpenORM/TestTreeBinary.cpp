@@ -32,7 +32,7 @@ public:
 		MemoryHandlerBasic mb(5);
 		CPPUNIT_ASSERT_EQUAL(size_t(1), mb.RefCount());
 		memcpy(mb.Data(), (UInt8*)"Bob!", 5);
-		TreeBinary b(&mb);
+		TreeBinary b(mb.Clone());
 		CPPUNIT_ASSERT_EQUAL(size_t(5), b.SizeBytes());
 		CPPUNIT_ASSERT_EQUAL(string("Bob!"), string((const char*)b.Data()));
 		CPPUNIT_ASSERT_EQUAL(size_t(2), mb.RefCount());
@@ -57,14 +57,14 @@ public:
 		CPPUNIT_ASSERT_EQUAL((UInt8*)NULL, a.Data());
 
 		// set first
-		a.SetData(&m1);
+		a.SetData(m1.Clone());
 		CPPUNIT_ASSERT_EQUAL(size_t(5), a.SizeBytes());
 		CPPUNIT_ASSERT_EQUAL(string("Bob!"), string((const char*)a.Data()));
 		CPPUNIT_ASSERT_EQUAL(size_t(2), m1.RefCount());
 		CPPUNIT_ASSERT_EQUAL(size_t(1), m2.RefCount());
 
 		// now change to second
-		a.SetData(&m2);
+		a.SetData(m2.Clone());
 		CPPUNIT_ASSERT_EQUAL(size_t(4), a.SizeBytes());
 		CPPUNIT_ASSERT_EQUAL(string("No!"), string((const char*)a.Data()));
 		CPPUNIT_ASSERT_EQUAL(size_t(1), m1.RefCount());
@@ -78,7 +78,7 @@ public:
 		memcpy(ma.Data(), (UInt8*)"Who?!", 6);
 		CPPUNIT_ASSERT_EQUAL(size_t(1), ma.RefCount());
 
-		TreeBinary a(&ma);
+		TreeBinary a(ma.Clone());
 		CPPUNIT_ASSERT_EQUAL(size_t(6), a.SizeBytes());
 		CPPUNIT_ASSERT_EQUAL(string("Who?!"), string((const char*)a.Data()));
 		CPPUNIT_ASSERT_EQUAL(size_t(2), ma.RefCount());
@@ -100,7 +100,7 @@ public:
 		memcpy(m.Data(), (UInt8*)"Bob!", 5);
 		
 		// make first item
-		a.SetData(&m);
+		a.SetData(m.Clone());
 		CPPUNIT_ASSERT_EQUAL(size_t(2), m.RefCount());
 
 		// check b is empty

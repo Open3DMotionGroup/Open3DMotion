@@ -104,7 +104,7 @@ public:
 			mem.Data()[0] = 20;
 			mem.Data()[1] = 30;
 			mem.Data()[2] = 44;
-			a.MyData.SetData(&mem);
+			a.MyData.SetData(mem.Clone());
 			std::auto_ptr<TreeValue> tree(a.ToTree());
       BSONOutputStreamSTL stream_output(output);
       BSONWriter writer(stream_output);
@@ -150,7 +150,7 @@ public:
 			a1.MyString = "NothingHere";
 			a1.MyScalar = 122.222;
 			a1.MyQuestion = true;
-			a1.MyData.SetData(&mem1);
+			a1.MyData.SetData(mem1.Clone());
 
 			ObjectB b;
 			b.IsItTrue = true;
@@ -209,7 +209,7 @@ public:
 			a1.MyString = "NothingHere";
 			a1.MyScalar = 122.222;
 			a1.MyQuestion = true;
-			a1.MyData.SetData(&mem1);
+			a1.MyData.SetData(mem1.Clone());
 
 			ObjectB b;
 			b.IsItTrue = true;

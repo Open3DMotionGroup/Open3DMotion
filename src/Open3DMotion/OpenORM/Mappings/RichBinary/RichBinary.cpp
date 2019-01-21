@@ -24,7 +24,7 @@ namespace Open3DMotion
 	{
 		Structure.SetLayout(layout);
 		size_t datasize = Structure.TotalBytes() * numframes;
-		Binary.SetData( memfactory.Allocate(datasize) );
+		Binary.SetData(memfactory.Allocate(datasize));
 	}
 
 	void RichBinary::DeepCopyFrom(const RichBinary& src, const BinMemFactory& memfactory)

@@ -86,7 +86,7 @@ public:
 		// and also a convenient way to check that the item is referenced/dereferenced to avoid memory leaks
 		MemoryHandlerBasic m(5);
 		CPPUNIT_ASSERT_EQUAL(size_t(1), m.RefCount());
-		tl->Add(new TreeBinary(&m));
+		tl->Add(new TreeBinary(m.Clone()));
 
 		// check it's on there ok
 		CPPUNIT_ASSERT_EQUAL(size_t(4), tl->NumElements());
@@ -116,7 +116,7 @@ public:
 
 		// and binary handler
 		MemoryHandlerBasic m(5);
-		tl->Add(new TreeBinary(&m));
+		tl->Add(new TreeBinary(m.Clone()));
 
 		CPPUNIT_ASSERT_EQUAL(size_t(3), tl->NumElements());
 		CPPUNIT_ASSERT_EQUAL(size_t(2), m.RefCount());

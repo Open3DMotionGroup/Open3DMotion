@@ -178,7 +178,7 @@ public:
 			m.Data()[999] = 3;
 
 			// put into tree object
-			TreeBinary tree_data(&m);
+			TreeBinary tree_data(m.Clone());
 			PyObject* py_data = PythonConvert::FromTree(&tree_data);
 
 			// should be byte array containing data as specified

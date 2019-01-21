@@ -173,8 +173,7 @@ namespace Open3DMotion
 		}
 		else if (PyMemoryView_Check(py_value))
 		{
-			MemoryHandlerPython mem( py_value );
-			return new TreeBinary( &mem );
+			return new TreeBinary(new MemoryHandlerPython(py_value));
 		}
 		else if (PyDict_Check(py_value))
 		{

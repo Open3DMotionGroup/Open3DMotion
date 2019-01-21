@@ -85,6 +85,6 @@ namespace Open3DMotion
 		memcpy(binary_handler->Data(), &decoded_binary[0], (size_t)decoded_length);
 		
 		// done
-		return new TreeBinary(binary_handler.get());
+		return new TreeBinary(binary_handler.release());
 	}
 }

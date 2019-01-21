@@ -209,9 +209,9 @@ public:
 	{ 
 		BSONOutputStreamNull nullstream;
 		BSONWriter writer(nullstream);
-		MemoryHandlerBasic binarydata(650);
+		std::auto_ptr<MemoryHandlerBasic> binarydata(new MemoryHandlerBasic(650));
 		std::string name("Info");
-		TreeBinary value(&binarydata);
+		TreeBinary value(binarydata.release());
 		UInt32 s = writer.SizeElement(name, value);
 		// 1 byte type ID, 4 byte name, 1 byte name term,
 		// 4 byte binary length, 1 byte binary sub-type, 650 bytes binary data
@@ -466,7 +466,7 @@ public:
 			mem.Data()[4] = 0xB1;
 			mem.Data()[5] = 0xAA;
 			mem.Data()[6] = 0x11;
-			TreeBinary value(&mem);
+			TreeBinary value(mem.Clone());
 			BSONOutputStreamSTL stream(output);
 			BSONWriter writer(stream);
 			writer.WriteElement("Ted", value);
@@ -887,9 +887,9 @@ public:
 	{ 
 		BSONOutputStreamNull nullstream;
 		BSONWriterMOBL writer(nullstream);
-		MemoryHandlerBasic binarydata(623);
+		std::auto_ptr<MemoryHandlerBasic> binarydata(new MemoryHandlerBasic(623));
 		std::string name("Info");
-		TreeBinary value(&binarydata);
+		TreeBinary value(binarydata.release());
 		UInt32 s = writer.SizeElement(name, value);
 		// 1 byte type ID, 4 byte name, 1 byte name term,
 		// 4 byte binary length, 1 byte binary sub-type, 
@@ -902,15 +902,15 @@ public:
 		std::stringstream output(std::ios::binary | std::ios::out | std::ios::in);
 
 		{
-			MemoryHandlerBasic mem(7);
-			mem.Data()[0] = 0xAA;
-			mem.Data()[1] = 0x04;
-			mem.Data()[2] = 0x05;
-			mem.Data()[3] = 0xA1;
-			mem.Data()[4] = 0xB1;
-			mem.Data()[5] = 0xAA;
-			mem.Data()[6] = 0x11;
-			TreeBinary value(&mem);
+			std::auto_ptr<MemoryHandlerBasic> mem(new MemoryHandlerBasic(7));
+			mem->Data()[0] = 0xAA;
+			mem->Data()[1] = 0x04;
+			mem->Data()[2] = 0x05;
+			mem->Data()[3] = 0xA1;
+			mem->Data()[4] = 0xB1;
+			mem->Data()[5] = 0xAA;
+			mem->Data()[6] = 0x11;
+			TreeBinary value(mem.release());
 			BSONOutputStreamSTL stream(output);
 			BSONWriterMOBL writer(stream);
 			writer.WriteElement("Ted", value);
