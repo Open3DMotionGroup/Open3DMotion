@@ -126,18 +126,20 @@ namespace Open3DMotion
 		tr.Rate = mts.Rate();
 
 		// allocate time sequences
-		TSFactoryValue(3).Allocate(force, tr, memfactory);
-		TSFactoryValue(3).Allocate(point, tr, memfactory);
-		TSFactoryValue(3).Allocate(freemoment, tr, memfactory);
+		// - these need not have an occlusion flag but put in
+		//   for backwards compatibility with scripts
+		TSFactoryOccValue(3).Allocate(force, tr, memfactory);
+		TSFactoryOccValue(3).Allocate(point, tr, memfactory);
+		TSFactoryOccValue(3).Allocate(freemoment, tr, memfactory);
 
 		// per-frame buffers
 		std::vector<double> buffer_rawanalog;
 		std::vector<double> buffer_calanalog;
 
 		// do all calcs
-		TSVector3Iter iter_force(force);
-		TSVector3Iter iter_point(point);
-		TSVector3Iter iter_freemoment(freemoment);
+		TSOccVector3Iter iter_force(force);
+		TSOccVector3Iter iter_point(point);
+		TSOccVector3Iter iter_freemoment(freemoment);
 		mts.Begin();
 
 		for (; iter_force.HasFrame(); iter_force.Next(), iter_point.Next(), iter_freemoment.Next(), mts.NextFrame())
@@ -150,6 +152,11 @@ namespace Open3DMotion
 			Vector3::Copy(iter_force.Value(), f);
 			Vector3::Copy(iter_point.Value(), p);
 			Vector3::Copy(iter_freemoment.Value(), freemoment);
+
+			// set unoccluded
+			iter_force.Occluded() = 0;
+			iter_point.Occluded() = 0;
+			iter_freemoment.Occluded() = 0;
     }
 
 		return true;
