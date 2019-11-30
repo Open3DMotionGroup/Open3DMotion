@@ -30,7 +30,7 @@ namespace Open3DMotion
 	void RichBinary::DeepCopyFrom(const RichBinary& src, const BinMemFactory& memfactory)
 	{
 		// make a shallow copy of binary data and deep copy of all meta-data
-		std::auto_ptr<TreeValue> tree_copy( src.ToTree() );
+		std::unique_ptr<TreeValue> tree_copy( src.ToTree() );
 		FromTree(tree_copy.get());
 
 		// replace data with a copy

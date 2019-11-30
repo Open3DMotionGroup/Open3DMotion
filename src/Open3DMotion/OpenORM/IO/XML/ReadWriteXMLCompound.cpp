@@ -44,7 +44,7 @@ namespace Open3DMotion
 			return NULL;
 
 		// build compound item
-		std::auto_ptr<TreeCompound> newobject( new TreeCompound() );
+		std::unique_ptr<TreeCompound> newobject( new TreeCompound() );
 		for (child = element.first_child(); child; child = child.next_sibling())
 		{
 			if (child.type() == pugi::node_element)

@@ -66,7 +66,7 @@ namespace Open3DMotion
     // Attempt read first element
   	std::string readname;
     TreeValue* readvalue(NULL);
-		std::auto_ptr<TreeValue> value;
+		std::unique_ptr<TreeValue> value;
     {
 	  	ReadElement(readname, readvalue);
       value.reset(readvalue);
@@ -75,7 +75,7 @@ namespace Open3DMotion
     // First element could be a string (in which case it is a label for list items)
     // Or special case for list of ObjectIds that have no item label
     // as used in the ODIN schema for ancestry lists
-		std::auto_ptr<TreeList> lst;
+		std::unique_ptr<TreeList> lst;
 		if (value.get() != NULL)
 		{
       if (value->ClassNameMatches(TreeString::classname))
@@ -142,7 +142,7 @@ namespace Open3DMotion
 		{
 			case 0x01:	// double (float64)
 			{
-				std::auto_ptr<TreeFloat64> f( new TreeFloat64 );
+				std::unique_ptr<TreeFloat64> f( new TreeFloat64 );
 				ReadBinary(&f->Value(), 8);
 				return f.release();
 			}
@@ -151,14 +151,14 @@ namespace Open3DMotion
 			case 0x0D:	// javascript code
 			case 0x0E:	// symbol (deprecated)
 			{
-				std::auto_ptr<TreeString> s( new TreeString );
+				std::unique_ptr<TreeString> s( new TreeString );
 				ReadString(s->Value());
 				return s.release();
 			}
 
 			case 0x03:	// compound document
 			{
-				std::auto_ptr<TreeCompound> c( new TreeCompound );
+				std::unique_ptr<TreeCompound> c( new TreeCompound );
 				ReadDocument(*c);
 				return c.release();
 			}
@@ -174,7 +174,7 @@ namespace Open3DMotion
 				UInt8 subtype(0);
 				ReadBinary(&numbytes, 4);
 				ReadBinary(&subtype, 1);
-				std::auto_ptr<MemoryHandler> memory( memfactory.Allocate(numbytes) );
+				std::unique_ptr<MemoryHandler> memory( memfactory.Allocate(numbytes) );
 				ReadBinary(memory->Data(), numbytes);
 				return new TreeBinary(memory.release());
 			}
@@ -188,7 +188,7 @@ namespace Open3DMotion
 
 			case 0x10:	// Int32
 			{
-				std::auto_ptr<TreeInt32> n( new TreeInt32 );
+				std::unique_ptr<TreeInt32> n( new TreeInt32 );
 				ReadBinary(&n->Value(), 4);
 				return n.release();
 			}

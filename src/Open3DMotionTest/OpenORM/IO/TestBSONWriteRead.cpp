@@ -105,7 +105,7 @@ public:
 			mem.Data()[1] = 30;
 			mem.Data()[2] = 44;
 			a.MyData.SetData(mem.Clone());
-			std::auto_ptr<TreeValue> tree(a.ToTree());
+			std::unique_ptr<TreeValue> tree(a.ToTree());
       BSONOutputStreamSTL stream_output(output);
       BSONWriter writer(stream_output);
 			writer.WriteDocument(*static_cast<TreeCompound*>(tree.get()));
@@ -157,7 +157,7 @@ public:
 			b.MyList.Add(a0);
 			b.MyList.Add(a1);
 			
-			std::auto_ptr<TreeValue> tree(b.ToTree());
+			std::unique_ptr<TreeValue> tree(b.ToTree());
       BSONOutputStreamSTL stream_output(output);
       BSONWriter writer(stream_output);
 			writer.WriteDocument(*static_cast<TreeCompound*>(tree.get()));
@@ -216,7 +216,7 @@ public:
 			b.MyList.Add(a0);
 			b.MyList.Add(a1);
 			
-			std::auto_ptr<TreeValue> tree(b.ToTree());
+			std::unique_ptr<TreeValue> tree(b.ToTree());
       BSONOutputStreamSTL stream_output(output);
       BSONWriterMOBL writer(stream_output);
 			writer.WriteDocument(*static_cast<TreeCompound*>(tree.get()));

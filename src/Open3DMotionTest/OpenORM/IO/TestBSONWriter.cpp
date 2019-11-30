@@ -209,7 +209,7 @@ public:
 	{ 
 		BSONOutputStreamNull nullstream;
 		BSONWriter writer(nullstream);
-		std::auto_ptr<MemoryHandlerBasic> binarydata(new MemoryHandlerBasic(650));
+		std::unique_ptr<MemoryHandlerBasic> binarydata(new MemoryHandlerBasic(650));
 		std::string name("Info");
 		TreeBinary value(binarydata.release());
 		UInt32 s = writer.SizeElement(name, value);
@@ -227,7 +227,7 @@ public:
 		BSONTimestampHolder holder;
 		holder.BSONTimestamp.Increment = 25;
 		holder.BSONTimestamp.Seconds = 227;
-		std::auto_ptr<TreeValue> value( holder.ToTree() );
+		std::unique_ptr<TreeValue> value( holder.ToTree() );
 		UInt32 s = writer.SizeElement(name, *value);
 		// 1 byte type ID, 6 byte name, 1 byte name term, 8 byte time stamp
 		CPPUNIT_ASSERT_EQUAL(UInt32(16), s);
@@ -244,7 +244,7 @@ public:
 		memset(&test_id[0], 0, sizeof(test_id));
 		BSONObjectIdHolder holder;
 		holder.FromBinary(test_id);
-		std::auto_ptr<TreeValue> value( holder.ToTree() );
+		std::unique_ptr<TreeValue> value( holder.ToTree() );
 		UInt32 s = writer.SizeElement(name, *value);
 
 		// 1 byte type ID, 8 byte name, 1 byte name term, 12 byte time object id
@@ -259,7 +259,7 @@ public:
 		BSONDateHolder holder;
 		holder.BSONDate.MSB = 0x00000000;
 		holder.BSONDate.LSB = 0xABCDEF12;
-		std::auto_ptr<TreeValue> value(holder.ToTree());
+		std::unique_ptr<TreeValue> value(holder.ToTree());
 		UInt32 s = writer.SizeElement(name, *value);
 		// 1 byte type ID, 8 byte name, 1 byte name term, 8 byte date
 		CPPUNIT_ASSERT_EQUAL(UInt32(18), s);
@@ -269,7 +269,7 @@ public:
 	{ 
 		BSONOutputStreamNull nullstream;
 		BSONWriter writer(nullstream);
-		std::auto_ptr<TreeCompound> tree( new TreeCompound );
+		std::unique_ptr<TreeCompound> tree( new TreeCompound );
 		tree->Set("One", new TreeInt32(583));
 		tree->Set("Other", new TreeString("Really?"));
 		UInt32 s = writer.SizeElement("Doc", *tree);
@@ -299,7 +299,7 @@ public:
 	{ 
 		BSONOutputStreamNull nullstream;
 		BSONWriter writer(nullstream);
-		std::auto_ptr<TreeList> items(new TreeList("Bob"));
+		std::unique_ptr<TreeList> items(new TreeList("Bob"));
 		items->Add(new TreeInt32(10));
 		items->Add(new TreeInt32(50));
 		items->Add(new TreeInt32(987));
@@ -528,7 +528,7 @@ public:
 			BSONTimestampHolder holder;
 			holder.BSONTimestamp.Increment = 23;
 			holder.BSONTimestamp.Seconds = 54;
-			std::auto_ptr<TreeValue> value(holder.ToTree());
+			std::unique_ptr<TreeValue> value(holder.ToTree());
 			BSONOutputStreamSTL stream(output);
 			BSONWriter writer(stream);
 			writer.WriteElement("t", *value);
@@ -557,7 +557,7 @@ public:
 			BSONObjectIdBinary data = { 8, 9, 7, 6, 50, 0, 70, 230, 55, 165, 255, 9 };
 			BSONObjectIdHolder holder;
 			holder.FromBinary(data);
-			std::auto_ptr<TreeValue> value(holder.ToTree());
+			std::unique_ptr<TreeValue> value(holder.ToTree());
 			BSONOutputStreamSTL stream(output);
 			BSONWriter writer(stream);
 			writer.WriteElement("MyID", *value);
@@ -589,7 +589,7 @@ public:
 		std::stringstream output(std::ios::binary | std::ios::out | std::ios::in);
 
 		{
-			std::auto_ptr<TreeCompound> tree(new TreeCompound);
+			std::unique_ptr<TreeCompound> tree(new TreeCompound);
 			tree->Set("One", new TreeString("Potato"));
 			tree->Set("Bigness", new TreeFloat64(0.0));
 			BSONOutputStreamSTL stream(output);
@@ -644,7 +644,7 @@ public:
 
 		{
 			std::string name("Stuff");
-			std::auto_ptr<TreeCompound> tree(new TreeCompound);
+			std::unique_ptr<TreeCompound> tree(new TreeCompound);
 			tree->Set("One", new TreeString("Potato"));
 			tree->Set("Bigness", new TreeFloat64(0.0));
 			BSONOutputStreamSTL stream(output);
@@ -721,7 +721,7 @@ public:
 		std::stringstream output(std::ios::binary | std::ios::out | std::ios::in);
 
 		{
-			std::auto_ptr<TreeList> items(new TreeList("Aircraft"));
+			std::unique_ptr<TreeList> items(new TreeList("Aircraft"));
 			items->Add(new TreeString("Plane"));
 			items->Add(new TreeString("Rocket"));
 			items->Add(new TreeString("Balloon"));
@@ -801,7 +801,7 @@ public:
 		std::stringstream output(std::ios::binary | std::ios::out | std::ios::in);
 
 		{
-			std::auto_ptr<TreeList> items(new TreeList("Aircraft"));
+			std::unique_ptr<TreeList> items(new TreeList("Aircraft"));
 			items->Add(new TreeString("Plane"));
 			items->Add(new TreeString("Rocket"));
 			items->Add(new TreeString("Balloon"));
@@ -887,7 +887,7 @@ public:
 	{ 
 		BSONOutputStreamNull nullstream;
 		BSONWriterMOBL writer(nullstream);
-		std::auto_ptr<MemoryHandlerBasic> binarydata(new MemoryHandlerBasic(623));
+		std::unique_ptr<MemoryHandlerBasic> binarydata(new MemoryHandlerBasic(623));
 		std::string name("Info");
 		TreeBinary value(binarydata.release());
 		UInt32 s = writer.SizeElement(name, value);
@@ -902,7 +902,7 @@ public:
 		std::stringstream output(std::ios::binary | std::ios::out | std::ios::in);
 
 		{
-			std::auto_ptr<MemoryHandlerBasic> mem(new MemoryHandlerBasic(7));
+			std::unique_ptr<MemoryHandlerBasic> mem(new MemoryHandlerBasic(7));
 			mem->Data()[0] = 0xAA;
 			mem->Data()[1] = 0x04;
 			mem->Data()[2] = 0x05;
@@ -949,7 +949,7 @@ public:
 			holder0.BSONObjectId = "12abcd34fe567891a3b4c7d3";
 			holder1.BSONObjectId = "234a2daa11223399b3e104dd";
 
-			std::auto_ptr<BSONObjectIdList> idlist(new BSONObjectIdList());
+			std::unique_ptr<BSONObjectIdList> idlist(new BSONObjectIdList());
 			idlist->Add(holder0.ToTree());
 			idlist->Add(holder1.ToTree());
 
@@ -997,7 +997,7 @@ public:
 		// write to stream
 		std::stringstream output(std::ios::binary | std::ios::out | std::ios::in);
 		{
-			std::auto_ptr<TreeValue> value(holder.ToTree());
+			std::unique_ptr<TreeValue> value(holder.ToTree());
 			BSONOutputStreamSTL stream(output);
 			BSONWriter writer(stream);
 			writer.WriteElement("SomeTime", *value);

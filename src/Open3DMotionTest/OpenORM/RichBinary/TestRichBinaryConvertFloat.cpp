@@ -30,7 +30,7 @@ public:
 
 	void test32To64NotRichBinary()
 	{
-		std::auto_ptr<TreeCompound> tree ( new TreeCompound );
+		std::unique_ptr<TreeCompound> tree ( new TreeCompound );
 		MemoryHandlerBasic junk(2003);
 		tree->Set(MEMBER_NAME(RichBinary::Data), new TreeBinary(junk.Clone()));
 		BinMemFactoryDefault memfactory;
@@ -40,7 +40,7 @@ public:
 
 	void test64To32NotRichBinary()
 	{
-		std::auto_ptr<TreeCompound> tree ( new TreeCompound );
+		std::unique_ptr<TreeCompound> tree ( new TreeCompound );
 		MemoryHandlerBasic junk(2003);
 		tree->Set(MEMBER_NAME(RichBinary::Data),  new TreeBinary(junk.Clone()) );
 		BinMemFactoryDefault memfactory;
@@ -52,7 +52,7 @@ public:
 	{
 		try
 		{
-			auto_ptr<TreeValue> result_tree;
+			unique_ptr<TreeValue> result_tree;
 			{
 				BinMemFactoryDefault memfactory;
 
@@ -85,13 +85,13 @@ public:
 				iter_input.ValuePtr2()[1] = 9;
 
 				// convert to tree
-				auto_ptr<TreeValue> rb_tree( rb.ToTree() );
+				unique_ptr<TreeValue> rb_tree( rb.ToTree() );
 		
 				// invented meta-data on rich binary object
 				TreeValueCast<TreeCompound>( rb_tree.get() )->Set("MyInfo", new TreeString("Some Text"));
 
 				// convert
-				result_tree = auto_ptr<TreeValue>( RichBinaryConvertFloat32To64(rb_tree.get(), "MyStructure", memfactory) );
+				result_tree = unique_ptr<TreeValue>( RichBinaryConvertFloat32To64(rb_tree.get(), "MyStructure", memfactory) );
 			}
 
 			CPPUNIT_ASSERT(result_tree.get() != NULL);
@@ -138,7 +138,7 @@ public:
 	{
 		try
 		{
-			auto_ptr<TreeValue> result_tree;
+			unique_ptr<TreeValue> result_tree;
 			{
 				BinMemFactoryDefault memfactory;
 
@@ -171,13 +171,13 @@ public:
 				iter_input.ValuePtr2()[1] = 9;
 
 				// convert to tree
-				auto_ptr<TreeValue> rb_tree = auto_ptr<TreeValue> ( rb.ToTree() );
+				unique_ptr<TreeValue> rb_tree = unique_ptr<TreeValue> ( rb.ToTree() );
 		
 				// invented meta-data on rich binary object
 				TreeValueCast<TreeCompound>( rb_tree.get() )->Set("MyInfo", new TreeString("Some Text"));
 
 				// convert
-				result_tree  = auto_ptr<TreeValue>( RichBinaryConvertFloat64To32(rb_tree.get(), "MyStructure", memfactory) );
+				result_tree  = unique_ptr<TreeValue>( RichBinaryConvertFloat64To32(rb_tree.get(), "MyStructure", memfactory) );
 			}
 
 		

@@ -34,7 +34,7 @@ namespace Open3DMotion
 		MOBLFormatReader* Open(const char* filename) throw(MotionFileException);
 
 	protected:
-		std::auto_ptr<MOBLFormat> mobl;
+		std::unique_ptr<MOBLFormat> mobl;
 	};
 
 }

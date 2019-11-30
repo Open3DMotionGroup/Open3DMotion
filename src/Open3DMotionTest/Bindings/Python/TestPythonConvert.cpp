@@ -212,7 +212,7 @@ public:
 #else
 			PyString_FromString("Correct!");
 #endif
-		std::auto_ptr<TreeValue> result( PythonConvert::ToTree(py_correct) );
+		std::unique_ptr<TreeValue> result( PythonConvert::ToTree(py_correct) );
 		Py_DECREF(py_correct);
 		CPPUNIT_ASSERT(result.get() != NULL);
 		TreeString* result_string = TreeValueCast<TreeString> ( result.get() );
@@ -226,13 +226,13 @@ public:
 	{
 		size_t refcount0 = PythonTotalRefCount();
 
-		std::auto_ptr<TreeValue> result_true( PythonConvert::ToTree(Py_True) );
+		std::unique_ptr<TreeValue> result_true( PythonConvert::ToTree(Py_True) );
 		CPPUNIT_ASSERT(result_true.get() != NULL);
 		TreeBool* tree_result_true = TreeValueCast<TreeBool> ( result_true.get() );
 		CPPUNIT_ASSERT(tree_result_true != NULL);
 		CPPUNIT_ASSERT_EQUAL(true, tree_result_true->Value());
 
-		std::auto_ptr<TreeValue> result_false( PythonConvert::ToTree(Py_False) );
+		std::unique_ptr<TreeValue> result_false( PythonConvert::ToTree(Py_False) );
 		CPPUNIT_ASSERT(result_false.get() != NULL);
 		TreeBool* tree_result_false = TreeValueCast<TreeBool> ( result_false.get() );
 		CPPUNIT_ASSERT(tree_result_false != NULL);
@@ -248,7 +248,7 @@ public:
 
 		// should work for numbers that can be represented as 32-bit
 		PyObject* py_number = PyLong_FromLong(-59982L);
-		std::auto_ptr<TreeValue> result(PythonConvert::ToTree(py_number));
+		std::unique_ptr<TreeValue> result(PythonConvert::ToTree(py_number));
 		Py_DECREF(py_number);
 		CPPUNIT_ASSERT(result.get() != NULL);
 		TreeInt32* result_int32 = TreeValueCast<TreeInt32>(result.get());
@@ -265,7 +265,7 @@ public:
 
 		// should fail when presented with long occupying more than 32-bit representation
 		PyObject* py_number = PyLong_FromLongLong(0xABCD0123CDEF3456LL);
-		std::auto_ptr<TreeValue> result( PythonConvert::ToTree(py_number) );
+		std::unique_ptr<TreeValue> result( PythonConvert::ToTree(py_number) );
 		CPPUNIT_ASSERT(result.get() == NULL);
 		Py_DECREF(py_number);
 
@@ -283,7 +283,7 @@ public:
 #else
 			PyInt_FromLong(-597L);
 #endif
-		std::auto_ptr<TreeValue> result(PythonConvert::ToTree(py_number));
+		std::unique_ptr<TreeValue> result(PythonConvert::ToTree(py_number));
 		Py_DECREF(py_number);
 		CPPUNIT_ASSERT(result.get() != NULL);
 		TreeInt32* result_int32 = TreeValueCast<TreeInt32>(result.get());
@@ -299,7 +299,7 @@ public:
 		size_t refcount0 = PythonTotalRefCount();
 
 		PyObject* py_number = PyFloat_FromDouble(480327.9986754);
-		std::auto_ptr<TreeValue> result( PythonConvert::ToTree(py_number) );
+		std::unique_ptr<TreeValue> result( PythonConvert::ToTree(py_number) );
 		Py_DECREF(py_number);
 		CPPUNIT_ASSERT(result.get() != NULL);
 		TreeFloat64* result_float64 = TreeValueCast<TreeFloat64> ( result.get() );
@@ -325,7 +325,7 @@ public:
 
 		{
 			// convert
-			std::auto_ptr<TreeValue> result( PythonConvert::ToTree(py_view) );
+			std::unique_ptr<TreeValue> result( PythonConvert::ToTree(py_view) );
 
 			CPPUNIT_ASSERT_EQUAL(2, (int)Py_REFCNT(py_view));
 
@@ -436,7 +436,7 @@ public:
 		PyObject* py_list = PyList_New(0);
 		PyDict_SetItemString(py_test_empty, "SomeElementNameHere", py_list);
 		Py_DECREF(py_list);
-		std::auto_ptr<TreeValue> result( PythonConvert::ToTree(py_test_empty) );
+		std::unique_ptr<TreeValue> result( PythonConvert::ToTree(py_test_empty) );
 		Py_DECREF(py_test_empty);
 		
 		// check it works and uses the element name
@@ -474,7 +474,7 @@ public:
 		}
 
 		// convert
-		std::auto_ptr<TreeValue> result( PythonConvert::ToTree(py_wrapper) );
+		std::unique_ptr<TreeValue> result( PythonConvert::ToTree(py_wrapper) );
 
 		// done with data
 		Py_DECREF(py_wrapper);
@@ -573,7 +573,7 @@ public:
 		size_t refcount0 = PythonTotalRefCount();
 
 		PyObject* py_c = PyDict_New();
-		std::auto_ptr<TreeValue> result( PythonConvert::ToTree(py_c) );
+		std::unique_ptr<TreeValue> result( PythonConvert::ToTree(py_c) );
 		Py_DECREF(py_c);
 
 		CPPUNIT_ASSERT(result.get() != NULL);
@@ -617,7 +617,7 @@ public:
 		Py_DECREF(py_description);
 
 		// do conversion
-		std::auto_ptr<TreeValue> result( PythonConvert::ToTree(py_c) );
+		std::unique_ptr<TreeValue> result( PythonConvert::ToTree(py_c) );
 
 		// done with base
 		Py_DECREF(py_c);

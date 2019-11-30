@@ -67,18 +67,18 @@ namespace Open3DMotion
 			throw MotionFileException(MotionFileException::formaterror, result.description());
 		}
 
-		std::auto_ptr<XMLReadingMachine> reader;
+		std::unique_ptr<XMLReadingMachine> reader;
 		if (xmove_options.LegacyCompoundNames)
 		{
 			// Support legacy version of format in which 
 			// elements of time sequence and event groups structures have assumed types
 			// and some naming conventions are different
-			reader = std::auto_ptr<XMLReadingMachine>( new XMLReadingMachineLegacy(memfactory) );
+			reader = std::unique_ptr<XMLReadingMachine>( new XMLReadingMachineLegacy(memfactory) );
 		}
 		else
 		{
 			// Standard XML reader
-			reader = std::auto_ptr<XMLReadingMachine>( new XMLReadingMachine(memfactory) );
+			reader = std::unique_ptr<XMLReadingMachine>( new XMLReadingMachine(memfactory) );
 		}
 
 		// find xmove node
@@ -157,14 +157,14 @@ namespace Open3DMotion
 		}
 
 		// write to file
-		std::auto_ptr<TreeValue> descriptor_tree(descriptor.ToTree());
+		std::unique_ptr<TreeValue> descriptor_tree(descriptor.ToTree());
 		writer->WriteValue(FileFormatXMove::XMLFormatDescriptorSection, descriptor_tree.get());
 	}
 
 	void FileFormatXMove::WriteContents(const MotionFileHandler& context, const TreeValue* contents, XMLWritingMachine* writer, const FileFormatOptionsXMove& xmove_options) const throw(MotionFileException)
 	{
 		// make copy of trial so we can adjust its structure according to export options
-		std::auto_ptr<TreeCompound> export_contents(new TreeCompound);
+		std::unique_ptr<TreeCompound> export_contents(new TreeCompound);
 		const TreeCompound* input_contents = TreeValueCast<TreeCompound>(contents);
 		if (input_contents)
 		{
@@ -175,7 +175,7 @@ namespace Open3DMotion
 		export_contents->Remove(XMLFormatDescriptorSection);
 
 		// optionally convert 64-bit floats to 32-bit
-		std::auto_ptr<TreeCompound> contents_copy;
+		std::unique_ptr<TreeCompound> contents_copy;
 		if (xmove_options.ConvertBinaryFloat32)
 		{
 			// remap binary data
@@ -209,7 +209,7 @@ namespace Open3DMotion
 		xmove_options.FromTree(writeoptions);
 
 		// build writer based on options
-		std::auto_ptr<XMLWritingMachine> writer(BuildXMLWritingMachine(os, xmove_options));
+		std::unique_ptr<XMLWritingMachine> writer(BuildXMLWritingMachine(os, xmove_options));
 
 		// XML pre-amble
 		WriteHeader(os);

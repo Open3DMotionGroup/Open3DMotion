@@ -28,9 +28,9 @@ namespace Open3DMotion
         if (cfile == NULL)
             throw MotionFileException(MotionFileException::noaccess, "file does not exist or you have insufficient permissions to open it");
 		// assign C++ style object
-		std::auto_ptr< std::ifstream > is( new std::ifstream(cfile) );
+		std::unique_ptr< std::ifstream > is( new std::ifstream(cfile) );
 #else
-        std::auto_ptr< std::ifstream > is( new std::ifstream(filename, std::ios::binary) );
+        std::unique_ptr< std::ifstream > is( new std::ifstream(filename, std::ios::binary) );
 #endif
 
 

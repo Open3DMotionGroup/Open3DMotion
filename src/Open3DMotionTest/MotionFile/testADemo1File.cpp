@@ -25,10 +25,10 @@ void testADemo1File(Open3DMotion::MotionFileHandler& handler, const char* filena
 	double forcetol = strict ? 1E-4 : 0.05;
 
 	// load file
-	std::auto_ptr<Open3DMotion::TreeValue> trialcontents;
+	std::unique_ptr<Open3DMotion::TreeValue> trialcontents;
 	try
 	{
-		trialcontents = std::auto_ptr<Open3DMotion::TreeValue>( handler.Read(filename) );
+		trialcontents = std::unique_ptr<Open3DMotion::TreeValue>( handler.Read(filename) );
 	}
 	catch(const Open3DMotion::MotionFileException& error)
 	{
@@ -36,7 +36,7 @@ void testADemo1File(Open3DMotion::MotionFileHandler& handler, const char* filena
 	}
 
 	// build trial
-	std::auto_ptr<Open3DMotion::Trial> trial( new Open3DMotion::Trial );
+	std::unique_ptr<Open3DMotion::Trial> trial( new Open3DMotion::Trial );
 	trial->FromTree(trialcontents.get());
 
 	// retrieve sequences (analog & marker)

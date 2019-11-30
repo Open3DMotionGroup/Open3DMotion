@@ -61,7 +61,7 @@ namespace Open3DMotion
   TreeValue* FileFormatMoXie::Read(const MotionFileHandler& /*context*/, std::istream& is, const BinMemFactory& memfactory, const TreeValue* /*readoptions*/) const throw(MotionFileException)
   {
 		// trial to fill
-		std::auto_ptr<Trial> trial(new Trial);
+		std::unique_ptr<Trial> trial(new Trial);
 
 		// load
 		pugi::xml_document doc;
@@ -151,7 +151,7 @@ namespace Open3DMotion
 							&p[0], &p[1], &p[2], &p[3], &p[4], &p[5], &p[6], &p[7], &p[8], &p[9], &p[10], &p[11] );
 					if (numparsed == 12)
 					{		
-						std::auto_ptr<TrialVideoCamera> camera (new TrialVideoCamera);
+						std::unique_ptr<TrialVideoCamera> camera (new TrialVideoCamera);
 						for (int i = 0; i < 12; i++)
 							camera->Calibration.ProjectionMatrix.Add(p[i]);
 						trial->Acq.Video.Add( camera.release() );
@@ -272,7 +272,7 @@ namespace Open3DMotion
   void FileFormatMoXie::Write(const MotionFileHandler& /*context*/, const TreeValue* contents, std::ostream& os, const TreeValue* writeoptions) const throw(MotionFileException)
   {
 		// parse to trial
-		std::auto_ptr<Trial> trial( new Trial );
+		std::unique_ptr<Trial> trial( new Trial );
 		trial->FromTree(contents);
 
 		// read options
@@ -398,7 +398,7 @@ namespace Open3DMotion
 		{
 			// create calculator object for this plate, if supported
 			const ForcePlate& fp = trial->Acq.ForcePlates[0];
-			std::auto_ptr<ForceCalculator> calculator( ForceCalculatorFactory().CreateCalculator(fp) );
+			std::unique_ptr<ForceCalculator> calculator( ForceCalculatorFactory().CreateCalculator(fp) );
 
 			if (calculator.get() != NULL)
 			{
@@ -426,13 +426,13 @@ namespace Open3DMotion
 					tr.Rate = mts.Rate();
 
 					// sequences for results in canonical coords
-					std::auto_ptr<TimeSequence> timecode( TSFactoryValue(1).New(tr, memfactory_default) );
-					std::auto_ptr<TimeSequence> Fx( TSFactoryValue(1).New(tr, memfactory_default) );
-					std::auto_ptr<TimeSequence> Fy( TSFactoryValue(1).New(tr, memfactory_default) );
-					std::auto_ptr<TimeSequence> Fz( TSFactoryValue(1).New(tr, memfactory_default) );
-					std::auto_ptr<TimeSequence> Mx( TSFactoryValue(1).New(tr, memfactory_default) );
-					std::auto_ptr<TimeSequence> My( TSFactoryValue(1).New(tr, memfactory_default) );
-					std::auto_ptr<TimeSequence> Mz( TSFactoryValue(1).New(tr, memfactory_default) );
+					std::unique_ptr<TimeSequence> timecode( TSFactoryValue(1).New(tr, memfactory_default) );
+					std::unique_ptr<TimeSequence> Fx( TSFactoryValue(1).New(tr, memfactory_default) );
+					std::unique_ptr<TimeSequence> Fy( TSFactoryValue(1).New(tr, memfactory_default) );
+					std::unique_ptr<TimeSequence> Fz( TSFactoryValue(1).New(tr, memfactory_default) );
+					std::unique_ptr<TimeSequence> Mx( TSFactoryValue(1).New(tr, memfactory_default) );
+					std::unique_ptr<TimeSequence> My( TSFactoryValue(1).New(tr, memfactory_default) );
+					std::unique_ptr<TimeSequence> Mz( TSFactoryValue(1).New(tr, memfactory_default) );
 
 					// iterators
 					TSVector3ConstIter iter_force( force );

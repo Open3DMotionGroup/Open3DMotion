@@ -49,7 +49,7 @@ public:
 		try
 		{
 			MotionBundleHandler bundlehandler;
-			std::auto_ptr<MOBLFormatReader> formatreader( bundlehandler.Open(filename) );
+			std::unique_ptr<MOBLFormatReader> formatreader( bundlehandler.Open(filename) );
 			CPPUNIT_ASSERT(formatreader.get() != NULL);
 
 			UInt32 num_trials = formatreader->TrialCount();
@@ -57,7 +57,7 @@ public:
 
 			for (UInt32 index = 0; index < 7UL; index++)
 			{
-				std::auto_ptr<TreeValue> tree( formatreader->ReadTrial(index) );
+				std::unique_ptr<TreeValue> tree( formatreader->ReadTrial(index) );
 				CPPUNIT_ASSERT(tree.get() != NULL);
 
 				Trial t;
@@ -65,7 +65,7 @@ public:
 
 				MotionFileHandler filehandler("TestMotionBundle", "UNVERSIONED");
 				FileFormatOptionsXMove xmove_options;
-				std::auto_ptr<TreeValue> xmove_options_tree( xmove_options.ToTree() );
+				std::unique_ptr<TreeValue> xmove_options_tree( xmove_options.ToTree() );
 				std::ostringstream dbg_filename;
 				dbg_filename << "Open3DMotionTest/Data/Temp/TestMotionBundle.testLoad" << std::setfill('0') << std::setw(2) << index << ".xml";
 				filehandler.Write(dbg_filename.str().c_str(), tree.get(), xmove_options_tree.get());
@@ -84,7 +84,7 @@ public:
 		{
 			// open bundle
 			MotionBundleHandler bundlehandler;
-			std::auto_ptr<MOBLFormatReader> formatreader( bundlehandler.Open("Open3DMotionTest/Data/MOBL/ADemo1.ODIN.mobl") );
+			std::unique_ptr<MOBLFormatReader> formatreader( bundlehandler.Open("Open3DMotionTest/Data/MOBL/ADemo1.ODIN.mobl") );
 			CPPUNIT_ASSERT(formatreader.get() != NULL);
 
 			// should have one trial
@@ -92,7 +92,7 @@ public:
 			CPPUNIT_ASSERT_EQUAL(UInt32(1), num_trials);
 
 			// load it
-			std::auto_ptr<TreeValue> tree( formatreader->ReadTrial(0) );
+			std::unique_ptr<TreeValue> tree( formatreader->ReadTrial(0) );
 			
 			// store as XMove
 			const char* tempfilename = "Open3DMotionTest/Data/Temp/TestMotionBundle.ADemo1.ODIN.xml";
@@ -100,7 +100,7 @@ public:
 			FileFormatOptionsXMove xmove_options;
 			xmove_options.ConvertBinaryFloat32 = false;
 			xmove_options.LegacyCompoundNames = false;
-			std::auto_ptr<TreeValue> xmove_options_tree( xmove_options.ToTree() );
+			std::unique_ptr<TreeValue> xmove_options_tree( xmove_options.ToTree() );
 			filehandler.Write(tempfilename, tree.get(), xmove_options_tree.get());
 
 			// reload from XMove and check results

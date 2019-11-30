@@ -30,7 +30,7 @@ namespace Open3DMotion
 			{
 				SkipBytes(4);
 				numbytes -= 4;
-				std::auto_ptr<MemoryHandler> memory( MemFactory().Allocate(numbytes) );
+				std::unique_ptr<MemoryHandler> memory( MemFactory().Allocate(numbytes) );
 				ReadBinary(memory->Data(), numbytes);
 				return new TreeBinary(memory.release());
 			}

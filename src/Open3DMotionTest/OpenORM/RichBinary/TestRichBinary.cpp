@@ -168,7 +168,7 @@ public:
 		drb.Data()[7] = 121;
 
 		DerivedRichBinary copy_shallow;
-		std::auto_ptr<TreeValue> tree_copy(drb.ToTree());
+		std::unique_ptr<TreeValue> tree_copy(drb.ToTree());
 		copy_shallow.FromTree(tree_copy.get());
 
 		DerivedRichBinary copy_deep;

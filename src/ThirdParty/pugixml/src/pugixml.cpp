@@ -207,7 +207,7 @@ PUGI__NS_BEGIN
 PUGI__NS_END
 
 #if !defined(PUGIXML_NO_STL) || !defined(PUGIXML_NO_XPATH)
-// auto_ptr-like buffer holder for exception recovery
+// unique_ptr-like buffer holder for exception recovery
 PUGI__NS_BEGIN
 	struct buffer_holder
 	{

@@ -94,7 +94,7 @@ namespace Open3DMotion
 
 		// use format to read scale
     float scale(0.0);
-		auto_ptr<C3DMachine> machine ( options.NewMachine() );
+		unique_ptr<C3DMachine> machine ( options.NewMachine() );
     is.seekg(12, ios::beg);
 		machine->ReadFloat(scale, is);
 
@@ -119,10 +119,10 @@ namespace Open3DMotion
 		c3doptions.FromTree( readoptions );
 
 		// create machine-specific reader
-		std::auto_ptr<C3DMachine> machine( c3doptions.NewMachine() );
+		std::unique_ptr<C3DMachine> machine( c3doptions.NewMachine() );
 
 		// trial object to read
-		std::auto_ptr<TrialC3D> trial( new TrialC3D );
+		std::unique_ptr<TrialC3D> trial( new TrialC3D );
 
 		// go to param value
     is.clear();
@@ -670,7 +670,7 @@ namespace Open3DMotion
 		c3doptions.FromTree( writeoptions );
 
 		// create machine-specific writer
-		auto_ptr<C3DMachine> machine( c3doptions.NewMachine() );
+		unique_ptr<C3DMachine> machine( c3doptions.NewMachine() );
 
 		size_t i;
 

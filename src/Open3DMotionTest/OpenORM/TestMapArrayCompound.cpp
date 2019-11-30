@@ -256,7 +256,7 @@ public:
 			t1->Set("Trees", new TreeInt32(3333));
 			t1->Set("Acres", new TreeFloat64(1000.11));
 			t1->Set("Notes", new TreeString("Some notes"));
-			std::auto_ptr<MemoryHandlerBasic> m(new MemoryHandlerBasic(888));
+			std::unique_ptr<MemoryHandlerBasic> m(new MemoryHandlerBasic(888));
 			t1->Set("RingData", new TreeBinary(m.release()));
 			t.Add(t1);
 		}

@@ -22,10 +22,10 @@ void testSample08File(MotionFileHandler& handler, const char* filename, double m
 	const char* msg = filename;
 
 	// read
-	std::auto_ptr<TreeValue> trialcontents;
+	std::unique_ptr<TreeValue> trialcontents;
 	try
 	{
-		trialcontents = std::auto_ptr<TreeValue>( handler.Read(filename) );
+		trialcontents = std::unique_ptr<TreeValue>( handler.Read(filename) );
 	}
 	catch(MotionFileException& e)
 	{
@@ -33,7 +33,7 @@ void testSample08File(MotionFileHandler& handler, const char* filename, double m
 	}
 
 	// build trial object
-	std::auto_ptr<Trial> trial(new Trial);
+	std::unique_ptr<Trial> trial(new Trial);
 	trial->FromTree(trialcontents.get());
 
 	// retrieve marker sequences

@@ -147,12 +147,12 @@ public:
 		try
 		{
 			// read from MDF
-			std::auto_ptr<Open3DMotion::TreeValue> tree( handler.Read("Open3DMotionTest/Data/MDF/gait-bilateral-1997-Kistlerx1.mdf") );
+			std::unique_ptr<Open3DMotion::TreeValue> tree( handler.Read("Open3DMotionTest/Data/MDF/gait-bilateral-1997-Kistlerx1.mdf") );
 
 			// set options for write in legacy format
 			Open3DMotion::FileFormatOptionsXMove options;
 			options.LegacyCompoundNames = true;
-			std::auto_ptr<Open3DMotion::TreeValue> options_tree( options.ToTree() );
+			std::unique_ptr<Open3DMotion::TreeValue> options_tree( options.ToTree() );
 
 			// write like this
 			handler.Write("Open3DMotionTest/Data/Temp/TestXMove.ADemo1.ODIN.Legacy.ReWrite.xml", tree.get(), options_tree.get());

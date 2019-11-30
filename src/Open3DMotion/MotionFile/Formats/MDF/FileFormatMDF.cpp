@@ -261,10 +261,10 @@ namespace Open3DMotion
 		mdf_options.FromTree(readoptions);
 
 		// MDF descriptor item
-		std::auto_ptr<MDFDescriptor> mdf_descriptor( mdf_options.NewDescriptor() );
+		std::unique_ptr<MDFDescriptor> mdf_descriptor( mdf_options.NewDescriptor() );
 
 		// new trial object
-		std::auto_ptr<TrialMDF> trial( new TrialMDF );
+		std::unique_ptr<TrialMDF> trial( new TrialMDF );
 
     // Don't put manufacturer info in
     // - if external c3d is converted to mdf and back
@@ -1054,7 +1054,7 @@ namespace Open3DMotion
 		mdf_options.FromTree( writeoptions );
 
 		// create machine-specific writer
-		std::auto_ptr<MDFDescriptor> descriptor( mdf_options.NewDescriptor() );
+		std::unique_ptr<MDFDescriptor> descriptor( mdf_options.NewDescriptor() );
 
 		// parse to trial structure
 		TrialMDF trial;

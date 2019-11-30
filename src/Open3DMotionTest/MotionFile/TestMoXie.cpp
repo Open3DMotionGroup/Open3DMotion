@@ -110,10 +110,10 @@ void TestMoXie::testReWriteMoXie()
 	try
 	{
 		// read
-		auto_ptr<TreeValue> file( handler.Read("Open3DMotionTest/Data/MoXie/nwalk02.mox") );
+		unique_ptr<TreeValue> file( handler.Read("Open3DMotionTest/Data/MoXie/nwalk02.mox") );
 		
 		// write MoXie
-		auto_ptr<TreeValue> options( FileFormatOptionsMoXie().ToTree() );
+		unique_ptr<TreeValue> options( FileFormatOptionsMoXie().ToTree() );
 		handler.Write("Open3DMotionTest/Data/Temp/nwalk02_rewrite.mox", file.get(), options.get());
 	}
 	catch(const MotionFileException& error)
@@ -140,8 +140,8 @@ void TestMoXie::testTrialAttributes()
 		trial.UserInput.TrialCondition = "Not on your Nelly";
 
 		// save
-		auto_ptr<TreeValue> trial_tree( trial.ToTree() );
-		auto_ptr<TreeValue> moxie_options( FileFormatOptionsMoXie().ToTree() );
+		unique_ptr<TreeValue> trial_tree( trial.ToTree() );
+		unique_ptr<TreeValue> moxie_options( FileFormatOptionsMoXie().ToTree() );
 		handler.Write("Open3DMotionTest/Data/Temp/trialattributes.mox", trial_tree.get(), moxie_options.get());
 
 		// ... test data will now go out of scope & be destroyed
@@ -154,7 +154,7 @@ void TestMoXie::testTrialAttributes()
 	try
 	{
 		// load results
-		auto_ptr<TreeValue> result_tree (handler.Read("Open3DMotionTest/Data/Temp/trialattributes.mox"));
+		unique_ptr<TreeValue> result_tree (handler.Read("Open3DMotionTest/Data/Temp/trialattributes.mox"));
 
 		// retrieve fields
 		Trial result;
@@ -184,13 +184,13 @@ void TestMoXie::testForceConversion()
 	try
 	{
 		// load AMTI force data
-		auto_ptr<TreeValue> fileC3D( handler.Read("Open3DMotionTest/Data/C3D/sample10/TYPE-4.C3D") );
+		unique_ptr<TreeValue> fileC3D( handler.Read("Open3DMotionTest/Data/C3D/sample10/TYPE-4.C3D") );
 
 		// parse
 		trialC3D.FromTree( fileC3D.get() );
 
 		// re-write as MoXie
-		auto_ptr<TreeValue> moxie_options( FileFormatOptionsMoXie().ToTree() );
+		unique_ptr<TreeValue> moxie_options( FileFormatOptionsMoXie().ToTree() );
 		handler.Write("Open3DMotionTest/Data/Temp/rewrite_sample10_TYPE-4.mox", fileC3D.get(), moxie_options.get());
 	}
 	catch(const MotionFileException& error)
@@ -202,7 +202,7 @@ void TestMoXie::testForceConversion()
 	Trial trialMox;
 	try
 	{
-		auto_ptr<TreeValue> treeMox( handler.Read("Open3DMotionTest/Data/Temp/rewrite_sample10_TYPE-4.mox") );
+		unique_ptr<TreeValue> treeMox( handler.Read("Open3DMotionTest/Data/Temp/rewrite_sample10_TYPE-4.mox") );
 		trialMox.FromTree( treeMox.get() );
 	}
 	catch(const MotionFileException& error)
@@ -248,7 +248,7 @@ void TestMoXie::testNWalk02File(const char* filename)
 	Trial trial;
 	try
 	{
-		auto_ptr<TreeValue> tree( handler.Read(filename) );
+		unique_ptr<TreeValue> tree( handler.Read(filename) );
 		trial.FromTree(tree.get());
 	}
 	catch(const MotionFileException& error)
@@ -354,7 +354,7 @@ void TestMoXie::ComputeForce(TimeSequence& force, TimeSequence& point, const Tri
 	// compute force and centre-of-pressure in global coords
 	CPPUNIT_ASSERT(trial.Acq.ForcePlates.NumElements() >= 1);
 	const ForcePlate& fp = trial.Acq.ForcePlates[0];
-	std::auto_ptr<ForceCalculator> calculator( ForceCalculatorFactory().CreateCalculator(fp) );
+	std::unique_ptr<ForceCalculator> calculator( ForceCalculatorFactory().CreateCalculator(fp) );
 	CPPUNIT_ASSERT( calculator.get() != NULL);
 	std::vector<const TimeSequence*> analog_all;
 	trial.Acq.GetTSGroup(analog_all, TrialSectionAcq::TSGroupAnalog);

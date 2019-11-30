@@ -568,7 +568,7 @@ public:
 		BinMemFactoryDefault memfactory;
 		BSONReader reader(stream, memfactory);
 
-		std::auto_ptr<TreeList> lst(reader.ReadList());
+		std::unique_ptr<TreeList> lst(reader.ReadList());
 		CPPUNIT_ASSERT(lst.get() != NULL);
 		CPPUNIT_ASSERT_EQUAL(std::string("Food"), lst->ElementName());
 		CPPUNIT_ASSERT_EQUAL(size_t(2), lst->NumElements());

@@ -149,7 +149,7 @@ public:
 		size_t refcount0 = PythonTotalRefCount();
 		{
 			BinMemFactoryPython factory;
-			std::auto_ptr<MemoryHandler> mem( factory.Allocate(37) );
+			std::unique_ptr<MemoryHandler> mem( factory.Allocate(37) );
 			CPPUNIT_ASSERT(mem.get() != NULL);
 			CPPUNIT_ASSERT_EQUAL(size_t(37), mem->SizeBytes());
 			MemoryHandlerPython* mem_python = NamedClassCast<MemoryHandler, MemoryHandlerPython> ( mem.get() );

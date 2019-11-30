@@ -294,10 +294,10 @@ CPPUNIT_TEST_SUITE_REGISTRATION( TestMDF );
 void TestMDF::testAMTIForceCoPConsistent(const char* filename, size_t numplates, int calcoption) 
 {
 	// read
-	std::auto_ptr<Open3DMotion::TreeValue> trialcontents;
+	std::unique_ptr<Open3DMotion::TreeValue> trialcontents;
 	try
 	{
-		trialcontents = std::auto_ptr<Open3DMotion::TreeValue>( handler.Read(filename) );
+		trialcontents = std::unique_ptr<Open3DMotion::TreeValue>( handler.Read(filename) );
 	}
 	catch(const Open3DMotion::MotionFileException& error)
 	{
@@ -305,7 +305,7 @@ void TestMDF::testAMTIForceCoPConsistent(const char* filename, size_t numplates,
 	}
 
 	// build trial object
-	std::auto_ptr<Open3DMotion::Trial> trial( new Open3DMotion::Trial );
+	std::unique_ptr<Open3DMotion::Trial> trial( new Open3DMotion::Trial );
 	trial->FromTree(trialcontents.get());
 
 	// get details of all plates
@@ -462,10 +462,10 @@ void TestMDF::testReWriteADemo1(const Open3DMotion::FileFormatOptions& options, 
 	try
 	{
 		// read in
-		std::auto_ptr<Open3DMotion::TreeValue> trial_tree( handler.Read("Open3DMotionTest/Data/MDF/gait-bilateral-1997-Kistlerx1.mdf") );
+		std::unique_ptr<Open3DMotion::TreeValue> trial_tree( handler.Read("Open3DMotionTest/Data/MDF/gait-bilateral-1997-Kistlerx1.mdf") );
 				
 		// make writing options
-		std::auto_ptr<Open3DMotion::TreeValue> format_value( options.ToTree() );
+		std::unique_ptr<Open3DMotion::TreeValue> format_value( options.ToTree() );
 
 		// write
 		handler.Write(savename.c_str(), trial_tree.get(), format_value.get());
@@ -490,10 +490,10 @@ void TestMDF::testReWriteWalk4Descriptors(const Open3DMotion::FileFormatOptions&
 	try
 	{
 		// read in
-		std::auto_ptr<Open3DMotion::TreeValue> trial_tree( handler.Read("Open3DMotionTest/Data/MDF/gait-clusters-multicoda-Kistlerx2.mdf") );
+		std::unique_ptr<Open3DMotion::TreeValue> trial_tree( handler.Read("Open3DMotionTest/Data/MDF/gait-clusters-multicoda-Kistlerx2.mdf") );
 
 		// make writing options
-		std::auto_ptr<Open3DMotion::TreeValue> format_value( options.ToTree() );
+		std::unique_ptr<Open3DMotion::TreeValue> format_value( options.ToTree() );
 
 		// write
 		handler.Write(savename.c_str(), trial_tree.get(), format_value.get());
@@ -513,7 +513,7 @@ void TestMDF::testReadWheelMDF2()
 	try
 	{
 		// read in
-		std::auto_ptr<Open3DMotion::TreeValue> trial_tree( handler.Read("Open3DMotionTest/Data/MDF/Wheel.mdf") );
+		std::unique_ptr<Open3DMotion::TreeValue> trial_tree( handler.Read("Open3DMotionTest/Data/MDF/Wheel.mdf") );
 
 	}
 	catch(const Open3DMotion::MotionFileException& error)

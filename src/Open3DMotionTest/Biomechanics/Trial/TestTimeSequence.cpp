@@ -139,7 +139,7 @@ public:
 
 	void testToFromTree()
 	{
-		std::auto_ptr<TreeValue> tree;
+		std::unique_ptr<TreeValue> tree;
 
 		{
 			// sample data

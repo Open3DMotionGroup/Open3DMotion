@@ -164,7 +164,7 @@ void TestC3D::testReWriteSample08(const char* formatID, const char* processor, b
 	// open and re-write to specified format
 	try
 	{
-		std::auto_ptr<TreeValue> trialcontents( handler.Read("Open3DMotionTest/Data/C3D/sample08/EB015PI.c3d") );
+		std::unique_ptr<TreeValue> trialcontents( handler.Read("Open3DMotionTest/Data/C3D/sample08/EB015PI.c3d") );
 
 		FileFormatOptionsC3D c3doptions;
 		c3doptions.FormatID = formatID;

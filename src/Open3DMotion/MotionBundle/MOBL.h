@@ -60,7 +60,7 @@ namespace Open3DMotion
 		bool PositionReader(UInt32 doc_index_needed)  throw(MotionFileException);
 
 	protected:
-    std::auto_ptr<std::istream> is;
+    std::unique_ptr<std::istream> is;
 		MOBLReadOptions readoptions;
 		BSONInputStream* stream;
 		UInt32 num_docs_read;

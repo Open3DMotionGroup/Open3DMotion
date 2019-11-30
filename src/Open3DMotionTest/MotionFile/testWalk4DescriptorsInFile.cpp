@@ -15,10 +15,10 @@
 void testWalk4DescriptorsInFile(Open3DMotion::MotionFileHandler& handler, const char* filename, bool enforcestartoffset)
 {
 	// load file
-	std::auto_ptr<Open3DMotion::TreeValue> trialcontents;
+	std::unique_ptr<Open3DMotion::TreeValue> trialcontents;
 	try
 	{
-		trialcontents = std::auto_ptr<Open3DMotion::TreeValue>( handler.Read(filename) );
+		trialcontents = std::unique_ptr<Open3DMotion::TreeValue>( handler.Read(filename) );
 	}
 	catch(Open3DMotion::MotionFileException& error)
 	{
@@ -26,7 +26,7 @@ void testWalk4DescriptorsInFile(Open3DMotion::MotionFileHandler& handler, const 
 	}
 
 	// build trial object
-	std::auto_ptr<Open3DMotion::Trial> trial( new Open3DMotion::Trial );
+	std::unique_ptr<Open3DMotion::Trial> trial( new Open3DMotion::Trial );
 	trial->FromTree(trialcontents.get());
 	
 	// retrieve marker sequences

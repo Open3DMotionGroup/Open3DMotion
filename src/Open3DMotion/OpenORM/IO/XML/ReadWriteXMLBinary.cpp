@@ -79,7 +79,7 @@ namespace Open3DMotion
 		// Allocate memory object with wrapper
 		// Use of auto pointer means that wrapper will be deleted, but note that inner object is 
 		// unaffected
-		std::auto_ptr<MemoryHandler> binary_handler( reader.MemFactory().Allocate((size_t)decoded_length) );
+		std::unique_ptr<MemoryHandler> binary_handler( reader.MemFactory().Allocate((size_t)decoded_length) );
 
 		// copy
 		memcpy(binary_handler->Data(), &decoded_binary[0], (size_t)decoded_length);

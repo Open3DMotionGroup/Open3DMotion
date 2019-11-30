@@ -51,7 +51,7 @@ namespace Open3DMotion
 			return NULL;
 
 		// new list
-		std::auto_ptr<TreeList> newlist( new TreeList( xml_element_name.c_str() ) );
+		std::unique_ptr<TreeList> newlist( new TreeList( xml_element_name.c_str() ) );
 
 		// read all
 		for (child = element.first_child(); child; child = child.next_sibling())

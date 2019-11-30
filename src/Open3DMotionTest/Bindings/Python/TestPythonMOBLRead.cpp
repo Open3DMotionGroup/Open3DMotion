@@ -31,19 +31,19 @@ public:
 
 		MotionBundleHandler bundlehandler;
 		BinMemFactoryPython memfactory;
-		std::auto_ptr<MOBLFormatReader> formatreader( bundlehandler.Open("Open3DMotionTest/Data/MOBL/ReachingTaskExample-20111013.mobl") );
+		std::unique_ptr<MOBLFormatReader> formatreader( bundlehandler.Open("Open3DMotionTest/Data/MOBL/ReachingTaskExample-20111013.mobl") );
 		CPPUNIT_ASSERT(formatreader.get() != NULL);
 
 		{
 			// first trial
-			std::auto_ptr<TreeValue> tree( formatreader->ReadTrial(0, memfactory) );
+			std::unique_ptr<TreeValue> tree( formatreader->ReadTrial(0, memfactory) );
 
 			// look at as trial and check time sequence is of Python type
 			Trial trial;
 			trial.FromTree(tree.get());
 			CPPUNIT_ASSERT(trial.Acq.TimeSequences.NumElements() > 0);
 			const TimeSequence& ts = trial.Acq.TimeSequences[0];
-			std::auto_ptr<TreeValue> ts_tree( ts.ToTree() );
+			std::unique_ptr<TreeValue> ts_tree( ts.ToTree() );
 			const TreeCompound* ts_compound = TreeValueCast<TreeCompound> (ts_tree.get());
 			CPPUNIT_ASSERT(ts_compound != NULL);
 			const TreeBinary* bin = TreeValueCast<TreeBinary>(ts_compound->Get(MEMBER_NAME(RichBinary::Data)));

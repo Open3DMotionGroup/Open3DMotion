@@ -886,7 +886,7 @@ public:
 			// generate data and also calculate ground-truth for angles for comparison
 			Vector3 a(0.0);
 			Vector3 t(0.0);
-			std::auto_ptr<TimeSequence> ts_angle_truth( TSFactoryOccValue(3).New(tr, BinMemFactoryDefault()) );
+			std::unique_ptr<TimeSequence> ts_angle_truth( TSFactoryOccValue(3).New(tr, BinMemFactoryDefault()) );
 			TSOccVector3Iter iter_ts_angle_truth(*ts_angle_truth);
 			for (iframe = 0; iframe < (UInt32)tr.Frames; iframe++)
 			{

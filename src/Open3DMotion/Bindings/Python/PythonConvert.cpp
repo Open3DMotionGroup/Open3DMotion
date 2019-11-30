@@ -14,6 +14,7 @@
 #include "Open3DMotion/OpenORM/Leaves/TreeBinary.h"
 #include "Open3DMotion/OpenORM/Branches/TreeList.h"
 #include "Open3DMotion/OpenORM/Branches/TreeCompound.h"
+#include <memory>
 
 namespace Open3DMotion
 {
@@ -208,7 +209,7 @@ namespace Open3DMotion
 			if (py_list)
 			{
 				// it's a list
-				std::auto_ptr<TreeList> result_list(new TreeList(elementname));
+				std::unique_ptr<TreeList> result_list(new TreeList(elementname));
 				Py_ssize_t s = PyList_Size(py_list);
 				for (Py_ssize_t index = 0; index < s; index++)
 				{
@@ -224,7 +225,7 @@ namespace Open3DMotion
 			else
 			{
 				// it represents a compound object
-				std::auto_ptr<TreeCompound> result_compound(new TreeCompound);
+				std::unique_ptr<TreeCompound> result_compound(new TreeCompound);
 				PyObject* key = NULL;
 				PyObject* py_element = NULL;
 				Py_ssize_t pos = 0;

@@ -84,7 +84,7 @@ void TestCODAText::testCartWheelFile(const char* filename)
 	try
 	{
 		// read
-		std::auto_ptr<Open3DMotion::TreeValue> tree ( handler.Read(filename) );
+		std::unique_ptr<Open3DMotion::TreeValue> tree ( handler.Read(filename) );
 
 		// parse as trial object
 		trial.FromTree(tree.get());
@@ -168,10 +168,10 @@ void TestCODAText::testReWriteCartWheel()
 	try
 	{
 		// read in
-		std::auto_ptr<Open3DMotion::TreeValue> tree( handler.Read("Open3DMotionTest/Data/CODAText/CartWheel.txt") );
+		std::unique_ptr<Open3DMotion::TreeValue> tree( handler.Read("Open3DMotionTest/Data/CODAText/CartWheel.txt") );
 
 		// write as text
-		std::auto_ptr<Open3DMotion::TreeValue> options( Open3DMotion::FileFormatOptionsCODAText().ToTree() );
+		std::unique_ptr<Open3DMotion::TreeValue> options( Open3DMotion::FileFormatOptionsCODAText().ToTree() );
 		handler.Write("Open3DMotionTest/Data/Temp/CartWheel_rewrite_CODAtext.txt", tree.get(), options.get());
 	}
 	catch(Open3DMotion::MotionFileException& error)

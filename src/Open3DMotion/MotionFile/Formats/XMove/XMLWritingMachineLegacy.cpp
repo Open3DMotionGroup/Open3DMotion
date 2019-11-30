@@ -37,8 +37,8 @@ namespace Open3DMotion
 		const char* type_attribute = xml_class->TypeAttribute();
 
 		// override for known structure names
-		std::auto_ptr<TreeCompound> remapped_group;
-		std::auto_ptr<TreeString> remapped_group_name;
+		std::unique_ptr<TreeCompound> remapped_group;
+		std::unique_ptr<TreeString> remapped_group_name;
 		MapArrayCompound<EventNameID> remapped_event_ids(EventGroup::EventMapElementName);
 		if (type_attribute == NULL && value->ClassNameMatches(TreeCompound::classname))
 		{
@@ -59,7 +59,7 @@ namespace Open3DMotion
 					remapped_event_ids.FromTree( id_list );
 
 					// re-assign the value pointer to a mutable copy of the event group
-					remapped_group = std::auto_ptr<TreeCompound> ( new TreeCompound );
+					remapped_group = std::unique_ptr<TreeCompound> ( new TreeCompound );
 					remapped_group->CopyFrom( value );
 					value = remapped_group.get();
 
@@ -71,7 +71,7 @@ namespace Open3DMotion
 					if (name)
 					{
 						// copy name
-						remapped_group_name = std::auto_ptr<TreeString>( new TreeString(*name) );
+						remapped_group_name = std::unique_ptr<TreeString>( new TreeString(*name) );
 						
 						// remove from map
 						remapped_group->Remove( MEMBER_NAME(EventGroup::Name) );
@@ -100,7 +100,7 @@ namespace Open3DMotion
 		for (size_t iname = 0; iname < remapped_event_ids.NumElements(); iname++)
 		{
 			const EventNameID& name_id = remapped_event_ids[iname];
-			std::auto_ptr<TreeCompound> remapped_name_id( new TreeCompound );
+			std::unique_ptr<TreeCompound> remapped_name_id( new TreeCompound );
 			remapped_name_id->Set("Number", new TreeInt32(name_id.ID));
 			remapped_name_id->Set("Name", new TreeString(name_id.Name));
 			WriteValue("Flag", remapped_name_id.get());

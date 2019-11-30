@@ -29,7 +29,7 @@ namespace Open3DMotion
     
   protected:
     std::ostream& output;
-		std::auto_ptr<z_stream_s> strm;    
+		std::unique_ptr<z_stream_s> strm;    
 		std::vector<UInt8> output_buffer;
 	};
   

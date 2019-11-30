@@ -164,7 +164,7 @@ namespace Open3DMotion
 			throw MotionFileException(MotionFileException::formaterror, "invalid trial index");
 
 		// auto ptr so it will get released on exception thrown
-		std::auto_ptr<TreeCompound> MOBLresult( new TreeCompound );
+		std::unique_ptr<TreeCompound> MOBLresult( new TreeCompound );
 
 		// read
 		try
