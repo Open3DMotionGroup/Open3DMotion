@@ -411,7 +411,7 @@ namespace Open3DMotion
 			if (name.empty())
       {
         std::ostringstream sname;
-        sname << "Marker" << (i+1) << std::ends;
+        sname << "Marker" << (i+1);
         name = sname.str();
 			}
 
@@ -485,7 +485,7 @@ namespace Open3DMotion
       else
       {
         std::ostringstream sname;
-        sname << "EMG" << (i+1) << std::ends;
+        sname << "EMG" << (i+1);
         name = sname.str();
       }
 
@@ -577,7 +577,7 @@ namespace Open3DMotion
             // TODO: construct name according to force plate type
             //       (Fx, Mx, etc)
             std::ostringstream sname;
-            sname << "Force" << (index_file_force+1) << std::ends;
+            sname << "Force" << (index_file_force+1);
 						name = sname.str();
           }
 
@@ -1632,7 +1632,7 @@ namespace Open3DMotion
 			for (i = emgindex.size(); i < num_emg; i++)
 			{
 				std::ostringstream unusedname;
-				unusedname << "NotUsed" << (i+1) << std::ends;
+				unusedname << "NotUsed" << (i+1);
 				EncodeMDFString(os, unusedname.str(), true);
 			}
 
