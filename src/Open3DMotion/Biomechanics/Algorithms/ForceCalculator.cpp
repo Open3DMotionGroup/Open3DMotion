@@ -132,6 +132,11 @@ namespace Open3DMotion
 		TSFactoryOccValue(3).Allocate(point, tr, memfactory);
 		TSFactoryOccValue(3).Allocate(freemoment, tr, memfactory);
 
+		// specify units
+		force.Units = "N";
+		point.Units = "mm";
+		freemoment.Units = "Nmm";
+
 		// per-frame buffers
 		std::vector<double> buffer_rawanalog;
 		std::vector<double> buffer_calanalog;
