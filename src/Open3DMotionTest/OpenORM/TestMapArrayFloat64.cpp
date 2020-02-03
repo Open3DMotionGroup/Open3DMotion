@@ -39,6 +39,7 @@ public:
 	CPPUNIT_TEST( testAddClear );
 	CPPUNIT_TEST( testToTree );
 	CPPUNIT_TEST( testFromTree );
+	CPPUNIT_TEST( testFromTree_SingleItem );
 	CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -141,6 +142,21 @@ public:
 			}
 		}
 	}
+
+	void testFromTree_SingleItem()
+	{
+		TreeCompound t;
+		TreeCompound* sub_t = new TreeCompound;
+		t.Set("SomeNumber", new TreeFloat64(-253.5));
+
+		MapArrayFloat64 result("SomeNumber");
+		result.FromTree(&t);
+
+		CPPUNIT_ASSERT_EQUAL(size_t(1), result.NumElements());
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(-253.5, result[0], 1E-12);
+	}
+
+
 
 };
 

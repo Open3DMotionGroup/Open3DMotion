@@ -10,6 +10,7 @@
 #include "Open3DMotion/OpenORM/Mappings/MapInt32.h"
 #include "Open3DMotion/OpenORM/Mappings/MapFloat64.h"
 #include "Open3DMotion/OpenORM/Mappings/MapString.h"
+#include "Open3DMotion/OpenORM/Mappings/MapArraySimpleValue.h"
 #include <cppunit/extensions/HelperMacros.h>
 
 using namespace Open3DMotion;
@@ -50,6 +51,17 @@ class TestMapCompound  : public CppUnit::TestCase
 		}
 	};
 
+	class OneLayerWithSimpleList : public MapCompound
+	{
+	public:
+		OneLayerWithSimpleList() :
+			Beans("Variety")
+		{
+			REGISTER_MEMBER(Beans);
+		}
+
+		MapArraySimpleValue<TreeString, std::string> Beans;
+	};
 
 public:
 	CPPUNIT_TEST_SUITE( TestMapCompound );
@@ -58,6 +70,8 @@ public:
 	CPPUNIT_TEST( testFromTreeEmpty );
 	CPPUNIT_TEST( testFromTreeTwoLayers );
 	CPPUNIT_TEST( testMemberName );
+	CPPUNIT_TEST( testFromTreeSimpleList_SingleItem );
+	CPPUNIT_TEST( testFromTreeSimpleList_MultiItem );
 	CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -148,6 +162,39 @@ public:
 		const char* test2 = MEMBER_NAME(TestMapCompound::OneLayer::ABanana);
 		CPPUNIT_ASSERT_EQUAL(std::string("ABanana"), std::string(test2));
 	}
+
+	void testFromTreeSimpleList_MultiItem()
+	{
+		// Check receives array of simple items into simple list member of compound class
+
+		TreeCompound t;
+		TreeList* sub_t = new TreeList("Variety");
+		t.Set("Beans", sub_t);
+		sub_t->Add(new TreeString("Cool"));
+		sub_t->Add(new TreeString("Baked"));
+
+		OneLayerWithSimpleList m;
+		m.FromTree(&t);
+		CPPUNIT_ASSERT_EQUAL(size_t(2), m.Beans.NumElements());
+		CPPUNIT_ASSERT_EQUAL(std::string("Cool"), m.Beans[0]);
+		CPPUNIT_ASSERT_EQUAL(std::string("Baked"), m.Beans[1]);
+	}
+
+	void testFromTreeSimpleList_SingleItem()
+	{
+		// Should permit a single item expressed as compound
+
+		TreeCompound t;
+		TreeCompound* sub_t = new TreeCompound;
+		t.Set("Beans", sub_t);
+		sub_t->Set("Variety", new TreeString("Cool"));
+
+		OneLayerWithSimpleList m;
+		m.FromTree(&t);
+		CPPUNIT_ASSERT_EQUAL(size_t(1), m.Beans.NumElements());
+		CPPUNIT_ASSERT_EQUAL(std::string("Cool"), m.Beans[0]);
+	}
+
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION( TestMapCompound );

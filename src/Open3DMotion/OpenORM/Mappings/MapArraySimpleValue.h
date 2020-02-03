@@ -10,6 +10,7 @@
 
 #include "Open3DMotion/OpenORM/Mappings/MapElement.h"
 #include "Open3DMotion/OpenORM/Branches/TreeList.h"
+#include "Open3DMotion/OpenORM/Branches/TreeCompound.h"
 #include "Open3DMotion/OpenORM/Leaves/TreeSimpleValue.h"
 
 namespace Open3DMotion
@@ -71,6 +72,19 @@ namespace Open3DMotion
 						{
 							elementarray.push_back(src_element->Value());
 						}
+					}
+				}
+			}
+			else
+			{
+				// can allow single compound class of one element
+				const TreeCompound* src = TreeValueCast<TreeCompound>(v);
+				if (src != NULL)
+				{
+					const TreeValueClass* src_element = src->GetType<TreeValueClass>(elementname.c_str());
+					if (src_element != NULL)
+					{
+						elementarray.push_back(src_element->Value());
 					}
 				}
 			}
