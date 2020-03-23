@@ -1,6 +1,6 @@
 /*--
   Open3DMotion 
-  Copyright (c) 2004-2012.
+  Copyright (c) 2004-2020.
   All rights reserved.
   See LICENSE.txt for more information.
 --*/
@@ -142,12 +142,22 @@ namespace Open3DMotion
 		// find end frame
     size_t frame_end = frame_start+min_frames-1;
 
+		// check data lengths in case sequence is too short for offset to be used
+		for (size_t j = 0; j < ninputs; j++)
+		{
+			if (analog_iter[j].NumFrames() < (min_frames + 1))
+			{
+				// sequence is too short to allow offset to be used
+				// but reset iterators and leave offsets at zero so data can still
+				// be used without offset
+				Begin();
+				return false;
+			}
+		}
+
 		// recalculate offset from data
     for (size_t j = 0; j < ninputs; j++)
     {
-      if (frame_end >= analog_iter[0].NumFrames())
-          return false;
-
       double sum(0.0);
 			double sum2(0.0);
 			TSScalarConstIter& iter_input = analog_iter[j];
