@@ -42,8 +42,8 @@ namespace Open3DMotion
 		// copy events
 		size_t num_events = events.NumEvents();
 		std::vector<BinaryFieldSpec> layout;
-		layout.push_back(BinaryFieldSpec::FromType<Int32>(EventGroup::IDFieldName, 1));
 		layout.push_back(BinaryFieldSpec::FromType<double>(EventGroup::TimeFieldName, 1));
+		layout.push_back(BinaryFieldSpec::FromType<Int32>(EventGroup::IDFieldName, 1));
 		Allocate(layout, num_events, memfactory);
 		for (EventGroupIter i(*this); i.HasFrame(); i.Next())
 		{
