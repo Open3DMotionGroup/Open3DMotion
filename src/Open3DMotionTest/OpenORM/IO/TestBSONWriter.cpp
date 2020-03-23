@@ -926,7 +926,7 @@ public:
 		CPPUNIT_ASSERT_EQUAL(0, output.get());
 		CPPUNIT_ASSERT_EQUAL(0, output.get());
 		CPPUNIT_ASSERT_EQUAL(0, output.get());
-		CPPUNIT_ASSERT_EQUAL(0, output.get());		// binary sub-type
+		CPPUNIT_ASSERT_EQUAL(2, output.get());		// binary sub-type is two in MOBL files (the old indicator for binary)
 		CPPUNIT_ASSERT_EQUAL(7, output.get());		// internal data size descriptor
 		CPPUNIT_ASSERT_EQUAL(0, output.get());
 		CPPUNIT_ASSERT_EQUAL(0, output.get());

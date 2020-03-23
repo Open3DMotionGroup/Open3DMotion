@@ -13,7 +13,7 @@ namespace Open3DMotion
 			const TreeBinary& bin = static_cast<const TreeBinary&>(value);
 			UInt32 internal_data_size = (UInt32)bin.SizeBytes();	// the actual data size we have
 			UInt32 bson_data_size = 4UL + internal_data_size;			// additional 4-byte data size descriptor as required
-			UInt8 sub_type = 0;
+			UInt8 sub_type = 0x02;
 			WriteBinary(&bson_type, 1);
 			WriteCString(name);
 			WriteBinary(&bson_data_size, 4);
