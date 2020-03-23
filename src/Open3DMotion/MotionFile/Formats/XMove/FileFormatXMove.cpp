@@ -228,25 +228,46 @@ namespace Open3DMotion
 	{
 		if (section)
 		{
-			// get items
-			const TreeList* ts_list_input = section->GetType<TreeList>(listname);
-			if (ts_list_input)
-			{					
-				// convert
-				TreeList* ts_list_output = ts_list_input->NewBlank();
-				for (size_t iseq = 0; iseq < ts_list_input->NumElements(); iseq++)
+			// output list to build
+			std::auto_ptr<TreeList> ts_list_output;
+
+			// might be single object container or list
+			const TreeCompound* ts_object_input = section->GetType<TreeCompound>(listname);
+			if (ts_object_input && ts_object_input->NumElements() == 1)
+			{
+				// is a single object container
+				ts_list_output.reset(new TreeList(ts_object_input->Node(0)->Name().c_str()));
+				TreeValue* ts_output = RichBinaryConvertFloat32To64(ts_object_input->Node(0)->Value(), structurename, memfactory);
+				if (ts_output != NULL)
 				{
-					const TreeValue* ts_input = ts_list_input->ElementArray()[iseq];
-					TreeValue* ts_output = RichBinaryConvertFloat32To64(ts_input, structurename, memfactory);
-					if (ts_output != NULL)
+					ts_list_output->Add(ts_output);
+				}
+			}
+			else
+			{
+				// is a list - get items
+				const TreeList* ts_list_input = section->GetType<TreeList>(listname);
+				if (ts_list_input)
+				{
+					// convert
+					ts_list_output.reset(ts_list_input->NewBlank());
+					for (size_t iseq = 0; iseq < ts_list_input->NumElements(); iseq++)
 					{
-						ts_list_output->Add( ts_output );
+						const TreeValue* ts_input = ts_list_input->ElementArray()[iseq];
+						TreeValue* ts_output = RichBinaryConvertFloat32To64(ts_input, structurename, memfactory);
+						if (ts_output != NULL)
+						{
+							ts_list_output->Add(ts_output);
+						}
 					}
 				}
-		
+			}
+
+			if (ts_list_output.get())
+			{
 				// re-attach
 				section->Remove(listname);
-				section->Set(listname, ts_list_output);
+				section->Set(listname, ts_list_output.release());
 			}
 		}
 	}
@@ -255,25 +276,46 @@ namespace Open3DMotion
 	{
 		if (section)
 		{
-			// get items
-			const TreeList* ts_list_input = section->GetType<TreeList>(listname);
-			if (ts_list_input)
+			// output list to build
+			std::auto_ptr<TreeList> ts_list_output;
+			
+			// might be single object container or list
+			const TreeCompound* ts_object_input = section->GetType<TreeCompound>(listname);
+			if (ts_object_input && ts_object_input->NumElements() == 1)
 			{
-				// convert
-				TreeList* ts_list_output = ts_list_input->NewBlank();
-				for (size_t iseq = 0; iseq < ts_list_input->NumElements(); iseq++)
+				// is a single object container
+				ts_list_output.reset(new TreeList(ts_object_input->Node(0)->Name().c_str()));
+				TreeValue* ts_output = RichBinaryConvertFloat64To32(ts_object_input->Node(0)->Value(), structurename, memfactory);
+				if (ts_output != NULL)
 				{
-					const TreeValue* ts_input = ts_list_input->ElementArray()[iseq];
-					TreeValue* ts_output = RichBinaryConvertFloat64To32(ts_input, structurename, memfactory);
-					if (ts_output != NULL)
+					ts_list_output->Add(ts_output);
+				}
+			}
+			else
+			{
+				// is a list - get items
+				const TreeList* ts_list_input = section->GetType<TreeList>(listname);
+				if (ts_list_input)
+				{
+					// convert
+					ts_list_output.reset(ts_list_input->NewBlank());
+					for (size_t iseq = 0; iseq < ts_list_input->NumElements(); iseq++)
 					{
-						ts_list_output->Add( ts_output );
+						const TreeValue* ts_input = ts_list_input->ElementArray()[iseq];
+						TreeValue* ts_output = RichBinaryConvertFloat64To32(ts_input, structurename, memfactory);
+						if (ts_output != NULL)
+						{
+							ts_list_output->Add(ts_output);
+						}
 					}
 				}
-		
+			}
+
+			if (ts_list_output.get())
+			{
 				// re-attach
 				section->Remove(listname);
-				section->Set(listname, ts_list_output);
+				section->Set(listname, ts_list_output.release());
 			}
 		}
 	}

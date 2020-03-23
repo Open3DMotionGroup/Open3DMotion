@@ -72,9 +72,13 @@ namespace Open3DMotion
 		std::vector<UInt8> decoded_binary(textlength);
 
 		// decode
-		base64_decodestate state;
-		base64_init_decodestate(&state);
-		int decoded_length = base64_decode_block(text, textlength, (char*) &decoded_binary[0], &state);
+		int decoded_length(0);
+		if (textlength)
+		{
+			base64_decodestate state;
+			base64_init_decodestate(&state);
+			decoded_length = base64_decode_block(text, textlength, (char*)&decoded_binary[0], &state);
+		}
 		
 		// Allocate memory object with wrapper
 		// Use of auto pointer means that wrapper will be deleted, but note that inner object is 
@@ -82,7 +86,10 @@ namespace Open3DMotion
 		std::unique_ptr<MemoryHandler> binary_handler( reader.MemFactory().Allocate((size_t)decoded_length) );
 
 		// copy
-		memcpy(binary_handler->Data(), &decoded_binary[0], (size_t)decoded_length);
+		if (decoded_length)
+		{
+			memcpy(binary_handler->Data(), &decoded_binary[0], (size_t)decoded_length);
+		}
 		
 		// done
 		return new TreeBinary(binary_handler.release());

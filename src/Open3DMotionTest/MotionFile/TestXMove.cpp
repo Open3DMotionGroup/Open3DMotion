@@ -26,6 +26,7 @@ public:
 	CPPUNIT_TEST_SUITE( TestXMove );
 	CPPUNIT_TEST( testReadWriteEmptyXMove );
 	CPPUNIT_TEST( testReadWriteSimpleXMove );
+	CPPUNIT_TEST( testReadWriteEmptyEventGroup );
 	CPPUNIT_TEST( testADemo1Open3DMotion );
 	CPPUNIT_TEST( testADemo1ODINLegacy );
 	CPPUNIT_TEST( testODINLegacyReWrite );
@@ -130,6 +131,70 @@ public:
 		delete read_simple_tree;
 		delete read_simple_trial;
 	}
+
+	void testReadWriteEmptyEventGroup()
+	{
+		try
+		{
+			// Names of events
+			Open3DMotion::EventArray events;
+			events.SetIDName(1, "EventOne");
+			events.SetIDName(2, "EventTwo");
+
+			// An event group with names established but no actual events
+			Open3DMotion::EventGroup eg;
+			eg.Name = "AnEmptyThing";
+			eg.SetEvents(events, Open3DMotion::BinMemFactoryDefault());
+
+			// Set the event group
+			Open3DMotion::Trial trial;
+			trial.UserInput.Set();
+			trial.UserInput.EventGroups.Add(eg);
+
+			// convert to tree
+			std::unique_ptr<Open3DMotion::TreeValue> tree(trial.ToTree());
+
+			// read/write options
+			Open3DMotion::FileFormatOptionsXMove options;
+			std::unique_ptr<Open3DMotion::TreeValue> options_tree(options.ToTree());
+
+			// write it
+			handler.Write("Open3DMotionTest/Data/Temp/testReadWriteEmptyEventGroup.xml", tree.get(), options_tree.get());
+		}
+		catch (const Open3DMotion::MotionFileException & error)
+		{
+			CPPUNIT_FAIL(error.message);
+		}
+
+		try
+		{
+			// read
+			std::unique_ptr<Open3DMotion::TreeValue> tree(handler.Read("Open3DMotionTest/Data/Temp/testReadWriteEmptyEventGroup.xml"));
+
+			// parse
+			std::unique_ptr<Open3DMotion::Trial> trial(new Open3DMotion::Trial);
+			trial->FromTree(tree.get());
+
+			// should have one empty event group
+			CPPUNIT_ASSERT_EQUAL(true, trial->UserInput.IsSet());
+			CPPUNIT_ASSERT_EQUAL(size_t(1), trial->UserInput.EventGroups.NumElements());
+			CPPUNIT_ASSERT_EQUAL(std::string("AnEmptyThing"), trial->UserInput.EventGroups[0].Name.Value());
+			CPPUNIT_ASSERT_EQUAL(size_t(0), trial->UserInput.EventGroups[0].DataSizeBytes());
+			
+			// but event names should be preserved
+			Open3DMotion::EventArray events;
+			trial->UserInput.EventGroups[0].GetEvents(events);
+			CPPUNIT_ASSERT_EQUAL(size_t(2), events.NameMap().size());
+			CPPUNIT_ASSERT_EQUAL(std::string("EventOne"), events.NameMap().at(1));
+			CPPUNIT_ASSERT_EQUAL(std::string("EventTwo"), events.NameMap().at(2));
+		}
+		catch (const Open3DMotion::MotionFileException & error)
+		{
+			CPPUNIT_FAIL(error.message);
+		}
+
+	}
+
 
 	void testADemo1Open3DMotion()
 	{
