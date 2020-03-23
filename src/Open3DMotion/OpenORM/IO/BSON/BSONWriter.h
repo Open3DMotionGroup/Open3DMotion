@@ -47,7 +47,7 @@ namespace Open3DMotion
 		/** Evaluate size of BSON representation of element if supported
 			  @param value value to evaluate 
 				@return size in bytes which WriteElement will use or 0 if not supported */
-		UInt32 SizeElement(const std::string& name, const TreeValue& value);
+		virtual UInt32 SizeElement(const std::string& name, const TreeValue& value);
 
 		/** Helper to evaluate the storage required for array indices in a BSON array of specified size,
 		    assuming element name as first item */
