@@ -11,6 +11,7 @@
 #include "Open3DMotion/Biomechanics/Trial/TimeSequence.h"
 #include "Open3DMotion/Biomechanics/Trial/EventGroup.h"
 #include "Open3DMotion/Biomechanics/Trial/ForcePlate.h"
+#include "Open3DMotion/Biomechanics/Trial/Pointer.h"
 
 namespace Open3DMotion
 {
@@ -263,6 +264,7 @@ namespace Open3DMotion
 			REGISTER_MEMBER(RepLabel);
 			REGISTER_MEMBER(TrialCondition);
 			REGISTER_MEMBER(Subject);
+			REGISTER_MEMBER(Pointer);
 		}
 
 	public:
@@ -270,6 +272,7 @@ namespace Open3DMotion
 		MapOptionalString RepLabel;
 		MapOptionalString TrialCondition;
 		MapOptional<TrialSubject> Subject;
+		MapOptional<Pointer> Pointer;
 	};
 
 	class FileFormatInformation : public MapCompound

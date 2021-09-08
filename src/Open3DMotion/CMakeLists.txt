@@ -1,6 +1,6 @@
 #
 # Open3DMotion
-# Copyright (c) 2004-2018.
+# Copyright (c) 2004-2021.
 # All rights reserved.
 # See LICENSE.txt for details.
 #
@@ -16,7 +16,7 @@ file(GLOB_RECURSE Open3DMotion_CPP
   MotionBundle/*.cpp
   MotionFile/*.cpp)
 
-file(GLOB_RECURSE Open3DMotion_H 
+file(GLOB_RECURSE Open3DMotion_H
   OpenORM/*.h
   Maths/*.h
   Biomechanics/*.h
