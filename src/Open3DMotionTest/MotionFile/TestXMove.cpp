@@ -243,9 +243,10 @@ public:
 			t.Frames = 4;
 			t.Start = 0.0;
 			Open3DMotion::BinMemFactoryDefault memfactory;
-			Open3DMotion::TimeSequence* ts = Open3DMotion::TSFactoryOccValue(3).New(t, memfactory);
+			Open3DMotion::TimeSequence* tsA = Open3DMotion::TSFactoryOccValue(3).New(t, memfactory);
+			Open3DMotion::TimeSequence* tsB = Open3DMotion::TSFactoryValue(1).New(t, memfactory);
 
-			Open3DMotion::TSOccVector3Iter iter(*ts);
+			Open3DMotion::TSOccVector3Iter iter(*tsA);
 			iter.Value()[0] = 1.1;
 			iter.Value()[1] = 2.2;
 			iter.Value()[2] = 3.3;
@@ -267,7 +268,18 @@ public:
 			iter.Occluded() = 0;
 			iter.Next();
 
-			simple_trial.Acq.TimeSequences.Add(*ts);
+			Open3DMotion::TSScalarIter iterB(*tsB);
+			iterB.Value() = 1.1;
+			iterB.Next();
+			iterB.Value() = 2.2;
+			iterB.Next();
+			iterB.Value() = 3.3;
+			iterB.Next();
+			iterB.Value() = 4.4;
+			iterB.Next();
+
+			simple_trial.Acq.TimeSequences.Add(*tsA);
+			simple_trial.Acq.TimeSequences.Add(*tsB);
 
 			// Names of events
 			Open3DMotion::EventArray events;
@@ -302,7 +314,8 @@ public:
 				CPPUNIT_FAIL(error.message);
 			}
 
-			delete ts;
+			delete tsA;
+			delete tsB;
 			delete simple_trial_tree;
 			delete options_tree;
 		}
@@ -345,6 +358,30 @@ public:
 		CPPUNIT_ASSERT_EQUAL(std::string("-2.20000000"), std::string(f.attribute("y").value()));
 		CPPUNIT_ASSERT_EQUAL(std::string("-3.30000000"), std::string(f.attribute("z").value()));
 		CPPUNIT_ASSERT_EQUAL(std::string("0"), std::string(f.attribute("o").value()));
+
+		CPPUNIT_ASSERT(f.next_sibling() == false);
+
+		ts_node = ts_node.next_sibling();
+		CPPUNIT_ASSERT(ts_node);
+
+		dataext_node = ts_node.child("DataExt");
+		CPPUNIT_ASSERT(dataext_node);
+
+		f = dataext_node.first_child();
+		CPPUNIT_ASSERT_EQUAL(std::string("f"), std::string(f.name()));
+		CPPUNIT_ASSERT_EQUAL(std::string("1.10000000"), std::string(f.attribute("x").value()));
+
+		f = f.next_sibling();
+		CPPUNIT_ASSERT_EQUAL(std::string("f"), std::string(f.name()));
+		CPPUNIT_ASSERT_EQUAL(std::string("2.20000000"), std::string(f.attribute("x").value()));
+
+		f = f.next_sibling();
+		CPPUNIT_ASSERT_EQUAL(std::string("f"), std::string(f.name()));
+		CPPUNIT_ASSERT_EQUAL(std::string("3.30000000"), std::string(f.attribute("x").value()));
+
+		f = f.next_sibling();
+		CPPUNIT_ASSERT_EQUAL(std::string("f"), std::string(f.name()));
+		CPPUNIT_ASSERT_EQUAL(std::string("4.40000000"), std::string(f.attribute("x").value()));
 
 		CPPUNIT_ASSERT(f.next_sibling() == false);
 

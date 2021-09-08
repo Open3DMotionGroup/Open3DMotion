@@ -64,7 +64,7 @@ namespace Open3DMotion
 					{
 						for (TSScalarConstIter iter(ts); iter.HasFrame(); iter.Next())
 						{
-							snprintf(buffer, sizeof(buffer), "<f x=%.08f />\n", iter.Value());
+							snprintf(buffer, sizeof(buffer), "<f x=\"%.08f\"/>\n", iter.Value());
 							os << buffer;
 						}
 					}
