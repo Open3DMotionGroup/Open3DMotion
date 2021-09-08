@@ -1,6 +1,6 @@
 /*--
   Open3DMotion 
-  Copyright (c) 2004-2012.
+  Copyright (c) 2004-2021.
   All rights reserved.
   See LICENSE.txt for more information.
 --*/
@@ -13,6 +13,7 @@
 #include "Open3DMotion/OpenOrm/Mappings/RichBinary/BinMemFactoryDefault.h"
 #include "testADemo1File.h"
 #include <cppunit/extensions/HelperMacros.h>
+#include <pugixml.hpp>
 
 /* Summary
    Unit test fixture for XMove (XML) conversion to/from tree.
@@ -30,6 +31,7 @@ public:
 	CPPUNIT_TEST( testADemo1Open3DMotion );
 	CPPUNIT_TEST( testADemo1ODINLegacy );
 	CPPUNIT_TEST( testODINLegacyReWrite );
+	CPPUNIT_TEST( testWriteExtended );
 	CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -229,6 +231,145 @@ public:
 		{
 			CPPUNIT_FAIL(error.message);
 		}	
+	}
+
+	void testWriteExtended()
+	{
+		{
+			Open3DMotion::Trial simple_trial;
+
+			Open3DMotion::TimeRange t;
+			t.Rate = 200.0;
+			t.Frames = 4;
+			t.Start = 0.0;
+			Open3DMotion::BinMemFactoryDefault memfactory;
+			Open3DMotion::TimeSequence* ts = Open3DMotion::TSFactoryOccValue(3).New(t, memfactory);
+
+			Open3DMotion::TSOccVector3Iter iter(*ts);
+			iter.Value()[0] = 1.1;
+			iter.Value()[1] = 2.2;
+			iter.Value()[2] = 3.3;
+			iter.Occluded() = 1;
+			iter.Next();
+			iter.Value()[0] = 4.1;
+			iter.Value()[1] = 5.2;
+			iter.Value()[2] = 6.3;
+			iter.Occluded() = 0;
+			iter.Next();
+			iter.Value()[0] = 7.7;
+			iter.Value()[1] = 8.8;
+			iter.Value()[2] = 9.9;
+			iter.Occluded() = 1;
+			iter.Next();
+			iter.Value()[0] = -1.1;
+			iter.Value()[1] = -2.2;
+			iter.Value()[2] = -3.3;
+			iter.Occluded() = 0;
+			iter.Next();
+
+			simple_trial.Acq.TimeSequences.Add(*ts);
+
+			// Names of events
+			Open3DMotion::EventArray events;
+			events.SetIDName(1, "EventOne");
+			events.SetIDName(2, "EventTwo");
+			events.AddEvent(8.2, 2);
+			events.AddEvent(9.3, 1);
+			events.AddEvent(9.9501, 2);
+
+			Open3DMotion::EventGroup eg;
+			eg.Name = "SomeEvents";
+			eg.SetEvents(events, Open3DMotion::BinMemFactoryDefault());
+
+			simple_trial.UserInput.Set();
+			simple_trial.UserInput.EventGroups.Add(eg);
+
+			Open3DMotion::FileFormatOptionsXMove options;
+			options.ConvertBinaryFloat32 = false;
+			options.LegacyCompoundNames = false;
+			options.Extended = true;
+
+			Open3DMotion::TreeValue* simple_trial_tree = simple_trial.ToTree();
+			Open3DMotion::TreeValue* options_tree = options.ToTree();
+
+			try
+			{
+				// write
+				handler.Write("Open3DMotionTest/Data/Temp/testWriteExtendedXMove.xml", simple_trial_tree, options_tree);
+			}
+			catch (const Open3DMotion::MotionFileException & error)
+			{
+				CPPUNIT_FAIL(error.message);
+			}
+
+			delete ts;
+			delete simple_trial_tree;
+			delete options_tree;
+		}
+
+		// read it as a block
+		std::ifstream examplestream("Open3DMotionTest/Data/Temp/testWriteExtendedXMove.xml");
+		pugi::xml_document doc;
+		CPPUNIT_ASSERT( doc.load(examplestream) );
+
+		pugi::xml_node ts_node = doc.first_element_by_path("xmove/Acq/Sequences/Sequence");
+		CPPUNIT_ASSERT(ts_node);
+
+		pugi::xml_node dataext_node = ts_node.child("DataExt");
+		CPPUNIT_ASSERT(dataext_node);
+
+		pugi::xml_node f = dataext_node.first_child();
+		CPPUNIT_ASSERT_EQUAL(std::string("f"), std::string(f.name()));
+		CPPUNIT_ASSERT_EQUAL(std::string("1.10000000"), std::string(f.attribute("x").value()));
+		CPPUNIT_ASSERT_EQUAL(std::string("2.20000000"), std::string(f.attribute("y").value()));
+		CPPUNIT_ASSERT_EQUAL(std::string("3.30000000"), std::string(f.attribute("z").value()));
+		CPPUNIT_ASSERT_EQUAL(std::string("1"), std::string(f.attribute("o").value()));
+
+		f = f.next_sibling();
+		CPPUNIT_ASSERT_EQUAL(std::string("f"), std::string(f.name()));
+		CPPUNIT_ASSERT_EQUAL(std::string("4.10000000"), std::string(f.attribute("x").value()));
+		CPPUNIT_ASSERT_EQUAL(std::string("5.20000000"), std::string(f.attribute("y").value()));
+		CPPUNIT_ASSERT_EQUAL(std::string("6.30000000"), std::string(f.attribute("z").value()));
+		CPPUNIT_ASSERT_EQUAL(std::string("0"), std::string(f.attribute("o").value()));
+
+		f = f.next_sibling();
+		CPPUNIT_ASSERT_EQUAL(std::string("f"), std::string(f.name()));
+		CPPUNIT_ASSERT_EQUAL(std::string("7.70000000"), std::string(f.attribute("x").value()));
+		CPPUNIT_ASSERT_EQUAL(std::string("8.80000000"), std::string(f.attribute("y").value()));
+		CPPUNIT_ASSERT_EQUAL(std::string("9.90000000"), std::string(f.attribute("z").value()));
+		CPPUNIT_ASSERT_EQUAL(std::string("1"), std::string(f.attribute("o").value()));
+
+		f = f.next_sibling();
+		CPPUNIT_ASSERT_EQUAL(std::string("f"), std::string(f.name()));
+		CPPUNIT_ASSERT_EQUAL(std::string("-1.10000000"), std::string(f.attribute("x").value()));
+		CPPUNIT_ASSERT_EQUAL(std::string("-2.20000000"), std::string(f.attribute("y").value()));
+		CPPUNIT_ASSERT_EQUAL(std::string("-3.30000000"), std::string(f.attribute("z").value()));
+		CPPUNIT_ASSERT_EQUAL(std::string("0"), std::string(f.attribute("o").value()));
+
+		CPPUNIT_ASSERT(f.next_sibling() == false);
+
+		pugi::xml_node eg_node = doc.first_element_by_path("xmove/UserInput/EventGroups/EventGroup");
+		CPPUNIT_ASSERT(eg_node);
+
+		dataext_node = eg_node.child("DataExt");
+		CPPUNIT_ASSERT(dataext_node);
+
+		pugi::xml_node e = dataext_node.first_child();
+		CPPUNIT_ASSERT_EQUAL(std::string("e"), std::string(e.name()));
+		CPPUNIT_ASSERT_EQUAL(std::string("2"), std::string(e.attribute("f").value()));
+		CPPUNIT_ASSERT_EQUAL(std::string("8.20000000"), std::string(e.attribute("t").value()));
+
+		e = e.next_sibling();
+		CPPUNIT_ASSERT_EQUAL(std::string("e"), std::string(e.name()));
+		CPPUNIT_ASSERT_EQUAL(std::string("1"), std::string(e.attribute("f").value()));
+		CPPUNIT_ASSERT_EQUAL(std::string("9.30000000"), std::string(e.attribute("t").value()));
+
+		e = e.next_sibling();
+		CPPUNIT_ASSERT_EQUAL(std::string("e"), std::string(e.name()));
+		CPPUNIT_ASSERT_EQUAL(std::string("2"), std::string(e.attribute("f").value()));
+		CPPUNIT_ASSERT_EQUAL(std::string("9.95010000"), std::string(e.attribute("t").value()));
+
+		CPPUNIT_ASSERT(e.next_sibling() == false);
 	}
 };
 

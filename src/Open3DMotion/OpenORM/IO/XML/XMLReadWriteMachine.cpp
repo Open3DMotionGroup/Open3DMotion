@@ -1,6 +1,6 @@
 /*--
   Open3DMotion 
-  Copyright (c) 2004-2012.
+  Copyright (c) 2004-2021.
   All rights reserved.
   See LICENSE.txt for more information.
 --*/
@@ -16,9 +16,9 @@
 
 namespace Open3DMotion
 {
-	XMLReadWriteMachine::XMLReadWriteMachine()
+	XMLReadWriteMachine::XMLReadWriteMachine(bool _extended /*=false*/)
 	{
-		element.push_back(new ReadWriteXMLCompound);
+		element.push_back(new ReadWriteXMLCompound(_extended));
 		element.push_back(new ReadWriteXMLList);
 		element.push_back(new ReadWriteXMLBool);
 		element.push_back(new ReadWriteXMLInt32);

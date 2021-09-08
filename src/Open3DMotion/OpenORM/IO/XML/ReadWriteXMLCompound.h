@@ -16,6 +16,7 @@ namespace Open3DMotion
 	class ReadWriteXMLCompound : public ReadWriteXML
 	{
 	public:
+		ReadWriteXMLCompound(bool _extended);
 
 		virtual const char* SupportedValueClass() const
 		{ return TreeCompound::classname; }
@@ -24,6 +25,8 @@ namespace Open3DMotion
 	
 		virtual TreeValue* ReadValue(XMLReadingMachine& reader, const pugi::xml_node& element) const;
 
+	protected:
+		bool extended;
 	};
 }
 

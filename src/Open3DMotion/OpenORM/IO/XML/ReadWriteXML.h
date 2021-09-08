@@ -40,7 +40,7 @@ namespace Open3DMotion
 		{ return NULL; }
 
 		/** The value class which the derived class supports.
-		    @return Supported class name as used by TreeValue::ClassNameMatches . */
+		    @return Supported class name as used by TreeValue::ClassNameMatches */
 		virtual const char* SupportedValueClass() const = 0;
 
 		/** Derived reader from XML to OpenORM value */
@@ -49,6 +49,9 @@ namespace Open3DMotion
 		/** Derived writer from OpenORM value to XML */
 		virtual void WriteValue(XMLWritingMachine& writer, const TreeValue* value) const = 0;
 
+		/** Can we write the given value type? Default behaviour is to check the class name
+				against SupportedValueValueClass() using TreeValue::ClassNameMatches */
+		virtual bool CanWrite(const TreeValue* value) const;
 	};
 
 }

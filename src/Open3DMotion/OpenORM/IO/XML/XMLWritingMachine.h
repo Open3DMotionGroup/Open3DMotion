@@ -17,7 +17,7 @@ namespace Open3DMotion
 	class XMLWritingMachine : public XMLReadWriteMachine
 	{
 	public:
-		XMLWritingMachine(std::ostream& _os);
+		XMLWritingMachine(std::ostream& _os, bool _extended = false);
 
 		virtual ~XMLWritingMachine();
 
@@ -32,6 +32,8 @@ namespace Open3DMotion
 		virtual void WriteTextNode(const std::string& value);
 
 		virtual void WriteValue(const std::string& name, const TreeValue* value);
+
+		virtual void WriteExtendedData(const TreeValue* value);
 
 	protected:
 		std::ostream& os;

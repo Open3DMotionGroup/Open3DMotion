@@ -15,7 +15,7 @@ namespace Open3DMotion
 	class XMLWritingMachineLegacy : public XMLWritingMachine
 	{
 	public:
-		XMLWritingMachineLegacy(std::ostream& _os);
+		XMLWritingMachineLegacy(std::ostream& _os, bool _extended = false);
 
 		/** Write a value to XML.
 				@param element The element to write.  It's assumed this has already been checked and matches the supported value class */

@@ -11,4 +11,9 @@
 
 namespace Open3DMotion
 {
+	bool ReadWriteXML::CanWrite(const TreeValue* value) const
+	{
+		return value->ClassNameMatches(SupportedValueClass());
+	}
 }
+

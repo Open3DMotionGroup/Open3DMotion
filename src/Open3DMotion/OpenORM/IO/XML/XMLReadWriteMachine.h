@@ -17,7 +17,7 @@ namespace Open3DMotion
 	class XMLReadWriteMachine
 	{
 	public:
-		XMLReadWriteMachine();
+		XMLReadWriteMachine(bool _extended = false);
 
 		virtual ~XMLReadWriteMachine();
 

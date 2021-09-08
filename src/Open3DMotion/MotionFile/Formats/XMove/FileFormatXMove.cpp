@@ -127,11 +127,11 @@ namespace Open3DMotion
 		// choose format based on options
 		if (xmove_options.LegacyCompoundNames)
 		{
-			return new XMLWritingMachineLegacy(os);
+			return new XMLWritingMachineLegacy(os, xmove_options.Extended);
 		}
 		else
 		{
-			return new XMLWritingMachine(os);
+			return new XMLWritingMachine(os, xmove_options.Extended);
 		}
 	}
 
