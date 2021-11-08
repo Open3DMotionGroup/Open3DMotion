@@ -1,6 +1,6 @@
 /*--
   Open3DMotion 
-  Copyright (c) 2004-2012.
+  Copyright (c) 2004-2021.
   All rights reserved.
   See LICENSE.txt for more information.
 --*/
@@ -24,7 +24,7 @@ namespace Open3DMotion
 
 	public:
 		
-		ForceCalculator* CreateCalculator(const ForcePlate& model) const;
+		ForceCalculator* CreateCalculator(const ForcePlate& model, uint32_t plate_model_occurence) const;
 
 
 	};

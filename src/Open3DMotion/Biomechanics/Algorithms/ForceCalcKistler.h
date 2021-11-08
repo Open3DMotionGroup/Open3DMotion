@@ -1,6 +1,6 @@
 /*--
   Open3DMotion 
-  Copyright (c) 2004-2012.
+  Copyright (c) 2004-2021.
   All rights reserved.
   See LICENSE.txt for more information.
 --*/
@@ -18,7 +18,7 @@ namespace Open3DMotion
   public:
 
 		// Verify Kistler-specific model params
-		virtual bool VerifyModel(const ForcePlate& model);
+		virtual bool VerifyModel(const ForcePlate& model, uint32_t plate_model_occurence);
 
     // 8 Inputs
 		virtual size_t NumInputs() const

@@ -1,6 +1,6 @@
 /*--
   Open3DMotion 
-  Copyright (c) 2004-2018.
+  Copyright (c) 2004-2021.
   All rights reserved.
   See LICENSE.txt for more information.
 --*/
@@ -65,7 +65,7 @@ namespace Open3DMotion
 	{
 	}
 
-	bool ForceCalculator::SetModel(const ForcePlate& _model)
+	bool ForceCalculator::SetModel(const ForcePlate& _model, uint32_t _plate_model_occurence)
 	{
 		// store model
 		model = _model;
@@ -75,7 +75,7 @@ namespace Open3DMotion
 			return false;
 
 		// plate-specific configuration
-		if (!VerifyModel(model))
+		if (!VerifyModel(model, _plate_model_occurence))
 			return false;
 
 		// done

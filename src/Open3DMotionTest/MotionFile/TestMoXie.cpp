@@ -1,6 +1,6 @@
 /*--
   Open3DMotion 
-  Copyright (c) 2004-2018.
+  Copyright (c) 2004-2021.
   All rights reserved.
   See LICENSE.txt for more information.
 --*/
@@ -354,7 +354,7 @@ void TestMoXie::ComputeForce(TimeSequence& force, TimeSequence& point, const Tri
 	// compute force and centre-of-pressure in global coords
 	CPPUNIT_ASSERT(trial.Acq.ForcePlates.NumElements() >= 1);
 	const ForcePlate& fp = trial.Acq.ForcePlates[0];
-	std::unique_ptr<ForceCalculator> calculator( ForceCalculatorFactory().CreateCalculator(fp) );
+	std::unique_ptr<ForceCalculator> calculator( ForceCalculatorFactory().CreateCalculator(fp, 1) );
 	CPPUNIT_ASSERT( calculator.get() != NULL);
 	std::vector<const TimeSequence*> analog_all;
 	trial.Acq.GetTSGroup(analog_all, TrialSectionAcq::TSGroupAnalog);

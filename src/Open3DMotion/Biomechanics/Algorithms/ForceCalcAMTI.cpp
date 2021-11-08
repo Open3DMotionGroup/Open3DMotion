@@ -1,6 +1,6 @@
 /*--
   Open3DMotion 
-  Copyright (c) 2004-2012.
+  Copyright (c) 2004-2021.
   All rights reserved.
   See LICENSE.txt for more information.
 --*/
@@ -12,7 +12,13 @@
 
 namespace Open3DMotion
 {
-	bool ForceCalc_AMTI::VerifyModel(const ForcePlate& model)
+	ForceCalc_AMTI::ForceCalc_AMTI() :
+		numinputs(0),
+		reverse_input_channel_order(false)
+	{
+	}
+
+	bool ForceCalc_AMTI::VerifyModel(const ForcePlate& model, uint32_t plate_model_occurence)
 	{
 		if (model.CentreOffset.IsSet())
 		{
@@ -31,11 +37,18 @@ namespace Open3DMotion
 			{
 				// implement as scale factor per-channel
 				numinputs = 6;
+				reverse_input_channel_order = false;
 			}
 			else if (model.Calibration.NumElements() >= 36)
 			{
 				// implement as matrix
 				numinputs = model.Calibration.NumElements() / 6;
+
+				// this is also the type that may need reverse ordering for even-numbered
+				// legacy AMTI serial digital plates
+				reverse_input_channel_order =
+					(plate_model_occurence % 2 == 0) &&
+					(model.Model.Value().compare("AccuGait/AccuSway") == 0);
 			}
 			else
 			{
@@ -59,7 +72,7 @@ namespace Open3DMotion
 			}
 			else
 			{
-				ApplyMatrix(corrected_analog, Model().Calibration, calanalog);
+				ApplyMatrix(corrected_analog, Model().Calibration, calanalog, reverse_input_channel_order);
 			}
 
 			// do computation based on corrected values
@@ -110,14 +123,27 @@ namespace Open3DMotion
 		}
 	}
 
-	void ForceCalc_AMTI::ApplyMatrix(std::vector<double>& corrected_analog, const MapArrayFloat64& calibration, const std::vector<double>& input_analog)
+	void ForceCalc_AMTI::ApplyMatrix(std::vector<double>& corrected_analog, const MapArrayFloat64& calibration, const std::vector<double>& input_analog, bool reverse_input_channel_order)
   {
 		size_t cols = calibration.NumElements() / 6;
-		for (size_t i = 0; i < 6; i++)
+		if (reverse_input_channel_order)
 		{
-			corrected_analog[i] = 0.0;
-			for (size_t j = 0; j < cols; j++)
-				corrected_analog[i] += calibration[cols*i+j] * input_analog[j];
+			// this reversal of input order is for legacy AMTI serial plates on even-numbered plates only
+			for (size_t i = 0; i < 6; i++)
+			{
+				corrected_analog[i] = 0.0;
+				for (size_t j = 0; j < cols; j++)
+					corrected_analog[i] += calibration[cols * i + j] * input_analog[cols-j-1];
+			}
+		}
+		else
+		{
+			for (size_t i = 0; i < 6; i++)
+			{
+				corrected_analog[i] = 0.0;
+				for (size_t j = 0; j < cols; j++)
+					corrected_analog[i] += calibration[cols * i + j] * input_analog[j];
+			}
 		}
 	}
 }

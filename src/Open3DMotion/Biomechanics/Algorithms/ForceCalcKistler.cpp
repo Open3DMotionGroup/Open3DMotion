@@ -1,6 +1,6 @@
 /*--
   Open3DMotion 
-  Copyright (c) 2004-2012.
+  Copyright (c) 2004-2021.
   All rights reserved.
   See LICENSE.txt for more information.
 --*/
@@ -12,7 +12,7 @@
 
 namespace Open3DMotion
 {
-  bool ForceCalc_Kistler::VerifyModel(const ForcePlate& model)
+  bool ForceCalc_Kistler::VerifyModel(const ForcePlate& model, uint32_t /*plate_model_occurence unused*/ )
 	{
 		if (model.SensorSeparation.IsSet())
 		{

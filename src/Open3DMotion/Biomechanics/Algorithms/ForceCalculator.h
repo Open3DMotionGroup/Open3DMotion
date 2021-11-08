@@ -1,6 +1,6 @@
 /*--
   Open3DMotion 
-  Copyright (c) 2004-2018.
+  Copyright (c) 2004-2021.
   All rights reserved.
   See LICENSE.txt for more information.
 --*/
@@ -30,10 +30,10 @@ namespace Open3DMotion
 		ForceCalculator();
 
 		// Called by force calculator factory to load and verify model information
-		bool SetModel(const ForcePlate& _model);
+		bool SetModel(const ForcePlate& _model, uint32_t plate_model_occurence);
 
 		// Override to use and verify type-specific information from model 
-		virtual bool VerifyModel(const ForcePlate& model) = 0;
+		virtual bool VerifyModel(const ForcePlate& model, uint32_t plate_model_occurence) = 0;
 
 	public:
 		virtual ~ForceCalculator();

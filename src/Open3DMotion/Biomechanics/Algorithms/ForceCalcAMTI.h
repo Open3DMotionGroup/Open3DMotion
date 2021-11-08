@@ -1,6 +1,6 @@
 /*--
   Open3DMotion 
-  Copyright (c) 2004-2012.
+  Copyright (c) 2004-2021.
   All rights reserved.
   See LICENSE.txt for more information.
 --*/
@@ -21,12 +21,14 @@ namespace Open3DMotion
 		
 		static void ApplyScaling(std::vector<double>& corrected_analog, const MapArrayFloat64& calibration, const std::vector<double>& input_analog);
 
-		static void ApplyMatrix(std::vector<double>& corrected_analog, const MapArrayFloat64& calibration, const std::vector<double>& input_analog);
+		static void ApplyMatrix(std::vector<double>& corrected_analog, const MapArrayFloat64& calibration, const std::vector<double>& input_analog, bool reverse_input_channel_order);
 
 	public:
+
+		ForceCalc_AMTI();
    
 		// Verify AMTI-specific model params
-		virtual bool VerifyModel(const ForcePlate& model);
+		virtual bool VerifyModel(const ForcePlate& model, uint32_t plate_model_occurence);
 
     // Either 6 inputs (when no calibration matrix or 6 x 1 calibration matrix)
 		// Or num inputs equivalent to num calibration elements / 6
@@ -40,6 +42,7 @@ namespace Open3DMotion
 
   protected:
 		size_t numinputs;
+		bool reverse_input_channel_order;
   };
 }
 

@@ -1,6 +1,6 @@
 /*--
   Open3DMotion 
-  Copyright (c) 2004-2018.
+  Copyright (c) 2004-2021.
   All rights reserved.
   See LICENSE.txt for more information.
 --*/
@@ -398,7 +398,7 @@ namespace Open3DMotion
 		{
 			// create calculator object for this plate, if supported
 			const ForcePlate& fp = trial->Acq.ForcePlates[0];
-			std::unique_ptr<ForceCalculator> calculator( ForceCalculatorFactory().CreateCalculator(fp) );
+			std::unique_ptr<ForceCalculator> calculator( ForceCalculatorFactory().CreateCalculator(fp, 1) );
 
 			if (calculator.get() != NULL)
 			{

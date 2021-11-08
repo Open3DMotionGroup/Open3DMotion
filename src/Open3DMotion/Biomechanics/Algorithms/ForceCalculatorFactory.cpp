@@ -1,6 +1,6 @@
 /*--
   Open3DMotion 
-  Copyright (c) 2004-2012.
+  Copyright (c) 2004-2021.
   All rights reserved.
   See LICENSE.txt for more information.
 --*/
@@ -21,7 +21,7 @@ namespace Open3DMotion
 	{
 	}
 
-	ForceCalculator* ForceCalculatorFactory::CreateCalculator(const ForcePlate& model) const
+	ForceCalculator* ForceCalculatorFactory::CreateCalculator(const ForcePlate& model, uint32_t plate_model_occurence) const
 	{
 		// init to NULL
 		ForceCalculator* calc = NULL;
@@ -37,7 +37,7 @@ namespace Open3DMotion
 		}
 
 		// set model in calculator - may return false if invalid model params
-		if (!calc->SetModel(model))
+		if (!calc->SetModel(model, plate_model_occurence))
 		{
 			delete calc;
 			calc = NULL;
