@@ -18,7 +18,7 @@ namespace Open3DMotion
 	{
 	}
 
-	bool ForceCalc_AMTI::VerifyModel(const ForcePlate& model, uint32_t plate_model_occurence)
+	bool ForceCalc_AMTI::VerifyModel(const ForcePlate& model, UInt32 plate_model_occurence)
 	{
 		if (model.CentreOffset.IsSet())
 		{

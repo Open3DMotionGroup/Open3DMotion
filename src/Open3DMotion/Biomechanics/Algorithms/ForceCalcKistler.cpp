@@ -12,7 +12,7 @@
 
 namespace Open3DMotion
 {
-  bool ForceCalc_Kistler::VerifyModel(const ForcePlate& model, uint32_t /*plate_model_occurence unused*/ )
+  bool ForceCalc_Kistler::VerifyModel(const ForcePlate& model, UInt32 /*plate_model_occurence unused*/ )
 	{
 		if (model.SensorSeparation.IsSet())
 		{

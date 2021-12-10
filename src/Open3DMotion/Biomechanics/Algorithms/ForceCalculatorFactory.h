@@ -24,7 +24,7 @@ namespace Open3DMotion
 
 	public:
 		
-		ForceCalculator* CreateCalculator(const ForcePlate& model, uint32_t plate_model_occurence) const;
+		ForceCalculator* CreateCalculator(const ForcePlate& model, UInt32 plate_model_occurence) const;
 
 
 	};

@@ -53,7 +53,7 @@ namespace Open3DMotion
 				{
 					for (TSOccVector3ConstIter iter(ts); iter.HasFrame(); iter.Next())
 					{
-						snprintf(buffer, sizeof(buffer), "<f x=\"%.08f\" y=\"%.08f\" z=\"%.08f\" o=\"%d\"/>\n",
+						_snprintf(buffer, sizeof(buffer), "<f x=\"%.08f\" y=\"%.08f\" z=\"%.08f\" o=\"%d\"/>\n",
 							iter.Value()[0], iter.Value()[1], iter.Value()[2], iter.Occluded() ? 1 : 0);
 						os << buffer;
 					}
@@ -64,7 +64,7 @@ namespace Open3DMotion
 					{
 						for (TSScalarConstIter iter(ts); iter.HasFrame(); iter.Next())
 						{
-							snprintf(buffer, sizeof(buffer), "<f x=\"%.08f\"/>\n", iter.Value());
+							_snprintf(buffer, sizeof(buffer), "<f x=\"%.08f\"/>\n", iter.Value());
 							os << buffer;
 						}
 					}
@@ -81,7 +81,7 @@ namespace Open3DMotion
 					eg.FromTree(compound);
 					for (EventGroupIter iter(eg); iter.HasFrame(); iter.Next())
 					{
-						snprintf(buffer, sizeof(buffer), "<e f=\"%d\" t=\"%.08f\"/>\n",
+						_snprintf(buffer, sizeof(buffer), "<e f=\"%d\" t=\"%.08f\"/>\n",
 							iter.ID(), iter.Time());
 						os << buffer;
 					}

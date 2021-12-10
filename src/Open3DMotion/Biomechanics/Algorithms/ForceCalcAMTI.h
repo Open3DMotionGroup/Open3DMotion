@@ -28,7 +28,7 @@ namespace Open3DMotion
 		ForceCalc_AMTI();
    
 		// Verify AMTI-specific model params
-		virtual bool VerifyModel(const ForcePlate& model, uint32_t plate_model_occurence);
+		virtual bool VerifyModel(const ForcePlate& model, UInt32 plate_model_occurence);
 
     // Either 6 inputs (when no calibration matrix or 6 x 1 calibration matrix)
 		// Or num inputs equivalent to num calibration elements / 6

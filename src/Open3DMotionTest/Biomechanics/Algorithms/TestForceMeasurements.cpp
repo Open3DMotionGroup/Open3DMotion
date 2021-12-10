@@ -41,7 +41,7 @@ namespace Open3DMotion
 			for (size_t index = 0; index < 9; index++)
 			{
 				char channelname[32];
-				snprintf(channelname, 32, "Analog%02d", (int)(index + 1));
+				_snprintf(channelname, 32, "Analog%02d", (int)(index + 1));
 
 				std::unique_ptr<TimeSequence> ts(new TimeSequence);
 				ts->Group = TrialSectionAcq::TSGroupAnalog;
@@ -176,7 +176,7 @@ namespace Open3DMotion
 			for (size_t index = 0; index < 9; index++)
 			{
 				char channelname[32];
-				snprintf(channelname, 32, "Analog%02d", (int)(index + 1));
+				_snprintf(channelname, 32, "Analog%02d", (int)(index + 1));
 
 				std::unique_ptr<TimeSequence> ts(new TimeSequence);
 				ts->Group = TrialSectionAcq::TSGroupAnalog;

@@ -65,7 +65,7 @@ namespace Open3DMotion
 	{
 	}
 
-	bool ForceCalculator::SetModel(const ForcePlate& _model, uint32_t _plate_model_occurence)
+	bool ForceCalculator::SetModel(const ForcePlate& _model, UInt32 _plate_model_occurence)
 	{
 		// store model
 		model = _model;

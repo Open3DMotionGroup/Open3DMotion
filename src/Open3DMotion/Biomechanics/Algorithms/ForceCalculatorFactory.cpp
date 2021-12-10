@@ -21,7 +21,7 @@ namespace Open3DMotion
 	{
 	}
 
-	ForceCalculator* ForceCalculatorFactory::CreateCalculator(const ForcePlate& model, uint32_t plate_model_occurence) const
+	ForceCalculator* ForceCalculatorFactory::CreateCalculator(const ForcePlate& model, UInt32 plate_model_occurence) const
 	{
 		// init to NULL
 		ForceCalculator* calc = NULL;
