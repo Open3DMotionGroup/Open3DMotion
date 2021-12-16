@@ -41,10 +41,29 @@ namespace Open3DMotion
 		MapArrayCompound<EventGroup> EventGroups;
 	};
 
+	class CODAUnit : public MapCompound
+	{
+	public:
+		CODAUnit() :
+			R("r"),
+			T("t")
+		{
+			REGISTER_MEMBER(R);
+			REGISTER_MEMBER(T);
+			REGISTER_MEMBER(Model);
+		}
+
+	public:
+		MapArrayFloat64 R;
+		MapArrayFloat64 T;
+		MapOptionalString Model;
+	};
+
 	class MeasurementSystemSpec : public MapCompound
 	{
 	public:
-		MeasurementSystemSpec()
+		MeasurementSystemSpec() :
+			CODAUnits("CODAUnit")
 		{
 			REGISTER_MEMBER(Name);
 			REGISTER_MEMBER(Company);
@@ -52,6 +71,7 @@ namespace Open3DMotion
 			REGISTER_MEMBER(SoftwareVersion);
 			REGISTER_MEMBER(DataServerName);
 			REGISTER_MEMBER(DataServerVersion);
+			REGISTER_MEMBER(CODAUnits);
 		}
 
 	public:
@@ -61,6 +81,7 @@ namespace Open3DMotion
 		MapOptionalString SoftwareVersion;
 		MapOptionalString DataServerName;
 		MapOptionalString DataServerVersion;
+		MapArrayCompound<CODAUnit> CODAUnits;
 	};
 
 	class TrialDate : public MapCompound
