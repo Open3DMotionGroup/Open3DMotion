@@ -9,6 +9,7 @@
 #define _OPEN3DMOTION_MAP_C3D_PARAMETERS_H_
 
 #include "Open3DMotion/MotionFile/Formats/C3D/C3DRecord.h"
+#include "Open3DMotion/Biomechanics/Trial/Trial.h"
 
 namespace Open3DMotion
 {
@@ -92,5 +93,34 @@ namespace Open3DMotion
 		std::list<C3DRecord*> records;
 	};
 
+	class C3DSection : public MapCompound
+	{
+	public:
+		C3DSection()
+		{
+			REGISTER_MEMBER(FirstFrame);
+			REGISTER_MEMBER(InterpolationGap);
+			REGISTER_MEMBER(ParameterHeader);
+			REGISTER_MEMBER(Parameters);
+		}
+
+	public:
+		MapInt32 FirstFrame;
+		MapInt32 InterpolationGap;
+		MapInt32 ParameterHeader;
+		MapC3DParameters Parameters;
+	};
+
+	class TrialC3D : public Trial
+	{
+	public:
+		TrialC3D()
+		{
+			REGISTER_MEMBER(C3D);
+		}
+
+	public:
+		C3DSection C3D;
+	};
 }
 #endif

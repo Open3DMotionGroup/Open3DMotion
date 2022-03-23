@@ -21,37 +21,7 @@
 using namespace std;
 
 namespace Open3DMotion
-{
-	class C3DSection : public MapCompound
-	{
-	public:
-		C3DSection()
-		{
-			REGISTER_MEMBER(FirstFrame);
-			REGISTER_MEMBER(InterpolationGap);
-			REGISTER_MEMBER(ParameterHeader);
-			REGISTER_MEMBER(Parameters);
-		}
-
-	public:
-		MapInt32 FirstFrame;
-		MapInt32 InterpolationGap;
-		MapInt32 ParameterHeader;
-		MapC3DParameters Parameters;
-	};
-
-	class TrialC3D : public Trial
-	{
-	public:
-		TrialC3D()
-		{
-			REGISTER_MEMBER(C3D);
-		}
-
-	public:
-		C3DSection C3D;
-	};
-	
+{	
 	// check file id, processor type and number format
   bool FileFormatC3D::Probe(const MotionFileHandler& /*context*/, TreeValue*& readoptions, istream& is) const throw(MotionFileException)
   {
