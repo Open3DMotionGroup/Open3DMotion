@@ -1,6 +1,6 @@
 /*--
   Open3DMotion 
-  Copyright (c) 2004-2012.
+  Copyright (c) 2004-2022.
   All rights reserved.
   See LICENSE.txt for more information.
 --*/
@@ -257,7 +257,7 @@ namespace Open3DMotion
 			// if no software name is specified, set default values for company, software name & version
 			// (simply say it's an import)
 			trial->Acq.MeasurementSystem.Name = "File Import";
-			trial->Acq.MeasurementSystem.Company = "Charnwood Dynamics Ltd.";
+			trial->Acq.MeasurementSystem.Company = "Codamotion Ltd";
 			trial->Acq.MeasurementSystem.SoftwareName = context.ProgramName();
 			trial->Acq.MeasurementSystem.SoftwareVersion = context.ProgramVersion();
 		}
@@ -482,6 +482,7 @@ namespace Open3DMotion
     }
 
     // analog channel names, scales and offsets
+		vector<float> analog_offset(num_analog, 0.0f);
     if (num_analog)
     {
 			// analog time range
@@ -536,8 +537,21 @@ namespace Open3DMotion
 				if (isforcechannel[i])
 					c3dscale = -c3dscale;
 				ts->Scale = analog_gen_scale * (double)c3dscale;
-				ts->Offset = (double)trial->C3D.Parameters.GetInteger("ANALOG", "OFFSET", 0, i);
-      }
+
+				// C3D offset and our offset are not semantically the same
+				// - the C3D offset is intended to correspond to the A/D process whereas 
+				//   our offsets are potentially from force baseline or similar pretrial process
+				//   so the following caches the C3D offset for subtraction from the TS
+				analog_offset[i] = trial->C3D.Parameters.GetInteger("ANALOG", "OFFSET", 0, i);
+				
+				// These will restore force cache offset if it was ever set
+				float acquisition_preoffset = trial->C3D.Parameters.GetReal("ANALOG", "ACQUISITION_PREOFFSET", 0, i);
+				ts->Offset = acquisition_preoffset;
+				ts->OffsetStdDev = trial->C3D.Parameters.GetReal("ANALOG", "ACQUISITION_PREOFFSET_STDDEV", 0, i);
+
+				// And we must add this back into time sequence
+				analog_offset[i] -= acquisition_preoffset;
+			}
 		}
 
 		// all is set up -- read the data
@@ -617,8 +631,8 @@ namespace Open3DMotion
             a = (float)a16;
           }							
 
-					// set in sequence array
-					iter_ts.Value() = a;				
+					// set in sequence array, subtracting any C3D offset
+					iter_ts.Value() = (double)(a - analog_offset[ianalog]);
 
 					// increment iterator
 					iter_ts.Next();
@@ -795,6 +809,8 @@ namespace Open3DMotion
 		vector<string> units_analog(num_analog);
 		vector<float> scale_analog(num_analog, 1.0f);
 		vector<Int16> offset_analog(num_analog, 0);
+		vector<float> acquisition_preoffset_analog(num_analog, 0.0f);
+		vector<float> acquisition_preoffset_stddev_analog(num_analog, 0.0f);
 		size_t maxchars_label_analog = 4;
 		size_t maxchars_analogdesc = 32;
 
@@ -824,7 +840,8 @@ namespace Open3DMotion
 				// copy to arrays for C3D writing
 				// must un-apply gen scale here
 				scale_analog[i] = (float)(analog[i]->Scale / gen_scale_analog);
-				offset_analog[i] = (Int16)(analog[i]->Offset.Value());
+				acquisition_preoffset_analog[i] = (float)(analog[i]->Offset.Value());
+				acquisition_preoffset_stddev_analog[i] = (float)(analog[i]->OffsetStdDev.Value());
 			}
       else
       {
@@ -1075,6 +1092,8 @@ namespace Open3DMotion
       param.AddRecord(new C3DRecordReal(2, "SCALE", "Scale factor", scale_analog));
       param.AddRecord(new C3DRecordInteger(2, "OFFSET", "Offset", offset_analog));
       param.AddRecord(new C3DRecordReal(2, "ACQUISITION_RATE", "Original data acquisition rate for each analog channel", rateAnalog));
+			param.AddRecord(new C3DRecordReal(2, "ACQUISITION_PREOFFSET", "Offsets recorded in pre-trial step", acquisition_preoffset_analog));
+			param.AddRecord(new C3DRecordReal(2, "ACQUISITION_PREOFFSET_STDDEV", "Standard deviation of offsets recorded in pre-trial step", acquisition_preoffset_stddev_analog));
 
 			// 20090305 set binary number format to signed when saving integer
 			// this should be the default for all readers but not so for Visual3D
@@ -1231,7 +1250,7 @@ namespace Open3DMotion
 			{
 				// If it's an import with company unknown, do put our company name 
 				// but indicate that it's an import in case it didn't originally come from us
-				param.AddRecord(new C3DRecordText(4, "COMPANY", "", "File Import by Charnwood Dynamics Ltd."));
+				param.AddRecord(new C3DRecordText(4, "COMPANY", "", "File Import by Codamotion Ltd."));
 			}
 		}
 
@@ -1441,23 +1460,25 @@ namespace Open3DMotion
 					status |= wResidual;
 				}
 
+				const double* value = iter_ts.Value();
+
         if (c3doptions.FloatingPoint)
         {
           // write un-scaled floats
-          machine->WriteFloat((float)iter_ts.Value()[0], os);
-          machine->WriteFloat((float)iter_ts.Value()[1], os);
-          machine->WriteFloat((float)iter_ts.Value()[2], os);
+          machine->WriteFloat((float)value[0], os);
+          machine->WriteFloat((float)value[1], os);
+          machine->WriteFloat((float)value[2], os);
           machine->WriteFloat((float)((Int16)status),os);
         }
         else
         {
           // write scaled signed integers (use rounding)
           double m;
-          m = iter_ts.Value()[0] / scale_marker;
+          m = value[0] / scale_marker;
           machine->WriteWord((UInt16)((m > 0.0) ? (Int16)(m+0.5) : (Int16)(m-0.5)), os);
-          m = iter_ts.Value()[1] / scale_marker;
+          m = value[1] / scale_marker;
           machine->WriteWord((UInt16)((m > 0.0) ? (Int16)(m+0.5) : (Int16)(m-0.5)), os);
-          m = iter_ts.Value()[2] / scale_marker;
+          m = value[2] / scale_marker;
           machine->WriteWord((UInt16)((m > 0.0) ? (Int16)(m+0.5) : (Int16)(m-0.5)), os);
           machine->WriteWord(status,os);
         }
@@ -1489,12 +1510,12 @@ namespace Open3DMotion
           }
 
 					// find value from data (interpolate if necessary)
-					double value;
+					float value;
           if (isub == 0 || iinput == ( static_cast<int>(ts_iter.NumFrames()-1)))
           {
             // at end of array - just use input frame
 						ts_iter.SeekTo(iinput);
-						value = ts_iter.Value();
+						value = (float) ts_iter.Value();
           }
           else
           {
@@ -1505,17 +1526,20 @@ namespace Open3DMotion
 
 						// do interpolation
             double lambda = (double)isub / (double)analog_subsample[i];
-            value = (1.0-lambda)*a0 + lambda *a1;
+            value = (float)( (1.0-lambda)*a0 + lambda*a1 );
           }
+
+					// subtract any pre-trial offset specified
+					value -= acquisition_preoffset_analog[i];
 
 					// write
           if (c3doptions.FloatingPoint)
           {
-            machine->WriteFloat((float)value, os);
+            machine->WriteFloat(value, os);
           }
           else
           {
-            Int16 a16 = (value > 0.0) ? (Int16)(value+0.5) : (Int16)(value-0.5);
+            Int16 a16 = (value > 0.0) ? (Int16)(value+0.5f) : (Int16)(value-0.5f);
             machine->WriteWord((UInt16)a16, os);
           }
         }
