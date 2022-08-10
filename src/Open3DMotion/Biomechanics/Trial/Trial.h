@@ -1,6 +1,6 @@
 /*--
   Open3DMotion 
-  Copyright (c) 2004-2018.
+  Copyright (c) 2004-2022.
   All rights reserved.
   See LICENSE.txt for more information.
 --*/
@@ -276,6 +276,31 @@ namespace Open3DMotion
 		MapOptionalFloat64 RadGyr_RFoot_Z;
 	};
 
+	class ExcludeMarkerPeriod : public MapCompound
+	{
+	public:
+		ExcludeMarkerPeriod()
+		{
+			REGISTER_MEMBER(HardwareID);
+			REGISTER_MEMBER(StartFrame);
+			REGISTER_MEMBER(EndFrame);
+		}
+
+	public:
+		MapInt32 HardwareID;
+		MapInt32 StartFrame;
+		MapInt32 EndFrame;
+	};
+
+	class ExcludeMarkerPeriods : public MapArrayCompound<ExcludeMarkerPeriod>
+	{
+	public:
+		ExcludeMarkerPeriods() :
+			MapArrayCompound<ExcludeMarkerPeriod>("ExcludeMarkerPeriod")
+		{
+		}
+	};
+
 	class TrialSectionUserInput : public TrialSection
 	{
 	public:
@@ -294,6 +319,7 @@ namespace Open3DMotion
 		MapOptionalString TrialCondition;
 		MapOptional<TrialSubject> Subject;
 		MapOptional<Pointer> Pointer;
+		MapOptional<ExcludeMarkerPeriods> ExcludeMarkerPeriods;
 	};
 
 	class FileFormatInformation : public MapCompound
