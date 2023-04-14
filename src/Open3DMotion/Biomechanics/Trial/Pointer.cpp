@@ -12,6 +12,7 @@ namespace Open3DMotion
 	Pointer::Pointer()
 	{
 		REGISTER_MEMBER(Generation);
+		REGISTER_MEMBER(distance);
 		REGISTER_MEMBER(CalX);
 		REGISTER_MEMBER(CalY);
 		REGISTER_MEMBER(CalZ);

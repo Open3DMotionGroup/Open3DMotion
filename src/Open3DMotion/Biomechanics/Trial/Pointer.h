@@ -21,8 +21,17 @@ namespace Open3DMotion
 		Pointer();
 
 	public: 
-		MapInt32 Generation;
+
+		// The landmark described (if a pointer trial rather than pointer calibration data)
 		MapOptionalString LandmarkName;
+
+		// Generation (style of pointer)
+		MapInt32 Generation;
+		
+		// Generation 1 parameters
+		MapOptionalFloat64 distance;
+		
+		// Generation 2 parameters
 		MapOptionalFloat64 CalX;
 		MapOptionalFloat64 CalY;
 		MapOptionalFloat64 CalZ;
