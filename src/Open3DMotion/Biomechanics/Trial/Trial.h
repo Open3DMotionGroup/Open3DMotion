@@ -311,6 +311,7 @@ namespace Open3DMotion
 			REGISTER_MEMBER(TrialCondition);
 			REGISTER_MEMBER(Subject);
 			REGISTER_MEMBER(Pointer);
+			REGISTER_MEMBER(ExcludeMarkerPeriods);
 		}
 
 	public:
