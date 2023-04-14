@@ -342,6 +342,8 @@ namespace Open3DMotion
         id = type_AMTI_AccuSway;
       else if (model == "AccuGait")
 				id=type_AMTI_AccuGait;
+			else if (model == "BP900900")
+				id = type_AMTI_BP900900;
 			else
         id = type_AMTI_BP2416;
     }
@@ -370,6 +372,7 @@ namespace Open3DMotion
 		case type_AMTI_OR6_7:
     case type_AMTI_AccuSway:
     case type_AMTI_AccuGait:
+		case type_AMTI_BP900900:
 			return ForcePlate::TypeAMTI;
 
     default:
@@ -415,7 +418,10 @@ namespace Open3DMotion
 		case type_AMTI_AccuGait:
       return "AccuGait";
 
-    default:
+		case type_AMTI_BP900900:
+			return "BP900900";
+
+		default:
 			throw (MotionFileException(MotionFileException::formaterror, "unrecognised force plate ID"));
       return "";
     }
@@ -475,21 +481,26 @@ namespace Open3DMotion
 
     case type_AMTI_BP2416:
     case type_AMTI_LG6:
-		case type_AMTI_OR6_7:
     case type_AMTI_AccuSway:
-      // centre_offset = Vector3(0.0F, 0.0F, 61.0F);
+		case type_AMTI_AccuGait:
+			// centre_offset = Vector3(0.0F, 0.0F, 61.0F);
 			CentreOffset.X = 0.0;
 			CentreOffset.Y = 0.0;
 			CentreOffset.Z = 61.0;
       break;
 
-		case type_AMTI_AccuGait:
-      // centre_offset = Vector3(0.0F, 0.0F, 61.0F);
+		case type_AMTI_OR6_7:
 			CentreOffset.X = 0.0;
 			CentreOffset.Y = 0.0;
-			CentreOffset.Z = 61.0;
-      break;
-    }
+			CentreOffset.Z = 42.3;
+			break;
+
+		case type_AMTI_BP900900:
+			CentreOffset.X = 0.0;
+			CentreOffset.Y = 0.0;
+			CentreOffset.Z = 79.4;
+			break;
+		}
   }
 
   void ForcePlateMDF::DefaultOutline()

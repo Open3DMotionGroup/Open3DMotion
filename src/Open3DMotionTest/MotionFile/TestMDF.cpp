@@ -54,6 +54,7 @@ public:
 	CPPUNIT_TEST( testReWriteWalk4Descriptors_c3d_pc_integer );
 #endif
 	CPPUNIT_TEST( testReadWheelMDF2 );
+	CPPUNIT_TEST( testReadEquineForce );
 	CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -284,6 +285,12 @@ public:
 		Verify that read of old MDF2 succeeds.
 		*/
 	void testReadWheelMDF2();
+
+	/*
+		Summary
+		Verify that read of old MDF with equine force data succeeds.
+	*/
+	void testReadEquineForce();
 
 protected:
 	Open3DMotion::MotionFileHandler handler;
@@ -517,6 +524,22 @@ void TestMDF::testReadWheelMDF2()
 
 	}
 	catch(const Open3DMotion::MotionFileException& error)
+	{
+		CPPUNIT_FAIL(error.message);
+	}
+}
+
+
+void TestMDF::testReadEquineForce()
+{
+	// Verify that legacy MDF2 format reads without error
+	try
+	{
+		// read in
+		std::unique_ptr<Open3DMotion::TreeValue> trial_tree(handler.Read("Open3DMotionTest/Data/MDF/equine-AMTI-BP900900.mdf"));
+
+	}
+	catch (const Open3DMotion::MotionFileException & error)
 	{
 		CPPUNIT_FAIL(error.message);
 	}

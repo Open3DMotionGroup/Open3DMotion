@@ -100,8 +100,9 @@ namespace Open3DMotion
       type_AMTI_BP2416 = 10,
       type_AMTI_LG6 = 11,
 			type_AMTI_OR6_7 = 12,
-      type_AMTI_AccuSway = 20,
-			type_AMTI_AccuGait=21
+			type_AMTI_BP900900 = 13,
+			type_AMTI_AccuSway = 20,
+			type_AMTI_AccuGait = 21
     };
 
 /* 
