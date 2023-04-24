@@ -157,7 +157,7 @@ namespace Open3DMotion
 				{
 					for (size_t c = 0; c < 6; c++)
 					{
-						this->COPOptimisation.Add(kistler_params[r][c]);
+						this->COPCorrection.Add(kistler_params[r][c]);
 					}
 				}
 			}

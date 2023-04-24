@@ -36,7 +36,7 @@ namespace Open3DMotion
 
 		// Kistler-specific
     MapOptional<MapVectorXYZ> SensorSeparation;
-		MapArrayFloat64 COPOptimisation;
+		MapArrayFloat64 COPCorrection;
 
 		// strain-gauge-specific
 		MapOptional<MapVectorXYZ> CentreOffset;

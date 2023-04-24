@@ -40,11 +40,11 @@ namespace Open3DMotion
 		}
 
   	// copy calibration
-		if (model.COPOptimisation.NumElements() == 0)
+		if (model.COPCorrection.NumElements() == 0)
 		{
 			// no COP correction
 		}
-		else if (model.COPOptimisation.NumElements() == 12)
+		else if (model.COPCorrection.NumElements() == 12)
     {
 			// use COP correction
     }
@@ -91,7 +91,7 @@ namespace Open3DMotion
 		if (_finite(ax) && _finite(ay))
 		{
 			// 4th order corrections
-			if (Model().COPOptimisation.NumElements() == 12)
+			if (Model().COPCorrection.NumElements() == 12)
 			{
 				// powers of ax and ay
 				double ax2 = ax * ax;
@@ -102,7 +102,7 @@ namespace Open3DMotion
 				double ay4 = ay * ay3;
 	      
 				// array reference
-				const MapArrayFloat64& c = Model().COPOptimisation;
+				const MapArrayFloat64& c = Model().COPCorrection;
 
 				// x-correction
 				double Dax = (c[0]*ay4 + c[1]*ay2 + c[2])*ax3

@@ -16,7 +16,7 @@ namespace Open3DMotion
 		Outline("Corner", 4),
 		Calibration("value"),
     Channels("Channel"),
-		COPOptimisation("value"),
+		COPCorrection("value"),
 		PreCompCoPChannels("Channel")
 	{
 		REGISTER_MEMBER(Type);
@@ -24,7 +24,7 @@ namespace Open3DMotion
 		REGISTER_MEMBER(Outline);
 		REGISTER_MEMBER(Calibration);
 		REGISTER_MEMBER(SensorSeparation);
-		REGISTER_MEMBER(COPOptimisation);
+		REGISTER_MEMBER(COPCorrection);
 		REGISTER_MEMBER(CentreOffset);
 		REGISTER_MEMBER(Channels);
 		REGISTER_MEMBER(PreCompCoPChannels);
