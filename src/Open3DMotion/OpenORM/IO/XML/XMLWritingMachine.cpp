@@ -1,6 +1,6 @@
 /*--
   Open3DMotion 
-  Copyright (c) 2004-2021.
+  Copyright (c) 2004-2024.
   All rights reserved.
   See LICENSE.txt for more information.
 --*/
@@ -18,6 +18,8 @@ namespace Open3DMotion
 	XMLWritingMachine::XMLWritingMachine(std::ostream& _os, bool _extended/*=false*/) :
 		XMLReadWriteMachine(_extended), os(_os)
 	{
+		// Avoid scientific notation in floating point output
+		os << std::fixed;
 	}
 
 	XMLWritingMachine::~XMLWritingMachine()
@@ -53,7 +55,7 @@ namespace Open3DMotion
 				{
 					for (TSOccVector3ConstIter iter(ts); iter.HasFrame(); iter.Next())
 					{
-						_snprintf(buffer, sizeof(buffer), "<f x=\"%.08f\" y=\"%.08f\" z=\"%.08f\" o=\"%d\"/>\n",
+						_snprintf(buffer, sizeof(buffer), "<f x=\"%.08lf\" y=\"%.08lf\" z=\"%.08lf\" o=\"%d\"/>\n",
 							iter.Value()[0], iter.Value()[1], iter.Value()[2], iter.Occluded() ? 1 : 0);
 						os << buffer;
 					}
@@ -64,7 +66,7 @@ namespace Open3DMotion
 					{
 						for (TSScalarConstIter iter(ts); iter.HasFrame(); iter.Next())
 						{
-							_snprintf(buffer, sizeof(buffer), "<f x=\"%.08f\"/>\n", iter.Value());
+							_snprintf(buffer, sizeof(buffer), "<f x=\"%.08lf\"/>\n", iter.Value());
 							os << buffer;
 						}
 					}
