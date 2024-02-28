@@ -1,6 +1,6 @@
 /*--
   Open3DMotion 
-  Copyright (c) 2004-2020.
+  Copyright (c) 2004-2024.
   All rights reserved.
   See LICENSE.txt for more information.
 --*/
@@ -108,6 +108,10 @@ namespace Open3DMotion
   {
 		// use input to determine num inputs
 		size_t ninputs = analog_iter.size();
+
+		// must have inputs to be able to do anything
+		if (ninputs == 0)
+			return false;
 
 		// if min_frames specified as zero, don't do an offset
 		if (min_frames == 0)
