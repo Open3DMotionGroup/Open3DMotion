@@ -1,6 +1,6 @@
 #
 # Open3DMotion
-# Copyright (c) 2004-2021.
+# Copyright (c) 2004-2024.
 # All rights reserved.
 # See LICENSE.txt for details.
 #
@@ -34,22 +34,35 @@ endif(OPEN3DMOTION_BIND_PYTHON)
 add_library(Open3DMotion ${Open3DMotion_CPP} ${Open3DMotion_H} ${Open3DMotion_Python_CPP} ${Open3DMotion_Python_H})
 
 # Specify include directories to export
-# and optionally use our own clapack headers
 target_include_directories(Open3DMotion 
     PUBLIC 
         $<INSTALL_INTERFACE:include>    
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../>
-    PRIVATE
-        $<$<BOOL:OPEN3DMOTION_OWNINCLUDE_CLAPACK>:${CMAKE_CURRENT_SOURCE_DIR}/../ThirdParty/CLAPACK>
-)
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../>)
+
+# Include linear algebra library
+if (OPEN3DMOTION_LINEAR_ALGEBRA_EIGEN)
+    target_include_directories(Open3DMotion PUBLIC "${OPEN3DMOTION_LINEAR_ALGEBRA_EIGEN_INCLUDEPATH}")
+else (OPEN3DMOTION_LINEAR_ALGEBRA_EIGEN)
+    # Option to use our own CLAPACK directory if not elsewhere defined
+    if (OPEN3DMOTION_OWNINCLUDE_CLAPACK)
+        target_include_directories(Open3DMotion PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/../ThirdParty/CLAPACK")
+    endif (OPEN3DMOTION_OWNINCLUDE_CLAPACK)
+    find_package(CLAPACK REQUIRED PATHS "${OPEN3DMOTION_LINEAR_ALGEBRA_CLAPACK_FINDPATH}")
+    target_link_libraries(Open3DMotion f2c blas lapack)
+endif (OPEN3DMOTION_LINEAR_ALGEBRA_EIGEN)
+
+# Python if Python was requested
+if (OPEN3DMOTION_BIND_PYTHON)
+    target_include_directories(Open3DMotion PUBLIC
+        $<$<NOT:$<CONFIG:DEBUG>>:${OPEN3DMOTION_BIND_PYTHON_CORE_RELEASE}/include>
+	    $<$<CONFIG:DEBUG>:${OPEN3DMOTION_BIND_PYTHON_CORE_DEBUG}/include>)
+    target_link_directories(Open3DMotion PUBLIC
+        $<$<NOT:$<CONFIG:DEBUG>>:${OPEN3DMOTION_BIND_PYTHON_CORE_RELEASE}/libs>
+	    $<$<CONFIG:DEBUG>:${OPEN3DMOTION_BIND_PYTHON_CORE_DEBUG}/libs>)
+endif(OPEN3DMOTION_BIND_PYTHON)
 
 # Link core dependencies
 target_link_libraries(Open3DMotion libb64 pugixml zlib)
-
-# Link CLAPACK unless using Eigen
-if(NOT OPEN3DMOTION_LINEAR_ALGEBRA_EIGEN)
-  target_link_libraries(Open3DMotion f2c blas lapack)
-endif(NOT OPEN3DMOTION_LINEAR_ALGEBRA_EIGEN)
 
 # Disable warnings for sprintf and sscanf on MSC
 target_compile_definitions(Open3DMotion PUBLIC $<$<CXX_COMPILER_ID:MSVC>:_CRT_SECURE_NO_WARNINGS>)

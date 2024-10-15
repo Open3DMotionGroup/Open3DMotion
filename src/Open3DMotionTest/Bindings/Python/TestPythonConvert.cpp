@@ -1,6 +1,6 @@
 /*--
   Open3DMotion 
-  Copyright (c) 2004-2013.
+  Copyright (c) 2004-2024.
   All rights reserved.
   See LICENSE.txt for more information.
 --*/
@@ -362,294 +362,385 @@ public:
 
 	void testFromEmptyList()
 	{
-		size_t refcount0 = PythonTotalRefCount();
-		TreeList testlist("SomeElementName");
-		PyObject* py_result = PythonConvert::FromTree(&testlist);
-		CPPUNIT_ASSERT(PyDict_Check(py_result));
-		CPPUNIT_ASSERT_EQUAL(Py_ssize_t(1), PyDict_Size(py_result));
-		PyObject* py_dict_key = NULL;
-		PyObject* py_dict_value = NULL;
-		Py_ssize_t pos = 0;
-		CPPUNIT_ASSERT(PyDict_Next(py_result, &pos, &py_dict_key, &py_dict_value) != 0);
-		CPPUNIT_ASSERT(PyList_Check(py_dict_value));
+		const uint32_t num_repeats = 10;
+		size_t refcount_start = PythonTotalRefCount();
+		for (uint32_t repeat = 0; repeat < num_repeats; repeat++)
+		{
+			TreeList testlist("SomeElementName");
+			PyObject* py_result = PythonConvert::FromTree(&testlist);
+			CPPUNIT_ASSERT(PyDict_Check(py_result));
+			CPPUNIT_ASSERT_EQUAL(Py_ssize_t(1), PyDict_Size(py_result));
+			PyObject* py_dict_key = NULL;
+			PyObject* py_dict_value = NULL;
+			Py_ssize_t pos = 0;
+			CPPUNIT_ASSERT(PyDict_Next(py_result, &pos, &py_dict_key, &py_dict_value) != 0);
+			CPPUNIT_ASSERT(PyList_Check(py_dict_value));
 #if PY_MAJOR_VERSION >= 3
-		CPPUNIT_ASSERT(PyUnicode_Check(py_dict_key));
-		CPPUNIT_ASSERT_EQUAL(std::string("SomeElementName"), std::string(PyUnicode_AsUTF8(py_dict_key)));
+			CPPUNIT_ASSERT(PyUnicode_Check(py_dict_key));
+			CPPUNIT_ASSERT_EQUAL(std::string("SomeElementName"), std::string(PyUnicode_AsUTF8(py_dict_key)));
 #else
-		CPPUNIT_ASSERT(PyString_Check(py_dict_key));
-		CPPUNIT_ASSERT_EQUAL(std::string("SomeElementName"), std::string(PyString_AsString(py_dict_key)));
+			CPPUNIT_ASSERT(PyString_Check(py_dict_key));
+			CPPUNIT_ASSERT_EQUAL(std::string("SomeElementName"), std::string(PyString_AsString(py_dict_key)));
 #endif
-		CPPUNIT_ASSERT_EQUAL(Py_ssize_t(0), PyList_Size(py_dict_value));
-		Py_DECREF(py_result);
-		size_t refcount1 = PythonTotalRefCount();
-		CPPUNIT_ASSERT(refcount1 == refcount0);
+			CPPUNIT_ASSERT_EQUAL(Py_ssize_t(0), PyList_Size(py_dict_value));
+			Py_DECREF(py_result);
+
+			size_t refcount_now = PythonTotalRefCount();
+			if (repeat > 0)
+			{
+				// Note that we don't comapre with the very first time this is done
+				// because more recent versions of Python 3 have some smart caching
+				// of things which cause incremented ref counts the first time
+				// some methods are run.
+				CPPUNIT_ASSERT(refcount_start == refcount_now);
+			}
+			refcount_start = refcount_now;
+		}		
 	}
 
 	void testFromVariedNumberList()
 	{
-		size_t refcount0 = PythonTotalRefCount();
+		const uint32_t num_repeats = 10;
+		size_t refcount_start = PythonTotalRefCount();
+		for (uint32_t repeat = 0; repeat < num_repeats; repeat++)
+		{
+			TreeList testlist("VariedElement");
+			testlist.Add(new TreeInt32(781));
+			testlist.Add(new TreeFloat64(-999.321));
+			testlist.Add(new TreeBool(true));
 
-		TreeList testlist("VariedElement");
-		testlist.Add( new TreeInt32( 781 ) );
-		testlist.Add( new TreeFloat64( -999.321 ) );
-		testlist.Add( new TreeBool(true) );
+			PyObject* py_result = PythonConvert::FromTree(&testlist);
 
-		PyObject* py_result = PythonConvert::FromTree(&testlist);
+			// The way to represent this is a dictionary with one element whose name is the list element
+			CPPUNIT_ASSERT(PyDict_Check(py_result));
+			CPPUNIT_ASSERT_EQUAL(Py_ssize_t(1), PyDict_Size(py_result));
+			PyObject* py_list = PyDict_GetItemString(py_result, "VariedElement");
+			CPPUNIT_ASSERT(py_list != NULL);
+			CPPUNIT_ASSERT(PyList_Check(py_list));
 
-		// The way to represent this is a dictionary with one element whose name is the list element
-		CPPUNIT_ASSERT(PyDict_Check(py_result));
-		CPPUNIT_ASSERT_EQUAL(Py_ssize_t(1), PyDict_Size(py_result));
-		PyObject* py_list = PyDict_GetItemString(py_result, "VariedElement");
-		CPPUNIT_ASSERT(py_list != NULL);
-		CPPUNIT_ASSERT(PyList_Check(py_list));
-
-		// And should have the 3 elements
-		CPPUNIT_ASSERT_EQUAL(Py_ssize_t(3), PyList_Size(py_list));
+			// And should have the 3 elements
+			CPPUNIT_ASSERT_EQUAL(Py_ssize_t(3), PyList_Size(py_list));
 
 #if PY_MAJOR_VERSION >= 3
-		CPPUNIT_ASSERT(PyLong_Check(PyList_GetItem(py_list, 0)));
-		CPPUNIT_ASSERT_EQUAL(781L, PyLong_AsLong(PyList_GetItem(py_list, 0)));
+			CPPUNIT_ASSERT(PyLong_Check(PyList_GetItem(py_list, 0)));
+			CPPUNIT_ASSERT_EQUAL(781L, PyLong_AsLong(PyList_GetItem(py_list, 0)));
 #else
-		CPPUNIT_ASSERT(PyInt_Check(PyList_GetItem(py_list, 0)));
-		CPPUNIT_ASSERT_EQUAL(781L, PyInt_AsLong(PyList_GetItem(py_list, 0)));
+			CPPUNIT_ASSERT(PyInt_Check(PyList_GetItem(py_list, 0)));
+			CPPUNIT_ASSERT_EQUAL(781L, PyInt_AsLong(PyList_GetItem(py_list, 0)));
 #endif
-		CPPUNIT_ASSERT(PyFloat_Check(PyList_GetItem(py_list, 1)));
-		CPPUNIT_ASSERT_EQUAL(-999.321, PyFloat_AsDouble(PyList_GetItem(py_list, 1)));
+			CPPUNIT_ASSERT(PyFloat_Check(PyList_GetItem(py_list, 1)));
+			CPPUNIT_ASSERT_EQUAL(-999.321, PyFloat_AsDouble(PyList_GetItem(py_list, 1)));
 
-		CPPUNIT_ASSERT(PyBool_Check(PyList_GetItem(py_list, 2)));
-		CPPUNIT_ASSERT(PyList_GetItem(py_list, 2) == Py_True);
+			CPPUNIT_ASSERT(PyBool_Check(PyList_GetItem(py_list, 2)));
+			CPPUNIT_ASSERT(PyList_GetItem(py_list, 2) == Py_True);
 
-		Py_DECREF(py_result);
+			Py_DECREF(py_result);
 
-		size_t refcount1 = PythonTotalRefCount();
-		CPPUNIT_ASSERT(refcount1 == refcount0);
+			size_t refcount_now = PythonTotalRefCount();
+			if (repeat > 0)
+			{
+				// Note that we don't comapre with the very first time this is done
+				// because more recent versions of Python 3 have some smart caching
+				// of things which cause incremented ref counts the first time
+				// some methods are run.
+				CPPUNIT_ASSERT(refcount_start == refcount_now);
+			}
+			refcount_start = refcount_now;
+		}
 	}
 
 	//------------- Conversion of lists from Python to C++ -------------//
 
 	void testToEmptyList()
 	{
-		size_t refcount0 = PythonTotalRefCount();
+		const uint32_t num_repeats = 10;
+		size_t refcount_start = PythonTotalRefCount();
+		for (uint32_t repeat = 0; repeat < num_repeats; repeat++)
+		{
+			// convert totally empty list (not even element name specified)
+			PyObject* py_test_empty = PyDict_New();
+			PyObject* py_list = PyList_New(0);
+			PyDict_SetItemString(py_test_empty, "SomeElementNameHere", py_list);
+			Py_DECREF(py_list);
+			std::unique_ptr<TreeValue> result(PythonConvert::ToTree(py_test_empty));
+			Py_DECREF(py_test_empty);
 
-		// convert totally empty list (not even element name specified)
-		PyObject* py_test_empty = PyDict_New();
-		PyObject* py_list = PyList_New(0);
-		PyDict_SetItemString(py_test_empty, "SomeElementNameHere", py_list);
-		Py_DECREF(py_list);
-		std::unique_ptr<TreeValue> result( PythonConvert::ToTree(py_test_empty) );
-		Py_DECREF(py_test_empty);
-		
-		// check it works and uses the element name
-		CPPUNIT_ASSERT(result.get() != NULL);
-		TreeList* result_list = TreeValueCast<TreeList> ( result.get() );
-		CPPUNIT_ASSERT(result_list != NULL);
-		CPPUNIT_ASSERT_EQUAL(size_t(0), result_list->NumElements());
-		CPPUNIT_ASSERT_EQUAL(std::string("SomeElementNameHere"), result_list->ElementName());
+			// check it works and uses the element name
+			CPPUNIT_ASSERT(result.get() != NULL);
+			TreeList* result_list = TreeValueCast<TreeList>(result.get());
+			CPPUNIT_ASSERT(result_list != NULL);
+			CPPUNIT_ASSERT_EQUAL(size_t(0), result_list->NumElements());
+			CPPUNIT_ASSERT_EQUAL(std::string("SomeElementNameHere"), result_list->ElementName());
 
-		size_t refcount1 = PythonTotalRefCount();
-		CPPUNIT_ASSERT(refcount1 == refcount0);
+			size_t refcount_now = PythonTotalRefCount();
+			if (repeat > 0)
+			{
+				// Note that we don't comapre with the very first time this is done
+				// because more recent versions of Python 3 have some smart caching
+				// of things which cause incremented ref counts the first time
+				// some methods are run.
+				CPPUNIT_ASSERT(refcount_start == refcount_now);
+			}
+			refcount_start = refcount_now;
+		}
 	}
 
 	void testToVariedNumberList()
 	{
-		size_t refcount0 = PythonTotalRefCount();
-
-		// make data
-		PyObject* py_wrapper(NULL);
+		const uint32_t num_repeats = 10;
+		size_t refcount_start = PythonTotalRefCount();
+		for (uint32_t repeat = 0; repeat < num_repeats; repeat++)
 		{
-			PyObject* py_list = PyList_New(3);
-			PyList_SetItem(py_list, 0, 
-#if PY_MAJOR_VERSION >= 3
-				PyLong_FromLong(23L)
-#else
-				PyInt_FromLong(23L)
-#endif
-			);
-			PyList_SetItem(py_list, 1, PyFloat_FromDouble(-99999.93));
-			Py_INCREF(Py_True);
-			PyList_SetItem(py_list, 2, Py_True);
-			py_wrapper = PyDict_New();
-			PyDict_SetItemString(py_wrapper, "Apples", py_list);
-			Py_DECREF(py_list);
+			// make data
+			PyObject* py_wrapper(NULL);
+			{
+				PyObject* py_list = PyList_New(3);
+				PyList_SetItem(py_list, 0, 
+	#if PY_MAJOR_VERSION >= 3
+					PyLong_FromLong(23L)
+	#else
+					PyInt_FromLong(23L)
+	#endif
+				);
+				PyList_SetItem(py_list, 1, PyFloat_FromDouble(-99999.93));
+				Py_INCREF(Py_True);
+				PyList_SetItem(py_list, 2, Py_True);
+				py_wrapper = PyDict_New();
+				PyDict_SetItemString(py_wrapper, "Apples", py_list);
+				Py_DECREF(py_list);
+			}
+
+			// convert
+			std::unique_ptr<TreeValue> result( PythonConvert::ToTree(py_wrapper) );
+
+			// done with data
+			Py_DECREF(py_wrapper);
+
+			// check results
+			CPPUNIT_ASSERT(result.get() != NULL);
+			const TreeList* result_list = TreeValueCast<TreeList>( result.get() );
+			CPPUNIT_ASSERT(result_list != NULL);
+			CPPUNIT_ASSERT_EQUAL(size_t(3), result_list->NumElements());
+			CPPUNIT_ASSERT_EQUAL(std::string("Apples"), result_list->ElementName());
+			const TreeInt32* el0 = TreeValueCast<TreeInt32> ( result_list->ElementArray()[0] );
+			const TreeFloat64* el1 = TreeValueCast<TreeFloat64> ( result_list->ElementArray()[1] );
+			const TreeBool* el2 = TreeValueCast<TreeBool> ( result_list->ElementArray()[2] );
+			CPPUNIT_ASSERT(el0 != NULL);
+			CPPUNIT_ASSERT_EQUAL(23L, el0->Value());
+			CPPUNIT_ASSERT(el1 != NULL);
+			CPPUNIT_ASSERT_EQUAL(-99999.93, el1->Value());
+			CPPUNIT_ASSERT(el2 != NULL);
+			CPPUNIT_ASSERT_EQUAL(true, el2->Value());
+
+			size_t refcount_now = PythonTotalRefCount();
+			if (repeat > 0)
+			{
+				// Note that we don't comapre with the very first time this is done
+				// because more recent versions of Python 3 have some smart caching
+				// of things which cause incremented ref counts the first time
+				// some methods are run.
+				CPPUNIT_ASSERT(refcount_start == refcount_now);
+			}
+			refcount_start = refcount_now;
 		}
-
-		// convert
-		std::unique_ptr<TreeValue> result( PythonConvert::ToTree(py_wrapper) );
-
-		// done with data
-		Py_DECREF(py_wrapper);
-
-		// check results
-		CPPUNIT_ASSERT(result.get() != NULL);
-		const TreeList* result_list = TreeValueCast<TreeList>( result.get() );
-		CPPUNIT_ASSERT(result_list != NULL);
-		CPPUNIT_ASSERT_EQUAL(size_t(3), result_list->NumElements());
-		CPPUNIT_ASSERT_EQUAL(std::string("Apples"), result_list->ElementName());
-		const TreeInt32* el0 = TreeValueCast<TreeInt32> ( result_list->ElementArray()[0] );
-		const TreeFloat64* el1 = TreeValueCast<TreeFloat64> ( result_list->ElementArray()[1] );
-		const TreeBool* el2 = TreeValueCast<TreeBool> ( result_list->ElementArray()[2] );
-		CPPUNIT_ASSERT(el0 != NULL);
-		CPPUNIT_ASSERT_EQUAL(23L, el0->Value());
-		CPPUNIT_ASSERT(el1 != NULL);
-		CPPUNIT_ASSERT_EQUAL(-99999.93, el1->Value());
-		CPPUNIT_ASSERT(el2 != NULL);
-		CPPUNIT_ASSERT_EQUAL(true, el2->Value());
-
-		size_t refcount1 = PythonTotalRefCount();
-		CPPUNIT_ASSERT(refcount1 == refcount0);
 	}
 
 	void testFromEmptyCompound()
 	{
-		size_t refcount0 = PythonTotalRefCount();
+		const uint32_t num_repeats = 10;
+		size_t refcount_start = PythonTotalRefCount();
+		for (uint32_t repeat = 0; repeat < num_repeats; repeat++)
+		{
+			TreeCompound c;
+			PyObject* py_c = PythonConvert::FromTree(&c);
+			CPPUNIT_ASSERT(PyDict_Check(py_c));
+			CPPUNIT_ASSERT_EQUAL(Py_ssize_t(0), PyDict_Size(py_c));
+			Py_DECREF(py_c);
 
-		TreeCompound c;
-		PyObject* py_c = PythonConvert::FromTree(&c);
-		CPPUNIT_ASSERT(PyDict_Check(py_c));
-		CPPUNIT_ASSERT_EQUAL(Py_ssize_t(0), PyDict_Size(py_c));
-		Py_DECREF(py_c);
-
-		size_t refcount1 = PythonTotalRefCount();
-		CPPUNIT_ASSERT(refcount1 == refcount0);
+			size_t refcount_now = PythonTotalRefCount();
+			if (repeat > 0)
+			{
+				// Note that we don't comapre with the very first time this is done
+				// because more recent versions of Python 3 have some smart caching
+				// of things which cause incremented ref counts the first time
+				// some methods are run.
+				CPPUNIT_ASSERT(refcount_start == refcount_now);
+			}
+			refcount_start = refcount_now;
+		}
 	}
 
 	void testFromCompound()
 	{
-		size_t refcount0 = PythonTotalRefCount();
+		const uint32_t num_repeats = 10;
+		size_t refcount_start = PythonTotalRefCount();
+		for (uint32_t repeat = 0; repeat < num_repeats; repeat++)
+		{
+			TreeCompound c;
+			c.Set("Age", new TreeInt32(3));
+			c.Set("Height", new TreeFloat64(22.3));
+			c.Set("Name", new TreeString("Ermintrude"));
 
-		TreeCompound c;
-		c.Set("Age", new TreeInt32(3));
-		c.Set("Height", new TreeFloat64(22.3));
-		c.Set("Name", new TreeString("Ermintrude"));
+			TreeCompound* c_sub = new TreeCompound;
+			c_sub->Set("Comment", new TreeString("What is this?"));
+			c.Set("OtherInfo", c_sub);
 
-		TreeCompound* c_sub = new TreeCompound;
-		c_sub->Set("Comment", new TreeString("What is this?"));
-		c.Set("OtherInfo", c_sub);
+			PyObject* py_c = PythonConvert::FromTree(&c);
+			CPPUNIT_ASSERT(PyDict_Check(py_c));
+			CPPUNIT_ASSERT_EQUAL(Py_ssize_t(4), PyDict_Size(py_c));
 
-		PyObject* py_c = PythonConvert::FromTree(&c);
-		CPPUNIT_ASSERT(PyDict_Check(py_c));
-		CPPUNIT_ASSERT_EQUAL(Py_ssize_t(4), PyDict_Size(py_c));
+			PyObject* py_age = PyDict_GetItemString(py_c, "Age");
+	#if PY_MAJOR_VERSION >= 3
+			CPPUNIT_ASSERT(PyLong_Check(py_age));
+			CPPUNIT_ASSERT_EQUAL(3L, PyLong_AsLong(py_age));
+	#else
+			CPPUNIT_ASSERT(PyInt_Check(py_age));
+			CPPUNIT_ASSERT_EQUAL(3L, PyInt_AsLong(py_age));
+	#endif
+			PyObject* py_height = PyDict_GetItemString(py_c, "Height");
+			CPPUNIT_ASSERT(PyFloat_Check(py_height));
+			CPPUNIT_ASSERT_EQUAL(22.3, PyFloat_AsDouble(py_height));
 
-		PyObject* py_age = PyDict_GetItemString(py_c, "Age");
-#if PY_MAJOR_VERSION >= 3
-		CPPUNIT_ASSERT(PyLong_Check(py_age));
-		CPPUNIT_ASSERT_EQUAL(3L, PyLong_AsLong(py_age));
-#else
-		CPPUNIT_ASSERT(PyInt_Check(py_age));
-		CPPUNIT_ASSERT_EQUAL(3L, PyInt_AsLong(py_age));
-#endif
-		PyObject* py_height = PyDict_GetItemString(py_c, "Height");
-		CPPUNIT_ASSERT(PyFloat_Check(py_height));
-		CPPUNIT_ASSERT_EQUAL(22.3, PyFloat_AsDouble(py_height));
+			PyObject* py_name = PyDict_GetItemString(py_c, "Name");
+	#if PY_MAJOR_VERSION >= 3
+			CPPUNIT_ASSERT(PyUnicode_Check(py_name));
+			CPPUNIT_ASSERT_EQUAL(std::string("Ermintrude"), std::string(PyUnicode_AsUTF8(py_name)));
+	#else
+			CPPUNIT_ASSERT(PyString_Check(py_name));
+			CPPUNIT_ASSERT_EQUAL( std::string("Ermintrude"), std::string( PyString_AsString(py_name) ) );
+	#endif
 
-		PyObject* py_name = PyDict_GetItemString(py_c, "Name");
-#if PY_MAJOR_VERSION >= 3
-		CPPUNIT_ASSERT(PyUnicode_Check(py_name));
-		CPPUNIT_ASSERT_EQUAL(std::string("Ermintrude"), std::string(PyUnicode_AsUTF8(py_name)));
-#else
-		CPPUNIT_ASSERT(PyString_Check(py_name));
-		CPPUNIT_ASSERT_EQUAL( std::string("Ermintrude"), std::string( PyString_AsString(py_name) ) );
-#endif
+			PyObject* py_other = PyDict_GetItemString(py_c, "OtherInfo");
+			CPPUNIT_ASSERT(PyDict_Check(py_other));
+			CPPUNIT_ASSERT_EQUAL(Py_ssize_t(1), PyDict_Size(py_other));
+			PyObject* py_comment = PyDict_GetItemString(py_other, "Comment");
+	#if PY_MAJOR_VERSION >= 3
+			CPPUNIT_ASSERT(PyUnicode_Check(py_comment));
+			CPPUNIT_ASSERT_EQUAL(std::string("What is this?"), std::string(PyUnicode_AsUTF8(py_comment)));
+	#else
+			CPPUNIT_ASSERT(PyString_Check(py_comment));
+			CPPUNIT_ASSERT_EQUAL(std::string("What is this?"), std::string(PyString_AsString(py_comment)));
+	#endif
+			Py_DECREF(py_c);
 
-		PyObject* py_other = PyDict_GetItemString(py_c, "OtherInfo");
-		CPPUNIT_ASSERT(PyDict_Check(py_other));
-		CPPUNIT_ASSERT_EQUAL(Py_ssize_t(1), PyDict_Size(py_other));
-		PyObject* py_comment = PyDict_GetItemString(py_other, "Comment");
-#if PY_MAJOR_VERSION >= 3
-		CPPUNIT_ASSERT(PyUnicode_Check(py_comment));
-		CPPUNIT_ASSERT_EQUAL(std::string("What is this?"), std::string(PyUnicode_AsUTF8(py_comment)));
-#else
-		CPPUNIT_ASSERT(PyString_Check(py_comment));
-		CPPUNIT_ASSERT_EQUAL(std::string("What is this?"), std::string(PyString_AsString(py_comment)));
-#endif
-		Py_DECREF(py_c);
-
-		size_t refcount1 = PythonTotalRefCount();
-		CPPUNIT_ASSERT(refcount1 == refcount0);
+			size_t refcount_now = PythonTotalRefCount();
+			if (repeat > 0)
+			{
+				// Note that we don't comapre with the very first time this is done
+				// because more recent versions of Python 3 have some smart caching
+				// of things which cause incremented ref counts the first time
+				// some methods are run.
+				CPPUNIT_ASSERT(refcount_start == refcount_now);
+			}
+			refcount_start = refcount_now;
+		}
 	}
 
 	void testToEmptyCompound()
 	{
-		size_t refcount0 = PythonTotalRefCount();
+		const uint32_t num_repeats = 10;
+		size_t refcount_start = PythonTotalRefCount();
+		for (uint32_t repeat = 0; repeat < num_repeats; repeat++)
+		{
+			PyObject* py_c = PyDict_New();
 
-		PyObject* py_c = PyDict_New();
-		std::unique_ptr<TreeValue> result( PythonConvert::ToTree(py_c) );
-		Py_DECREF(py_c);
+			std::unique_ptr<TreeValue> result( PythonConvert::ToTree(py_c) );
+			Py_DECREF(py_c);
 
-		CPPUNIT_ASSERT(result.get() != NULL);
-		const TreeCompound* c = TreeValueCast<TreeCompound> ( result.get() );
-		CPPUNIT_ASSERT(c != NULL);
-		CPPUNIT_ASSERT_EQUAL(size_t(0), c->NumElements());
+			CPPUNIT_ASSERT(result.get() != NULL);
+			const TreeCompound* c = TreeValueCast<TreeCompound> ( result.get() );
+			CPPUNIT_ASSERT(c != NULL);
+			CPPUNIT_ASSERT_EQUAL(size_t(0), c->NumElements());
 
-		size_t refcount1 = PythonTotalRefCount();
-		CPPUNIT_ASSERT(refcount1 == refcount0);
+			size_t refcount_now = PythonTotalRefCount();
+			if (repeat > 0)
+			{
+				// Note that we don't comapre with the very first time this is done
+				// because more recent versions of Python 3 have some smart caching
+				// of things which cause incremented ref counts the first time
+				// some methods are run.
+				CPPUNIT_ASSERT(refcount_start == refcount_now);
+			}
+			refcount_start = refcount_now;
+		}
 	}
 
 	void testToCompound()
 	{
-		size_t refcount0 = PythonTotalRefCount();
-
-		// build Python data
-		PyObject* py_c = PyDict_New();
-		PyObject* py_distance = PyFloat_FromDouble(33.333);
-		PyObject* py_hats =
-#if PY_MAJOR_VERSION >= 3
-			PyLong_FromLong(4);
-#else
-			PyInt_FromLong(4);
-#endif
-		PyObject* py_c_info = PyDict_New();
-		PyObject* py_description =
-#if PY_MAJOR_VERSION >= 3
-			PyUnicode_FromString("Hat throwing contest");
-#else
-			PyString_FromString("Hat throwing contest");
-#endif
-		PyDict_SetItemString(py_c_info, "Description", py_description);
-		PyDict_SetItemString(py_c, "Info", py_c_info);
-		PyDict_SetItemString(py_c, "Distance", py_distance);
-		PyDict_SetItemString(py_c, "Hats", py_hats);
+		const uint32_t num_repeats = 10;
+		size_t refcount_start = PythonTotalRefCount();
+		for (uint32_t repeat = 0; repeat < num_repeats; repeat++)
+		{
+			// build Python data
+			PyObject* py_c = PyDict_New();
+			PyObject* py_distance = PyFloat_FromDouble(33.333);
+			PyObject* py_hats =
+	#if PY_MAJOR_VERSION >= 3
+				PyLong_FromLong(4);
+	#else
+				PyInt_FromLong(4);
+	#endif
+			PyObject* py_c_info = PyDict_New();
+			PyObject* py_description =
+	#if PY_MAJOR_VERSION >= 3
+				PyUnicode_FromString("Hat throwing contest");
+	#else
+				PyString_FromString("Hat throwing contest");
+	#endif
+			PyDict_SetItemString(py_c_info, "Description", py_description);
+			PyDict_SetItemString(py_c, "Info", py_c_info);
+			PyDict_SetItemString(py_c, "Distance", py_distance);
+			PyDict_SetItemString(py_c, "Hats", py_hats);
 		
-		// done with direct references to sub-objects
-		Py_DECREF(py_distance);
-		Py_DECREF(py_hats);
-		Py_DECREF(py_c_info);
-		Py_DECREF(py_description);
+			// done with direct references to sub-objects
+			Py_DECREF(py_distance);
+			Py_DECREF(py_hats);
+			Py_DECREF(py_c_info);
+			Py_DECREF(py_description);
 
-		// do conversion
-		std::unique_ptr<TreeValue> result( PythonConvert::ToTree(py_c) );
+			// do conversion
+			std::unique_ptr<TreeValue> result( PythonConvert::ToTree(py_c) );
 
-		// done with base
-		Py_DECREF(py_c);
+			// done with base
+			Py_DECREF(py_c);
 
-		CPPUNIT_ASSERT(result.get() != NULL);
-		const TreeCompound* c = TreeValueCast<TreeCompound> ( result.get() );
-		CPPUNIT_ASSERT(c != NULL);
-		CPPUNIT_ASSERT_EQUAL(size_t(3), c->NumElements());
+			CPPUNIT_ASSERT(result.get() != NULL);
+			const TreeCompound* c = TreeValueCast<TreeCompound> ( result.get() );
+			CPPUNIT_ASSERT(c != NULL);
+			CPPUNIT_ASSERT_EQUAL(size_t(3), c->NumElements());
 
-		const TreeValue* distance = c->Get("Distance");
-		CPPUNIT_ASSERT(distance != NULL);
-		const TreeFloat64* distance_float64 = TreeValueCast<TreeFloat64> ( distance );
-		CPPUNIT_ASSERT(distance_float64 != NULL);
+			const TreeValue* distance = c->Get("Distance");
+			CPPUNIT_ASSERT(distance != NULL);
+			const TreeFloat64* distance_float64 = TreeValueCast<TreeFloat64> ( distance );
+			CPPUNIT_ASSERT(distance_float64 != NULL);
 
-		const TreeValue* hats = c->Get("Hats");
-		CPPUNIT_ASSERT(hats != NULL);
-		const TreeInt32* hats_int32 = TreeValueCast<TreeInt32> ( hats );
-		CPPUNIT_ASSERT(hats_int32 != NULL);
+			const TreeValue* hats = c->Get("Hats");
+			CPPUNIT_ASSERT(hats != NULL);
+			const TreeInt32* hats_int32 = TreeValueCast<TreeInt32> ( hats );
+			CPPUNIT_ASSERT(hats_int32 != NULL);
 
-		const TreeValue* info = c->Get("Info");
-		CPPUNIT_ASSERT(hats != NULL);
-		const TreeCompound* c_info = TreeValueCast<TreeCompound> ( info );
-		CPPUNIT_ASSERT(c_info != NULL);
-		CPPUNIT_ASSERT_EQUAL(size_t(1), c_info->NumElements());
-		const TreeValue* description = c_info->Get("Description");
-		CPPUNIT_ASSERT(description != NULL);
-		const TreeString* description_string = TreeValueCast<TreeString> ( description );
-		CPPUNIT_ASSERT(description_string != NULL);
-		CPPUNIT_ASSERT_EQUAL(std::string("Hat throwing contest"), description_string->Value());
+			const TreeValue* info = c->Get("Info");
+			CPPUNIT_ASSERT(hats != NULL);
+			const TreeCompound* c_info = TreeValueCast<TreeCompound> ( info );
+			CPPUNIT_ASSERT(c_info != NULL);
+			CPPUNIT_ASSERT_EQUAL(size_t(1), c_info->NumElements());
+			const TreeValue* description = c_info->Get("Description");
+			CPPUNIT_ASSERT(description != NULL);
+			const TreeString* description_string = TreeValueCast<TreeString> ( description );
+			CPPUNIT_ASSERT(description_string != NULL);
+			CPPUNIT_ASSERT_EQUAL(std::string("Hat throwing contest"), description_string->Value());
 
-		size_t refcount1 = PythonTotalRefCount();
-		CPPUNIT_ASSERT(refcount1 == refcount0);
+			size_t refcount_now = PythonTotalRefCount();
+			if (repeat > 0)
+			{
+				// Note that we don't comapre with the very first time this is done
+				// because more recent versions of Python 3 have some smart caching
+				// of things which cause incremented ref counts the first time
+				// some methods are run.
+				CPPUNIT_ASSERT(refcount_start == refcount_now);
+			}
+			refcount_start = refcount_now;
+		}
 	}
 
 };

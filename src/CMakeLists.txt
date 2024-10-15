@@ -1,6 +1,6 @@
 #
 # Open3DMotion
-# Copyright (c) 2004-2018.
+# Copyright (c) 2004-2024.
 # All rights reserved.
 # See LICENSE.txt for details.
 #
@@ -23,9 +23,11 @@ set(OPEN3DMOTION_LINEAR_ALGEBRA_CLAPACK_FINDPATH "" CACHE PATH "Find clapack usi
 option(OPEN3DMOTION_LINEAR_ALGEBRA_EIGEN "For linear algebra use the Eigen library instead of CLAPACK" OFF)
 set(OPEN3DMOTION_LINEAR_ALGEBRA_EIGEN_INCLUDEPATH "/usr/include" CACHE PATH "Path to Eigen library of headers")
 if (OPEN3DMOTION_BIND_PYTHON)
-  set(OPEN3DMOTION_BIND_PYTHON_VERSION_MAJOR "2" CACHE STRING "Python major version")
-  set(OPEN3DMOTION_BIND_PYTHON_VERSION_MINOR "7" CACHE STRING "Python minor version")
-  set(OPEN3DMOTION_BIND_PYTHON_INSTALLPATH "C:/Python${OPEN3DMOTION_BIND_PYTHON_VERSION_MAJOR}${OPEN3DMOTION_BIND_PYTHON_VERSION_MINOR}" CACHE PATH "Path to Python library")
+  set(OPEN3DMOTION_BIND_PYTHON_VERSION_MAJOR "3" CACHE STRING "Python major version")
+  set(OPEN3DMOTION_BIND_PYTHON_VERSION_MINOR "12" CACHE STRING "Python minor version")
+  set(OPEN3DMOTION_BIND_PYTHON_VERSION_MICRO "6" CACHE STRING "Python micro version")
+  set(OPEN3DMOTION_BIND_PYTHON_CORE_RELEASE "/Python-${OPEN3DMOTION_BIND_PYTHON_VERSION_MAJOR}.${OPEN3DMOTION_BIND_PYTHON_VERSION_MINOR}.${OPEN3DMOTION_BIND_PYTHON_VERSION_MICRO}" CACHE PATH "Path to Python library")
+  set(OPEN3DMOTION_BIND_PYTHON_CORE_DEBUG "${OPEN3DMOTION_BIND_PYTHON_CORE_RELEASE}" CACHE PATH "Path to Python library during debug builds")
 endif (OPEN3DMOTION_BIND_PYTHON)
 option(OPEN3DMOTION_OWNBUILD_CPPUNIT "Import our own build of CPPUNIT" ON)
 option(OPEN3DMOTION_OWNINCLUDE_CLAPACK "Put our own clapack directory on the include path" OFF)
@@ -60,19 +62,6 @@ if (WIN32 AND MSVC)
   message(${PROJECT_NAME} " building for architecture: " ${CMAKE_LIBRARY_ARCHITECTURE})
 endif(WIN32 AND MSVC)
 set(CMAKE_INSTALL_LIBDIR "lib/${CMAKE_LIBRARY_ARCHITECTURE}" CACHE STRING "Subdirectory for library")
-
-# Hard-coded path to Python if requested
-if (OPEN3DMOTION_BIND_PYTHON)
-  include_directories (${OPEN3DMOTION_BIND_PYTHON_INSTALLPATH}/include)
-  link_directories(${OPEN3DMOTION_BIND_PYTHON_INSTALLPATH}/libs)
-endif(OPEN3DMOTION_BIND_PYTHON)
-
-# Hard-coded path to Eigen if requested, otherwise find clapack package
-if (OPEN3DMOTION_LINEAR_ALGEBRA_EIGEN)
-  include_directories(${OPEN3DMOTION_LINEAR_ALGEBRA_EIGEN_INCLUDEPATH})
-else(OPEN3DMOTION_LINEAR_ALGEBRA_EIGEN)
-  find_package(CLAPACK PATHS ${OPEN3DMOTION_LINEAR_ALGEBRA_CLAPACK_FINDPATH})
-endif(OPEN3DMOTION_LINEAR_ALGEBRA_EIGEN)
 
 # Do our own build of dependent libraries if requested
 
