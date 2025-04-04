@@ -31,6 +31,9 @@ namespace Open3DMotion
 			((compoundobject->Get(TimeSequence::StructureName) != NULL) ||
   		 (compoundobject->Get(EventGroup::StructureName) != NULL));
 
+		writer.IncreaseIndent();
+		writer.WriteNewLine();
+
 		for (size_t index = 0; index < compoundobject->NumElements(); index++)
 		{
 			const TreeCompoundNode* node = compoundobject->Node(index);
@@ -58,6 +61,9 @@ namespace Open3DMotion
 			}
 
 		}
+
+		writer.DecreaseIndent();
+		writer.WriteIndent();
 	}
 	
 	TreeValue* ReadWriteXMLCompound::ReadValue(XMLReadingMachine& reader, const pugi::xml_node& element) const

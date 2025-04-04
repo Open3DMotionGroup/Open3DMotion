@@ -49,6 +49,9 @@ namespace Open3DMotion
 
 			// write
 			writer.OS() << encoded_data;
+
+			// also write indent
+			writer.WriteIndent();
 		}
 	}
 		

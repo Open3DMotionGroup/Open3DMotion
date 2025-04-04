@@ -17,10 +17,14 @@ namespace Open3DMotion
 	{ 
 		const TreeList* listobject = static_cast<const TreeList*>( value );
 		const std::vector<TreeValue*>& value_list = listobject->ElementArray();
+		writer.IncreaseIndent();
+		writer.WriteNewLine();
 		for (std::vector<TreeValue*>::const_iterator value_iter( value_list.begin() ); value_iter != value_list.end(); value_iter++)
 		{
 			writer.WriteValue(listobject->ElementName(), *value_iter);
 		}
+		writer.DecreaseIndent();
+		writer.WriteIndent();
 	}
 
 	TreeValue* ReadWriteXMLList::ReadValue(XMLReadingMachine& reader, const pugi::xml_node& element) const

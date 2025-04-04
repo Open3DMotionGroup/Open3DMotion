@@ -1,6 +1,6 @@
 /*--
   Open3DMotion 
-  Copyright (c) 2004-2013.
+  Copyright (c) 2004-2025.
   All rights reserved.
   See LICENSE.txt for more information.
 --*/
@@ -35,8 +35,17 @@ namespace Open3DMotion
 
 		virtual void WriteExtendedData(const TreeValue* value);
 
+		virtual void IncreaseIndent();
+
+		virtual void DecreaseIndent();
+
+		virtual void WriteIndent();
+
+		virtual void WriteNewLine();
+
 	protected:
 		std::ostream& os;
+		Open3DMotion::UInt32 indent;
 	};
 }
 
