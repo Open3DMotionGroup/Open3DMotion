@@ -16,7 +16,7 @@
 namespace Open3DMotion
 {
 	XMLWritingMachine::XMLWritingMachine(std::ostream& _os, bool _extended/*=false*/) :
-		XMLReadWriteMachine(_extended), os(_os)
+		XMLReadWriteMachine(_extended), os(_os), indent(0)
 	{
 		// Avoid scientific notation in floating point output
 		os << std::fixed;
@@ -26,8 +26,30 @@ namespace Open3DMotion
 	{
 	}
 
+	void XMLWritingMachine::IncreaseIndent()
+	{
+		++indent;
+	}
+
+	void XMLWritingMachine::DecreaseIndent()
+	{
+		--indent;
+	}
+
+	void XMLWritingMachine::WriteIndent()
+	{
+		for (Open3DMotion::UInt32 iter_indent = 0; iter_indent < indent; iter_indent++)
+			os << "  ";
+	}
+
+	void XMLWritingMachine::WriteNewLine()
+	{
+			os << "\n";
+	}
+
 	void XMLWritingMachine::Write(const ReadWriteXML* xml_class, const std::string& name, const TreeValue* value)
 	{
+		WriteIndent();
 		os << "<" << name;
 		const char* type_attribute = xml_class->TypeAttribute();
 		if (type_attribute != NULL)
@@ -36,7 +58,7 @@ namespace Open3DMotion
 		}
 		os << ">";
 		xml_class->WriteValue(*this, value);
-		os << "</" << name << ">";
+		os << "</" << name << ">\n";
 	}
 
 	void XMLWritingMachine::WriteExtendedData(const TreeValue* value)

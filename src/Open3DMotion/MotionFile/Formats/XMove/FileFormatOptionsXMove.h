@@ -24,6 +24,7 @@ namespace Open3DMotion
 		MapBool LegacyCompoundNames;
 		MapBool ConvertBinaryFloat32;
 		MapBool ExcludeCalc;
+		MapBool GenerateTrialRepLabel;
 	};
 }
 

@@ -15,12 +15,14 @@ namespace Open3DMotion
 		REGISTER_MEMBER(LegacyCompoundNames);
 		REGISTER_MEMBER(ConvertBinaryFloat32);
 		REGISTER_MEMBER(ExcludeCalc);
+		REGISTER_MEMBER(GenerateTrialRepLabel);
 
 		FormatID = "XMove";
 		Extended = false;
 		LegacyCompoundNames = false;
 		ConvertBinaryFloat32 = true;
 		ExcludeCalc = false;
+		GenerateTrialRepLabel = false;
 	}
 
 }

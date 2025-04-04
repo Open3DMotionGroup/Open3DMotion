@@ -188,6 +188,12 @@ namespace Open3DMotion
 			}
 		}
 
+		// optionally generate UserInput\Trial\RepLabel as {UserInput\Subject\ID}_{UserInput\RepLabel}
+		if (xmove_options.GenerateTrialRepLabel)
+		{
+			MakeUserInputTrialRepLabel(export_contents.get());
+		}
+
 		// all elements of trial, optionally excluding Calc section
 		for (size_t element_index = 0; element_index < export_contents->NumElements(); element_index++)
 		{
@@ -316,6 +322,37 @@ namespace Open3DMotion
 				// re-attach
 				section->Remove(listname);
 				section->Set(listname, ts_list_output.release());
+			}
+		}
+	}
+
+	void FileFormatXMove::MakeUserInputTrialRepLabel(TreeCompound* export_contents)
+	{
+		TreeCompound* userinput = export_contents->GetType<TreeCompound>(MEMBER_NAME(Trial::UserInput));
+		if (userinput)
+		{
+			const TreeCompound* subject = userinput->GetType<TreeCompound>(MEMBER_NAME(TrialSectionUserInput::Subject));
+			if (subject)
+			{
+				const TreeString* subject_id = subject->GetType<TreeString>(MEMBER_NAME(TrialSubject::ID));
+				if (subject_id)
+				{
+					const TreeString* replabel = userinput->GetType<TreeString>(MEMBER_NAME(TrialSectionUserInput::RepLabel));
+					if (replabel)
+					{
+						std::string subject_replabel = subject_id->Value() + std::string("_") + replabel->Value();
+
+						TreeCompound* userinput_trial = userinput->GetType<TreeCompound>("Trial");
+						if (userinput_trial == nullptr)
+						{
+							userinput_trial = new TreeCompound();
+							userinput->Set("Trial", userinput_trial);
+						}
+
+						userinput_trial->Set("RepLabel", new TreeString(subject_replabel));
+
+					}
+				}
 			}
 		}
 	}

@@ -59,6 +59,7 @@ namespace Open3DMotion
 	protected:
 		static void ConvertListFloat32To64(TreeCompound* section, const char* listname, const char* structurename, const BinMemFactory& memfactory);
 		static void ConvertListFloat64To32(TreeCompound* section, const char* listname, const char* structurename, const BinMemFactory& memfactory);
+		static void MakeUserInputTrialRepLabel(TreeCompound* export_contents);
 
 	};
 }

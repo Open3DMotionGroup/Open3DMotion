@@ -32,6 +32,7 @@ public:
 	CPPUNIT_TEST( testADemo1ODINLegacy );
 	CPPUNIT_TEST( testODINLegacyReWrite );
 	CPPUNIT_TEST( testWriteExtended );
+	CPPUNIT_TEST( testMakeUserInputTrialRepLabel );
 	CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -407,6 +408,59 @@ public:
 		CPPUNIT_ASSERT_EQUAL(std::string("9.95010000"), std::string(e.attribute("t").value()));
 
 		CPPUNIT_ASSERT(e.next_sibling() == false);
+	}
+
+	void testMakeUserInputTrialRepLabel()
+	{
+		// Generate example
+		{
+			Open3DMotion::Trial example_trial;
+			example_trial.UserInput.Set();
+			example_trial.UserInput.Subject.Set();
+			example_trial.UserInput.Subject.ID = "Bob";
+			example_trial.UserInput.RepLabel = "072";
+			std::unique_ptr<Open3DMotion::TreeValue> example_trial_tree(example_trial.ToTree());
+
+			Open3DMotion::FileFormatOptionsXMove options;
+			options.GenerateTrialRepLabel = true;
+			std::unique_ptr<Open3DMotion::TreeValue> options_tree(options.ToTree());
+
+			try
+			{
+				handler.Write("Open3DMotionTest/Data/Temp/testMakeUserInputTrialRepLabel.xml", example_trial_tree.get(), options_tree.get());
+			}
+			catch (const Open3DMotion::MotionFileException& error)
+			{
+				CPPUNIT_FAIL(error.message);
+			}
+		}
+
+		// Read back and check
+		try
+		{
+			// read
+			std::unique_ptr<Open3DMotion::TreeValue> tree(handler.Read("Open3DMotionTest/Data/Temp/testMakeUserInputTrialRepLabel.xml"));
+
+			// verify existing fields unchanged
+			std::unique_ptr<Open3DMotion::Trial> trial(new Open3DMotion::Trial);
+			trial->FromTree(tree.get());
+			CPPUNIT_ASSERT_EQUAL(std::string("Bob"), trial->UserInput.Subject.ID.Value());
+			CPPUNIT_ASSERT_EQUAL(std::string("072"), trial->UserInput.RepLabel.Value());
+
+			// verify new field present
+			const Open3DMotion::TreeCompound* tree_userinput = ((const Open3DMotion::TreeCompound*)tree.get())->GetType<Open3DMotion::TreeCompound>("UserInput");
+			CPPUNIT_ASSERT(tree_userinput != nullptr);
+			const Open3DMotion::TreeCompound* tree_userinput_trial = tree_userinput->GetType<Open3DMotion::TreeCompound>("Trial");
+			CPPUNIT_ASSERT(tree_userinput_trial != nullptr);
+			const Open3DMotion::TreeString* tree_userinput_trial_replabel = tree_userinput_trial->GetType<Open3DMotion::TreeString>("RepLabel");
+			CPPUNIT_ASSERT(tree_userinput_trial_replabel != nullptr);
+			CPPUNIT_ASSERT_EQUAL(std::string("Bob_072"), tree_userinput_trial_replabel->Value());
+		}
+		catch (const Open3DMotion::MotionFileException& error)
+		{
+			CPPUNIT_FAIL(error.message);
+		}
+
 	}
 };
 
