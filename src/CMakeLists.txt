@@ -1,6 +1,6 @@
 #
 # Open3DMotion
-# Copyright (c) 2004-2024.
+# Copyright (c) 2004-2025.
 # All rights reserved.
 # See LICENSE.txt for details.
 #
@@ -31,6 +31,10 @@ if (OPEN3DMOTION_BIND_PYTHON)
 endif (OPEN3DMOTION_BIND_PYTHON)
 option(OPEN3DMOTION_OWNBUILD_CPPUNIT "Import our own build of CPPUNIT" ON)
 option(OPEN3DMOTION_OWNINCLUDE_CLAPACK "Put our own clapack directory on the include path" OFF)
+set(OPEN3DMOTION_TEST_PATH_RELEASE "" CACHE PATH "Append to PATH environment used during testing (Release)")
+set(OPEN3DMOTION_TEST_PATH_DEBUG "" CACHE PATH "Append to PATH environment used during testing  (Debug)")
+set(OPEN3DMOTION_TEST_PYTHONPATH_RELEASE "" CACHE PATH "Append to PYTHONPATH environment used during testing (Release)")
+set(OPEN3DMOTION_TEST_PYTHONPATH_DEBUG "" CACHE PATH "Append to PYTHONPATH environment used during testing  (Debug)")
 
 # Append 'd' to end of library name for the debug version of the libraries we build
 SET(CMAKE_DEBUG_POSTFIX d)

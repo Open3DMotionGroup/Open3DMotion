@@ -1,6 +1,6 @@
 #
 # Open3DMotionTest
-# Copyright (c) 2004-2018.
+# Copyright (c) 2004-2025.
 # All rights reserved.
 # See LICENSE.txt for details.
 #
@@ -49,3 +49,20 @@ target_link_libraries(Open3DMotionTest Open3DMotion cppunit)
 #   because they expect to see Open3DMotionTest/Data present (relative to working directory)
 add_test (NAME Open3DMotionTestRun COMMAND $<TARGET_FILE:Open3DMotionTest>)
 set_tests_properties(Open3DMotionTestRun PROPERTIES WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
+
+# Copy any test environment path requested
+set(TEST_ENVIRONMENT_DEBUG "")
+foreach(TEST_PATH_ELEMENT IN LISTS OPEN3DMOTION_TEST_PYTHONPATH_DEBUG)
+	string(PREPEND TEST_ENVIRONMENT_DEBUG "PYTHONPATH=path_list_prepend:${TEST_PATH_ELEMENT};")
+endforeach()
+foreach(TEST_PATH_ELEMENT IN LISTS OPEN3DMOTION_TEST_PATH_DEBUG)
+	string(PREPEND TEST_ENVIRONMENT_DEBUG "PATH=path_list_prepend:${TEST_PATH_ELEMENT};")
+endforeach()
+set(TEST_ENVIRONMENT_RELEASE "")
+foreach(TEST_PATH_ELEMENT IN LISTS OPEN3DMOTION_TEST_PYTHONPATH_RELEASE)
+	string(PREPEND TEST_ENVIRONMENT_RELEASE "PYTHONPATH=path_list_prepend:${TEST_PATH_ELEMENT};")
+endforeach()
+foreach(TEST_PATH_ELEMENT IN LISTS OPEN3DMOTION_TEST_PATH_RELEASE)
+	string(PREPEND TEST_ENVIRONMENT_RELEASE "PATH=path_list_prepend:${TEST_PATH_ELEMENT};")
+endforeach()
+set_property(TEST Open3DMotionTestRun PROPERTY ENVIRONMENT_MODIFICATION "$<$<CONFIG:DEBUG>:${TEST_ENVIRONMENT_DEBUG}>$<$<CONFIG:RELEASE>:${TEST_ENVIRONMENT_RELEASE}>")
