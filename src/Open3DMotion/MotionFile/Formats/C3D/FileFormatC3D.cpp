@@ -1250,18 +1250,20 @@ namespace Open3DMotion
 			{
 				// If it's an import with company unknown, do put our company name 
 				// but indicate that it's an import in case it didn't originally come from us
-				param.AddRecord(new C3DRecordText(4, "COMPANY", "", "File Import by Codamotion Ltd."));
+				param.AddRecord(new C3DRecordText(4, "COMPANY", "", "File Import by Codamotion Ltd"));
 			}
 		}
 
-		if (trial.Acq.MeasurementSystem.SoftwareName.IsSet())
+		if (trial.Acq.MeasurementSystem.SoftwareName.IsSet() && trial.Acq.MeasurementSystem.SoftwareName.Value().size())
 			param.AddRecord(new C3DRecordText(4, "SOFTWARE", "", trial.Acq.MeasurementSystem.SoftwareName));
-		if (trial.Acq.MeasurementSystem.SoftwareVersion.IsSet())
+		if (trial.Acq.MeasurementSystem.SoftwareVersion.IsSet() && trial.Acq.MeasurementSystem.SoftwareVersion.Value().size())
 			param.AddRecord(new C3DRecordText(4, "VERSION", "", trial.Acq.MeasurementSystem.SoftwareVersion));
 
-		// add export info to C3D (this is non-standard but useful)
-		param.AddRecord(new C3DRecordText(4, "FILE_EXPORT_COMPANY", "", "Charnwood Dynamics Ltd."));
-		param.AddRecord(new C3DRecordText(4, "FILE_EXPORT_SOFTWARE", "", context.ProgramName().c_str()));
+		// add export info to C3D where available (this is non-standard but useful)
+		param.AddRecord(new C3DRecordText(4, "FILE_EXPORT_COMPANY", "", "Codamotion"));
+		if (context.ProgramName().size())
+			param.AddRecord(new C3DRecordText(4, "FILE_EXPORT_SOFTWARE", "", context.ProgramName().c_str()));
+		if (context.ProgramVersion().size())
 		param.AddRecord(new C3DRecordText(4, "FILE_EXPORT_VERSION", "", context.ProgramVersion().c_str()));
 
     // merge any existing info which was created when this trial was imported as C3D

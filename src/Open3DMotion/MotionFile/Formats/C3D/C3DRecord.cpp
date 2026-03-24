@@ -451,7 +451,7 @@ namespace Open3DMotion
 	void C3DRecordText::ValueElementsFromFile(const C3DMachine& /*machine*/, std::istream& is)
 	{
 		size_t fixedlength = range[0];
-		size_t numstrings = TotalElements() / fixedlength;
+		size_t numstrings = (fixedlength > 0) ? (TotalElements() / fixedlength) : 0;
 		for (size_t i = 0; i < numstrings; i++)
 		{
 			string str(fixedlength, ' ');
